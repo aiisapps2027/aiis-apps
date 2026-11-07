@@ -1,4 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ComingSoon } from "./ortu.segera.$fitur";
+import { ComingSoon } from "@/components/aiis/ComingSoon";
 
 export const Route = createFileRoute("/ortu/hafalan")({ component: () => <ComingSoon title="Hafalan" back={false} /> });

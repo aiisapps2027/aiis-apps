@@ -10,33 +10,146 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as OrtuRouteImport } from './routes/ortu'
+import { Route as SetupRouteImport } from './routes/setup'
+import { Route as OrtuIndexRouteImport } from './routes/ortu.index'
+import { Route as OrtuFiturRouteImport } from './routes/ortu.fitur'
+import { Route as OrtuHafalanRouteImport } from './routes/ortu.hafalan'
+import { Route as OrtuNotifikasiRouteImport } from './routes/ortu.notifikasi'
+import { Route as OrtuProfilRouteImport } from './routes/ortu.profil'
+import { Route as OrtuSegeraFiturRouteImport } from './routes/ortu.segera.$fitur'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrtuRoute = OrtuRouteImport.update({
+  id: '/ortu',
+  path: '/ortu',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SetupRoute = SetupRouteImport.update({
+  id: '/setup',
+  path: '/setup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrtuIndexRoute = OrtuIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OrtuRoute,
+} as any)
+const OrtuFiturRoute = OrtuFiturRouteImport.update({
+  id: '/fitur',
+  path: '/fitur',
+  getParentRoute: () => OrtuRoute,
+} as any)
+const OrtuHafalanRoute = OrtuHafalanRouteImport.update({
+  id: '/hafalan',
+  path: '/hafalan',
+  getParentRoute: () => OrtuRoute,
+} as any)
+const OrtuNotifikasiRoute = OrtuNotifikasiRouteImport.update({
+  id: '/notifikasi',
+  path: '/notifikasi',
+  getParentRoute: () => OrtuRoute,
+} as any)
+const OrtuProfilRoute = OrtuProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => OrtuRoute,
+} as any)
+const OrtuSegeraFiturRoute = OrtuSegeraFiturRouteImport.update({
+  id: '/segera/$fitur',
+  path: '/segera/$fitur',
+  getParentRoute: () => OrtuRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/ortu': typeof OrtuRouteWithChildren
+  '/setup': typeof SetupRoute
+  '/ortu/fitur': typeof OrtuFiturRoute
+  '/ortu/hafalan': typeof OrtuHafalanRoute
+  '/ortu/notifikasi': typeof OrtuNotifikasiRoute
+  '/ortu/profil': typeof OrtuProfilRoute
+  '/ortu/': typeof OrtuIndexRoute
+  '/ortu/segera/$fitur': typeof OrtuSegeraFiturRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/setup': typeof SetupRoute
+  '/ortu/fitur': typeof OrtuFiturRoute
+  '/ortu/hafalan': typeof OrtuHafalanRoute
+  '/ortu/notifikasi': typeof OrtuNotifikasiRoute
+  '/ortu/profil': typeof OrtuProfilRoute
+  '/ortu': typeof OrtuIndexRoute
+  '/ortu/segera/$fitur': typeof OrtuSegeraFiturRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/ortu': typeof OrtuRouteWithChildren
+  '/setup': typeof SetupRoute
+  '/ortu/fitur': typeof OrtuFiturRoute
+  '/ortu/hafalan': typeof OrtuHafalanRoute
+  '/ortu/notifikasi': typeof OrtuNotifikasiRoute
+  '/ortu/profil': typeof OrtuProfilRoute
+  '/ortu/': typeof OrtuIndexRoute
+  '/ortu/segera/$fitur': typeof OrtuSegeraFiturRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/ortu'
+    | '/setup'
+    | '/ortu/fitur'
+    | '/ortu/hafalan'
+    | '/ortu/notifikasi'
+    | '/ortu/profil'
+    | '/ortu/'
+    | '/ortu/segera/$fitur'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/setup'
+    | '/ortu/fitur'
+    | '/ortu/hafalan'
+    | '/ortu/notifikasi'
+    | '/ortu/profil'
+    | '/ortu'
+    | '/ortu/segera/$fitur'
+  id:
+    | '__root__'
+    | '/'
+    | '/login'
+    | '/ortu'
+    | '/setup'
+    | '/ortu/fitur'
+    | '/ortu/hafalan'
+    | '/ortu/notifikasi'
+    | '/ortu/profil'
+    | '/ortu/'
+    | '/ortu/segera/$fitur'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LoginRoute: typeof LoginRoute
+  OrtuRoute: typeof OrtuRouteWithChildren
+  SetupRoute: typeof SetupRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +161,97 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ortu': {
+      id: '/ortu'
+      path: '/ortu'
+      fullPath: '/ortu'
+      preLoaderRoute: typeof OrtuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/setup': {
+      id: '/setup'
+      path: '/setup'
+      fullPath: '/setup'
+      preLoaderRoute: typeof SetupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ortu/': {
+      id: '/ortu/'
+      path: '/'
+      fullPath: '/ortu/'
+      preLoaderRoute: typeof OrtuIndexRouteImport
+      parentRoute: typeof OrtuRoute
+    }
+    '/ortu/fitur': {
+      id: '/ortu/fitur'
+      path: '/fitur'
+      fullPath: '/ortu/fitur'
+      preLoaderRoute: typeof OrtuFiturRouteImport
+      parentRoute: typeof OrtuRoute
+    }
+    '/ortu/hafalan': {
+      id: '/ortu/hafalan'
+      path: '/hafalan'
+      fullPath: '/ortu/hafalan'
+      preLoaderRoute: typeof OrtuHafalanRouteImport
+      parentRoute: typeof OrtuRoute
+    }
+    '/ortu/notifikasi': {
+      id: '/ortu/notifikasi'
+      path: '/notifikasi'
+      fullPath: '/ortu/notifikasi'
+      preLoaderRoute: typeof OrtuNotifikasiRouteImport
+      parentRoute: typeof OrtuRoute
+    }
+    '/ortu/profil': {
+      id: '/ortu/profil'
+      path: '/profil'
+      fullPath: '/ortu/profil'
+      preLoaderRoute: typeof OrtuProfilRouteImport
+      parentRoute: typeof OrtuRoute
+    }
+    '/ortu/segera/$fitur': {
+      id: '/ortu/segera/$fitur'
+      path: '/segera/$fitur'
+      fullPath: '/ortu/segera/$fitur'
+      preLoaderRoute: typeof OrtuSegeraFiturRouteImport
+      parentRoute: typeof OrtuRoute
+    }
   }
 }
 
+interface OrtuRouteChildren {
+  OrtuFiturRoute: typeof OrtuFiturRoute
+  OrtuHafalanRoute: typeof OrtuHafalanRoute
+  OrtuNotifikasiRoute: typeof OrtuNotifikasiRoute
+  OrtuProfilRoute: typeof OrtuProfilRoute
+  OrtuIndexRoute: typeof OrtuIndexRoute
+  OrtuSegeraFiturRoute: typeof OrtuSegeraFiturRoute
+}
+
+const OrtuRouteChildren: OrtuRouteChildren = {
+  OrtuFiturRoute: OrtuFiturRoute,
+  OrtuHafalanRoute: OrtuHafalanRoute,
+  OrtuNotifikasiRoute: OrtuNotifikasiRoute,
+  OrtuProfilRoute: OrtuProfilRoute,
+  OrtuIndexRoute: OrtuIndexRoute,
+  OrtuSegeraFiturRoute: OrtuSegeraFiturRoute,
+}
+
+const OrtuRouteWithChildren = OrtuRoute._addFileChildren(OrtuRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LoginRoute: LoginRoute,
+  OrtuRoute: OrtuRouteWithChildren,
+  SetupRoute: SetupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
