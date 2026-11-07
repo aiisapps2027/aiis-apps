@@ -41,6 +41,98 @@ export type Database = {
         }
         Relationships: []
       }
+      bintang: {
+        Row: {
+          created_at: string
+          id: string
+          jumlah: number
+          keterangan: string
+          student_id: string
+          sumber_id: string
+          sumber_tipe: string
+          tanggal: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          jumlah?: number
+          keterangan: string
+          student_id: string
+          sumber_id: string
+          sumber_tipe: string
+          tanggal: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          jumlah?: number
+          keterangan?: string
+          student_id?: string
+          sumber_id?: string
+          sumber_tipe?: string
+          tanggal?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bintang_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      catatan_harian: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          diketahui_ortu_at: string | null
+          id: string
+          kegiatan: string | null
+          student_id: string
+          tanggal: string
+          teacher_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          diketahui_ortu_at?: string | null
+          id?: string
+          kegiatan?: string | null
+          student_id: string
+          tanggal?: string
+          teacher_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          diketahui_ortu_at?: string | null
+          id?: string
+          kegiatan?: string | null
+          student_id?: string
+          tanggal?: string
+          teacher_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catatan_harian_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catatan_harian_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "teachers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       halaqah: {
         Row: {
           created_at: string
@@ -69,6 +161,81 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "halaqah_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "teachers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      laporan_harian: {
+        Row: {
+          ayat_akhir: number | null
+          ayat_awal: number | null
+          created_at: string
+          halaman: number | null
+          id: string
+          jenis: string
+          jilid: string | null
+          jumlah_salah: number | null
+          juz: number | null
+          materi: string | null
+          nilai: string
+          student_id: string
+          surah_akhir: number | null
+          surah_awal: number | null
+          tanggal: string
+          teacher_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          ayat_akhir?: number | null
+          ayat_awal?: number | null
+          created_at?: string
+          halaman?: number | null
+          id?: string
+          jenis: string
+          jilid?: string | null
+          jumlah_salah?: number | null
+          juz?: number | null
+          materi?: string | null
+          nilai: string
+          student_id: string
+          surah_akhir?: number | null
+          surah_awal?: number | null
+          tanggal?: string
+          teacher_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ayat_akhir?: number | null
+          ayat_awal?: number | null
+          created_at?: string
+          halaman?: number | null
+          id?: string
+          jenis?: string
+          jilid?: string | null
+          jumlah_salah?: number | null
+          juz?: number | null
+          materi?: string | null
+          nilai?: string
+          student_id?: string
+          surah_akhir?: number | null
+          surah_awal?: number | null
+          tanggal?: string
+          teacher_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "laporan_harian_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "laporan_harian_teacher_id_fkey"
             columns: ["teacher_id"]
             isOneToOne: false
             referencedRelation: "teachers"
@@ -141,6 +308,75 @@ export type Database = {
           },
         ]
       }
+      target_harian: {
+        Row: {
+          ayat_akhir: number | null
+          ayat_awal: number | null
+          catatan: string | null
+          created_at: string
+          halaman: number | null
+          id: string
+          jenis: string
+          jilid: string | null
+          materi: string | null
+          student_id: string
+          surah_akhir: number | null
+          surah_awal: number | null
+          tanggal: string
+          teacher_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          ayat_akhir?: number | null
+          ayat_awal?: number | null
+          catatan?: string | null
+          created_at?: string
+          halaman?: number | null
+          id?: string
+          jenis: string
+          jilid?: string | null
+          materi?: string | null
+          student_id: string
+          surah_akhir?: number | null
+          surah_awal?: number | null
+          tanggal: string
+          teacher_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ayat_akhir?: number | null
+          ayat_awal?: number | null
+          catatan?: string | null
+          created_at?: string
+          halaman?: number | null
+          id?: string
+          jenis?: string
+          jilid?: string | null
+          materi?: string | null
+          student_id?: string
+          surah_akhir?: number | null
+          surah_awal?: number | null
+          tanggal?: string
+          teacher_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "target_harian_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "target_harian_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "teachers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       teachers: {
         Row: {
           aktif: boolean
@@ -200,7 +436,21 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      student_bintang_total: {
+        Row: {
+          student_id: string | null
+          total: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bintang_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       has_role: {
@@ -210,10 +460,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      hitung_nilai: { Args: { _jumlah_salah: number }; Returns: string }
+      is_my_student: { Args: { _student_id: string }; Returns: boolean }
+      jakarta_today: { Args: never; Returns: string }
       my_student_halaqah_id: { Args: never; Returns: string }
       my_student_id: { Args: never; Returns: string }
       my_teacher_id: { Args: never; Returns: string }
       set_my_student_photo: { Args: { _path: string }; Returns: undefined }
+      tandai_diketahui: { Args: { _tanggal: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "ustadz" | "ortu"
