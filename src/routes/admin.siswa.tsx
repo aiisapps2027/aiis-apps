@@ -186,11 +186,11 @@ function StudentDialog({ value, halaqah, onClose, onSaved }: { value: Partial<St
           <div><Label>No. HP Orang Tua</Label><Input inputMode="tel" value={f.no_hp ?? ""} onChange={set("no_hp")} /></div>
           <div><Label>Nama Wali</Label><Input value={f.nama_wali ?? ""} onChange={set("nama_wali")} /></div>
           <div><Label>Jenjang</Label>
-            <Select value={f.jenjang} onValueChange={(v) => setF({ ...f, jenjang: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="TK">TK</SelectItem><SelectItem value="SD">SD</SelectItem></SelectContent></Select>
+            <Select value={f.jenjang ?? "SD"} onValueChange={(v) => setF({ ...f, jenjang: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="TK">TK</SelectItem><SelectItem value="SD">SD</SelectItem></SelectContent></Select>
           </div>
           <div><Label>Kelas</Label><Input placeholder="mis. 3A" value={f.kelas ?? ""} onChange={set("kelas")} /></div>
           <div><Label>Jenis Kelamin</Label>
-            <Select value={f.jenis_kelamin} onValueChange={(v) => setF({ ...f, jenis_kelamin: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="L">Laki-laki</SelectItem><SelectItem value="P">Perempuan</SelectItem></SelectContent></Select>
+            <Select value={f.jenis_kelamin ?? "L"} onValueChange={(v) => setF({ ...f, jenis_kelamin: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="L">Laki-laki</SelectItem><SelectItem value="P">Perempuan</SelectItem></SelectContent></Select>
           </div>
           <div><Label>Target Hafalan</Label><Input placeholder="mis. Juz 30" value={f.target_hafalan ?? ""} onChange={set("target_hafalan")} /></div>
           <div className="col-span-2"><Label>Halaqah</Label>
@@ -237,7 +237,7 @@ function parseCsv(text: string): string[][] {
   return rows;
 }
 
-function validateRow(r: Record<string, string>): string[] {
+function validateRow(r: any): string[] {
   const e: string[] = [];
   if (!r.nama || r.nama.trim().length < 2) e.push("nama kosong");
   if (!isValidNik(r.nik ?? "")) e.push("NIK harus 16 digit");
@@ -248,23 +248,23 @@ function validateRow(r: Record<string, string>): string[] {
 }
 
 function ImportDialog({ open, onOpenChange, onDone }: { open: boolean; onOpenChange: (o: boolean) => void; onDone: () => void }) {
-  const [rows, setRows] = useState<(Record<string, string> & { _err: string[] })[]>([]);
+  const [rows, setRows] = useState<any[]>([]);
   const [results, setResults] = useState<Record<number, string>>({});
   const [busy, setBusy] = useState(false);
   const run = useServerFn(importStudents);
 
   async function onFile(file: File) {
     const text = await file.text();
-    const [head, ...body] = parseCsv(text.replace(/^\uFEFF/, ""));
+    const [head = [], ...body] = parseCsv(text.replace(/^\uFEFF/, ""));
     const cols = head.map((h) => h.trim().toLowerCase());
     const parsed = body.map((cells) => {
-      const r: Record<string, string> = {};
+      const r: any = {};
       cols.forEach((c, i) => (r[c] = (cells[i] ?? "").trim()));
       const seen = validateRow(r);
       return { ...r, _err: seen };
     });
     const phones = new Map<string, number>(), niks = new Map<string, number>();
-    parsed.forEach((r) => {
+    parsed.forEach((r: any) => {
       const p = normalizePhone(r.no_hp ?? "");
       if (phones.has(p)) r._err.push("No. HP ganda di file"); else phones.set(p, 1);
       if (niks.has(r.nik)) r._err.push("NIK ganda di file"); else niks.set(r.nik, 1);

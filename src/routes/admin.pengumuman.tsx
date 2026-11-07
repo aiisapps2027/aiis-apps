@@ -58,10 +58,10 @@ function AdminPengumuman() {
             </div>
             <DialogFooter>
               <Button onClick={async () => {
-                if (!edit.judul.trim()) return toast.error("Judul wajib diisi");
+                if (!edit.judul.trim()) { toast.error("Judul wajib diisi"); return; }
                 const row = { judul: edit.judul.trim(), isi: edit.isi, target: edit.target };
                 const { error } = edit.id ? await supabase.from("announcements").update(row).eq("id", edit.id) : await supabase.from("announcements").insert(row);
-                if (error) return toast.error(error.message);
+                if (error) { toast.error(error.message); return; }
                 toast.success("Pengumuman disimpan"); setEdit(null); refresh();
               }}>Simpan</Button>
             </DialogFooter>

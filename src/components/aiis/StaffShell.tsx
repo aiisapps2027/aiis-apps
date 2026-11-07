@@ -30,7 +30,7 @@ export function StaffShell({ nav, area }: { nav: NavItem[]; area: string }) {
             <Link
               key={n.to}
               to={n.to}
-              activeOptions={{ exact: n.exact }}
+              activeOptions={{ exact: !!n.exact }}
               className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-sidebar-accent"
               activeProps={{ className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
             >
@@ -53,7 +53,7 @@ export function StaffShell({ nav, area }: { nav: NavItem[]; area: string }) {
           <Link
             key={n.to}
             to={n.to}
-            activeOptions={{ exact: n.exact }}
+            activeOptions={{ exact: !!n.exact }}
             className="flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium text-muted-foreground"
             activeProps={{ className: "text-primary" }}
           >

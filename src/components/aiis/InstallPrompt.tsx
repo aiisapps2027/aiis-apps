@@ -37,6 +37,7 @@ export function InstallPrompt({ open: forced, onOpenChange }: { open?: boolean; 
       const t = setTimeout(() => setAuto(true), 1200);
       return () => clearTimeout(t);
     }
+    return undefined;
   }, [forced]);
   useEffect(() => {
     const h = () => force((n) => n + 1);

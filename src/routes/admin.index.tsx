@@ -13,7 +13,7 @@ import { seedDemo } from "@/lib/admin.functions";
 export const Route = createFileRoute("/admin/")({ component: AdminHome });
 
 const count = async (t: "students" | "teachers" | "halaqah", jenjang?: string) => {
-  let q = supabase.from(t).select("id", { count: "exact", head: true });
+  let q: any = supabase.from(t).select("id", { count: "exact", head: true });
   if (jenjang) q = q.eq("jenjang", jenjang);
   return (await q).count ?? 0;
 };

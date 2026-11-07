@@ -263,17 +263,17 @@ export const seedDemo = createServerFn({ method: "POST" })
       const kode = generateKode();
       const uid = await createAuthUser(admin, ustadzEmail(kode), kode, "ustadz");
       const { data } = await admin.from("teachers").insert({ ...t, kode, user_id: uid }).select("id").single();
-      tIds.push(data.id);
+      tIds.push((data as any).id);
       kodes.push({ nama: t.nama, kode });
     }
-    const hal = [
+    const hal: any[] = [
       { nama: "Halaqah Al-Fatih", jenjang: "SD", teacher_id: tIds[0] },
       { nama: "Halaqah Az-Zahra", jenjang: "SD", teacher_id: tIds[1] },
       { nama: "Halaqah Al-Furqan", jenjang: "SD", teacher_id: tIds[2] },
       { nama: "Halaqah Bintang Kecil", jenjang: "TK", teacher_id: tIds[1] },
     ];
     const { data: hRows } = await admin.from("halaqah").insert(hal).select("id");
-    const h = hRows.map((r: any) => r.id);
+    const h = (hRows ?? []).map((r: any) => r.id);
     const students: StudentInput[] = [
       ["Ahmad Fadli", "SD", "3A", "L", h[0], "Juz 30", "Budi Santoso"],
       ["Muhammad Ilham Akbar", "SD", "3A", "L", h[0], "Juz 30", "Rudi Hartono"],

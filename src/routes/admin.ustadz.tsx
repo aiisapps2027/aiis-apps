@@ -100,7 +100,7 @@ function TeacherDialog({ value, onClose, onSaved }: { value: Partial<Teacher>; o
           <div><Label>Nama (mis. Ust. Rizal)</Label><Input value={f.nama ?? ""} onChange={(e) => setF({ ...f, nama: e.target.value })} /></div>
           <div><Label>No. HP / WhatsApp</Label><Input inputMode="tel" value={f.no_hp ?? ""} onChange={(e) => setF({ ...f, no_hp: e.target.value })} /></div>
           <div><Label>Jenis Kelamin</Label>
-            <Select value={f.jenis_kelamin} onValueChange={(v) => setF({ ...f, jenis_kelamin: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="L">Ustadz (Laki-laki)</SelectItem><SelectItem value="P">Ustadzah (Perempuan)</SelectItem></SelectContent></Select>
+            <Select value={f.jenis_kelamin ?? "L"} onValueChange={(v) => setF({ ...f, jenis_kelamin: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="L">Ustadz (Laki-laki)</SelectItem><SelectItem value="P">Ustadzah (Perempuan)</SelectItem></SelectContent></Select>
           </div>
           {f.id && <div className="flex items-center justify-between rounded-xl bg-muted p-3"><Label>Aktif</Label><Switch checked={f.aktif ?? true} onCheckedChange={(v) => setF({ ...f, aktif: v })} /></div>}
           {!f.id && <p className="text-xs text-muted-foreground">Kode pengajar 8 karakter akan dibuat otomatis.</p>}

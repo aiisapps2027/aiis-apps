@@ -73,7 +73,7 @@ function HalaqahDialog({ value, teachers, students, onClose, onSaved }: {
   const pool = students.filter((s) => s.jenjang === f.jenjang);
 
   async function save() {
-    if (f.nama.trim().length < 2) return toast.error("Nama halaqah wajib diisi");
+    if (f.nama.trim().length < 2) { toast.error("Nama halaqah wajib diisi"); return; }
     setBusy(true);
     try {
       const row = { nama: f.nama.trim(), jenjang: f.jenjang, teacher_id: f.teacher_id };
