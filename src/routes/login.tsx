@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { User, Phone, IdCard, KeyRound, Mail, Lock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -120,11 +120,6 @@ function LoginPage() {
           {mode !== "ustadz" && <button type="button" onClick={() => setMode("ustadz")}>Masuk sebagai Ustadz</button>}
           {mode !== "admin" && <button type="button" onClick={() => setMode("admin")}>Masuk sebagai Admin</button>}
         </div>
-        {mode === "admin" && (
-          <p className="text-center text-xs text-muted-foreground">
-            Pertama kali? <Link to="/setup" className="font-medium text-brand">Buat akun admin</Link>
-          </p>
-        )}
         <p className="pt-2 text-center text-xs text-muted-foreground">Belum punya akun? Hubungi sekolah</p>
       </form>
 

@@ -13,7 +13,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OrtuRouteImport } from './routes/ortu'
-import { Route as SetupRouteImport } from './routes/setup'
 import { Route as UstadzRouteImport } from './routes/ustadz'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminHalaqahRouteImport } from './routes/admin.halaqah'
@@ -48,11 +47,6 @@ const LoginRoute = LoginRouteImport.update({
 const OrtuRoute = OrtuRouteImport.update({
   id: '/ortu',
   path: '/ortu',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SetupRoute = SetupRouteImport.update({
-  id: '/setup',
-  path: '/setup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UstadzRoute = UstadzRouteImport.update({
@@ -136,7 +130,6 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/login': typeof LoginRoute
   '/ortu': typeof OrtuRouteWithChildren
-  '/setup': typeof SetupRoute
   '/ustadz': typeof UstadzRouteWithChildren
   '/admin/halaqah': typeof AdminHalaqahRoute
   '/admin/pengumuman': typeof AdminPengumumanRoute
@@ -156,7 +149,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/setup': typeof SetupRoute
   '/admin/halaqah': typeof AdminHalaqahRoute
   '/admin/pengumuman': typeof AdminPengumumanRoute
   '/admin/siswa': typeof AdminSiswaRoute
@@ -178,7 +170,6 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/login': typeof LoginRoute
   '/ortu': typeof OrtuRouteWithChildren
-  '/setup': typeof SetupRoute
   '/ustadz': typeof UstadzRouteWithChildren
   '/admin/halaqah': typeof AdminHalaqahRoute
   '/admin/pengumuman': typeof AdminPengumumanRoute
@@ -202,7 +193,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/login'
     | '/ortu'
-    | '/setup'
     | '/ustadz'
     | '/admin/halaqah'
     | '/admin/pengumuman'
@@ -222,7 +212,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
-    | '/setup'
     | '/admin/halaqah'
     | '/admin/pengumuman'
     | '/admin/siswa'
@@ -243,7 +232,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/login'
     | '/ortu'
-    | '/setup'
     | '/ustadz'
     | '/admin/halaqah'
     | '/admin/pengumuman'
@@ -266,7 +254,6 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   LoginRoute: typeof LoginRoute
   OrtuRoute: typeof OrtuRouteWithChildren
-  SetupRoute: typeof SetupRoute
   UstadzRoute: typeof UstadzRouteWithChildren
 }
 
@@ -298,13 +285,6 @@ declare module '@tanstack/react-router' {
       path: '/ortu'
       fullPath: '/ortu'
       preLoaderRoute: typeof OrtuRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/setup': {
-      id: '/setup'
-      path: '/setup'
-      fullPath: '/setup'
-      preLoaderRoute: typeof SetupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ustadz': {
@@ -473,7 +453,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   LoginRoute: LoginRoute,
   OrtuRoute: OrtuRouteWithChildren,
-  SetupRoute: SetupRoute,
   UstadzRoute: UstadzRouteWithChildren,
 }
 export const routeTree = rootRouteImport
