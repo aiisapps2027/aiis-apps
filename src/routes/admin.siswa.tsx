@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/aiis/StaffShell";
 import { Avatar, StatusChip } from "@/components/aiis/decor";
+import { AvatarUploader } from "@/components/aiis/AvatarUploader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -179,6 +180,22 @@ function StudentDialog({ value, halaqah, onClose, onSaved }: { value: Partial<St
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader><DialogTitle>{f.id ? "Ubah Siswa" : "Tambah Siswa"}</DialogTitle></DialogHeader>
+        {f.id && (
+          <div className="flex items-center gap-3">
+            <AvatarUploader
+              name={f.nama ?? "?"}
+              path={f.foto_url}
+              owner={{ kind: "students", id: f.id }}
+              onUploaded={async (path) => {
+                const { error } = await supabase.from("students").update({ foto_url: path }).eq("id", f.id!);
+                if (error) throw error;
+                setF((cur) => ({ ...cur, foto_url: path }));
+                onSaved();
+              }}
+            />
+            <p className="text-xs text-muted-foreground">Ketuk ikon kamera untuk mengganti foto (maks. 2 MB, otomatis dipotong persegi).</p>
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2"><Label>Nama Murid</Label><Input value={f.nama ?? ""} onChange={set("nama")} /></div>
           <div><Label>NIS</Label><Input value={f.nis ?? ""} onChange={set("nis")} /></div>

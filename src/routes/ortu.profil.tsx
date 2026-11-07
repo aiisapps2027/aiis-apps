@@ -2,7 +2,9 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { UserCheck, Target, GraduationCap, Download, LogOut, ChevronRight, School } from "lucide-react";
-import { Avatar, ScreenHeader } from "@/components/aiis/decor";
+import { ScreenHeader } from "@/components/aiis/decor";
+import { AvatarUploader } from "@/components/aiis/AvatarUploader";
+import { supabase } from "@/integrations/supabase/client";
 import { InstallPrompt } from "@/components/aiis/InstallPrompt";
 import { Progress } from "@/components/ui/progress";
 import { myStudentQuery } from "@/lib/queries";
@@ -34,7 +36,21 @@ function Profil() {
       <ScreenHeader title="Profil Siswa" back={false} />
       <div className="space-y-4 p-4">
         <div className="flex items-center gap-4 rounded-2xl bg-card p-4 shadow-soft">
-          <Avatar name={s?.nama ?? "?"} url={s?.foto_url} size={68} />
+          {s ? (
+            <AvatarUploader
+              name={s.nama}
+              path={s.foto_url}
+              owner={{ kind: "students", id: s.id }}
+              onUploaded={async (path) => {
+                const { error } = await supabase.rpc("set_my_student_photo", { _path: path });
+                if (error) throw error;
+                await qc.invalidateQueries({ queryKey: ["my-student"] });
+                await qc.invalidateQueries({ queryKey: ["avatar-url"] });
+              }}
+            />
+          ) : (
+            <div className="h-[68px] w-[68px] rounded-full bg-secondary" />
+          )}
           <div>
             <p className="text-lg font-bold">{s?.nama}</p>
             <p className="text-sm text-muted-foreground">Kelas {s?.kelas ?? "-"}</p>

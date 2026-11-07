@@ -211,7 +211,9 @@ export type Database = {
         Returns: boolean
       }
       my_student_halaqah_id: { Args: never; Returns: string }
+      my_student_id: { Args: never; Returns: string }
       my_teacher_id: { Args: never; Returns: string }
+      set_my_student_photo: { Args: { _path: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "ustadz" | "ortu"

@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { useRouter } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { useAvatarUrl } from "@/lib/avatar";
 
 export function MosqueSilhouette({ className }: { className?: string }) {
   return (
@@ -68,8 +69,9 @@ export function IconTile({ children, className }: { children: ReactNode; classNa
 
 export function Avatar({ name, url, size = 56 }: { name: string; url?: string | null | undefined; size?: number }) {
   const initials = name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase();
-  return url ? (
-    <img src={url} alt={name} style={{ width: size, height: size }} className="rounded-full object-cover ring-2 ring-card" />
+  const src = useAvatarUrl(url);
+  return src ? (
+    <img src={src} alt={name} style={{ width: size, height: size }} className="rounded-full object-cover ring-2 ring-card" />
   ) : (
     <div style={{ width: size, height: size }} className="flex items-center justify-center rounded-full bg-secondary font-bold text-primary ring-2 ring-card">
       {initials}
