@@ -14,16 +14,207 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      announcements: {
+        Row: {
+          created_at: string
+          id: string
+          isi: string
+          judul: string
+          target: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          isi?: string
+          judul: string
+          target?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          isi?: string
+          judul?: string
+          target?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      halaqah: {
+        Row: {
+          created_at: string
+          id: string
+          jenjang: string
+          nama: string
+          teacher_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          jenjang: string
+          nama: string
+          teacher_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          jenjang?: string
+          nama?: string
+          teacher_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "halaqah_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "teachers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      students: {
+        Row: {
+          aktif: boolean
+          created_at: string
+          foto_url: string | null
+          halaqah_id: string | null
+          id: string
+          jenis_kelamin: string
+          jenjang: string
+          kelas: string | null
+          nama: string
+          nama_wali: string | null
+          nik: string
+          nis: string | null
+          no_hp: string
+          target_hafalan: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          aktif?: boolean
+          created_at?: string
+          foto_url?: string | null
+          halaqah_id?: string | null
+          id?: string
+          jenis_kelamin?: string
+          jenjang: string
+          kelas?: string | null
+          nama: string
+          nama_wali?: string | null
+          nik: string
+          nis?: string | null
+          no_hp: string
+          target_hafalan?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          aktif?: boolean
+          created_at?: string
+          foto_url?: string | null
+          halaqah_id?: string | null
+          id?: string
+          jenis_kelamin?: string
+          jenjang?: string
+          kelas?: string | null
+          nama?: string
+          nama_wali?: string | null
+          nik?: string
+          nis?: string | null
+          no_hp?: string
+          target_hafalan?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "students_halaqah_id_fkey"
+            columns: ["halaqah_id"]
+            isOneToOne: false
+            referencedRelation: "halaqah"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teachers: {
+        Row: {
+          aktif: boolean
+          created_at: string
+          foto_url: string | null
+          id: string
+          jenis_kelamin: string
+          kode: string
+          nama: string
+          no_hp: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          aktif?: boolean
+          created_at?: string
+          foto_url?: string | null
+          id?: string
+          jenis_kelamin?: string
+          kode: string
+          nama: string
+          no_hp?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          aktif?: boolean
+          created_at?: string
+          foto_url?: string | null
+          id?: string
+          jenis_kelamin?: string
+          kode?: string
+          nama?: string
+          no_hp?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      my_student_halaqah_id: { Args: never; Returns: string }
+      my_teacher_id: { Args: never; Returns: string }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "ustadz" | "ortu"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +341,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "ustadz", "ortu"],
+    },
   },
 } as const
