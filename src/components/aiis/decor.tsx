@@ -66,7 +66,7 @@ export function IconTile({ children, className }: { children: ReactNode; classNa
   );
 }
 
-export function Avatar({ name, url, size = 56 }: { name: string; url?: string | null; size?: number }) {
+export function Avatar({ name, url, size = 56 }: { name: string; url?: string | null | undefined; size?: number }) {
   const initials = name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase();
   return url ? (
     <img src={url} alt={name} style={{ width: size, height: size }} className="rounded-full object-cover ring-2 ring-card" />

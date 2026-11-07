@@ -311,7 +311,7 @@ function ImportDialog({ open, onOpenChange, onDone }: { open: boolean; onOpenCha
                 });
                 const { results: res } = await run({ data: { rows: payload } });
                 const map: Record<number, string> = {};
-                res.forEach((x, j) => (map[idx[j] + 1] = x.ok ? "ok" : x.error ?? "Gagal"));
+                res.forEach((x, j) => (map[(idx[j] ?? 0) + 1] = x.ok ? "ok" : x.error ?? "Gagal"));
                 setResults(map);
                 const ok = res.filter((x) => x.ok).length;
                 toast.success(`${ok} dari ${res.length} siswa berhasil diimpor`);

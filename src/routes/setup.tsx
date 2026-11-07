@@ -38,7 +38,7 @@ function SetupPage() {
         className="mt-6 space-y-3"
         onSubmit={async (e) => {
           e.preventDefault();
-          if (pw !== pw2) return toast.error("Kata sandi tidak sama");
+          if (pw !== pw2) { toast.error("Kata sandi tidak sama"); return; }
           setBusy(true);
           try {
             await run({ data: { email: ADMIN_EMAIL, password: pw } });
