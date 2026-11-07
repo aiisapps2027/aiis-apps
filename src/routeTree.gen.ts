@@ -16,6 +16,10 @@ import { Route as OrtuRouteImport } from './routes/ortu'
 import { Route as SetupRouteImport } from './routes/setup'
 import { Route as UstadzRouteImport } from './routes/ustadz'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminHalaqahRouteImport } from './routes/admin.halaqah'
+import { Route as AdminPengumumanRouteImport } from './routes/admin.pengumuman'
+import { Route as AdminSiswaRouteImport } from './routes/admin.siswa'
+import { Route as AdminUstadzRouteImport } from './routes/admin.ustadz'
 import { Route as OrtuIndexRouteImport } from './routes/ortu.index'
 import { Route as OrtuFiturRouteImport } from './routes/ortu.fitur'
 import { Route as OrtuHafalanRouteImport } from './routes/ortu.hafalan'
@@ -59,6 +63,26 @@ const UstadzRoute = UstadzRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminHalaqahRoute = AdminHalaqahRouteImport.update({
+  id: '/halaqah',
+  path: '/halaqah',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPengumumanRoute = AdminPengumumanRouteImport.update({
+  id: '/pengumuman',
+  path: '/pengumuman',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSiswaRoute = AdminSiswaRouteImport.update({
+  id: '/siswa',
+  path: '/siswa',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUstadzRoute = AdminUstadzRouteImport.update({
+  id: '/ustadz',
+  path: '/ustadz',
   getParentRoute: () => AdminRoute,
 } as any)
 const OrtuIndexRoute = OrtuIndexRouteImport.update({
@@ -114,6 +138,10 @@ export interface FileRoutesByFullPath {
   '/ortu': typeof OrtuRouteWithChildren
   '/setup': typeof SetupRoute
   '/ustadz': typeof UstadzRouteWithChildren
+  '/admin/halaqah': typeof AdminHalaqahRoute
+  '/admin/pengumuman': typeof AdminPengumumanRoute
+  '/admin/siswa': typeof AdminSiswaRoute
+  '/admin/ustadz': typeof AdminUstadzRoute
   '/ortu/fitur': typeof OrtuFiturRoute
   '/ortu/hafalan': typeof OrtuHafalanRoute
   '/ortu/notifikasi': typeof OrtuNotifikasiRoute
@@ -129,6 +157,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/setup': typeof SetupRoute
+  '/admin/halaqah': typeof AdminHalaqahRoute
+  '/admin/pengumuman': typeof AdminPengumumanRoute
+  '/admin/siswa': typeof AdminSiswaRoute
+  '/admin/ustadz': typeof AdminUstadzRoute
   '/ortu/fitur': typeof OrtuFiturRoute
   '/ortu/hafalan': typeof OrtuHafalanRoute
   '/ortu/notifikasi': typeof OrtuNotifikasiRoute
@@ -148,6 +180,10 @@ export interface FileRoutesById {
   '/ortu': typeof OrtuRouteWithChildren
   '/setup': typeof SetupRoute
   '/ustadz': typeof UstadzRouteWithChildren
+  '/admin/halaqah': typeof AdminHalaqahRoute
+  '/admin/pengumuman': typeof AdminPengumumanRoute
+  '/admin/siswa': typeof AdminSiswaRoute
+  '/admin/ustadz': typeof AdminUstadzRoute
   '/ortu/fitur': typeof OrtuFiturRoute
   '/ortu/hafalan': typeof OrtuHafalanRoute
   '/ortu/notifikasi': typeof OrtuNotifikasiRoute
@@ -168,6 +204,10 @@ export interface FileRouteTypes {
     | '/ortu'
     | '/setup'
     | '/ustadz'
+    | '/admin/halaqah'
+    | '/admin/pengumuman'
+    | '/admin/siswa'
+    | '/admin/ustadz'
     | '/ortu/fitur'
     | '/ortu/hafalan'
     | '/ortu/notifikasi'
@@ -183,6 +223,10 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/setup'
+    | '/admin/halaqah'
+    | '/admin/pengumuman'
+    | '/admin/siswa'
+    | '/admin/ustadz'
     | '/ortu/fitur'
     | '/ortu/hafalan'
     | '/ortu/notifikasi'
@@ -201,6 +245,10 @@ export interface FileRouteTypes {
     | '/ortu'
     | '/setup'
     | '/ustadz'
+    | '/admin/halaqah'
+    | '/admin/pengumuman'
+    | '/admin/siswa'
+    | '/admin/ustadz'
     | '/ortu/fitur'
     | '/ortu/hafalan'
     | '/ortu/notifikasi'
@@ -273,6 +321,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/halaqah': {
+      id: '/admin/halaqah'
+      path: '/halaqah'
+      fullPath: '/admin/halaqah'
+      preLoaderRoute: typeof AdminHalaqahRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/pengumuman': {
+      id: '/admin/pengumuman'
+      path: '/pengumuman'
+      fullPath: '/admin/pengumuman'
+      preLoaderRoute: typeof AdminPengumumanRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/siswa': {
+      id: '/admin/siswa'
+      path: '/siswa'
+      fullPath: '/admin/siswa'
+      preLoaderRoute: typeof AdminSiswaRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/ustadz': {
+      id: '/admin/ustadz'
+      path: '/ustadz'
+      fullPath: '/admin/ustadz'
+      preLoaderRoute: typeof AdminUstadzRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/ortu/': {
       id: '/ortu/'
       path: '/'
@@ -340,10 +416,18 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminHalaqahRoute: typeof AdminHalaqahRoute
+  AdminPengumumanRoute: typeof AdminPengumumanRoute
+  AdminSiswaRoute: typeof AdminSiswaRoute
+  AdminUstadzRoute: typeof AdminUstadzRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminHalaqahRoute: AdminHalaqahRoute,
+  AdminPengumumanRoute: AdminPengumumanRoute,
+  AdminSiswaRoute: AdminSiswaRoute,
+  AdminUstadzRoute: AdminUstadzRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
