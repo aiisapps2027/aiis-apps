@@ -9,9 +9,9 @@ export const Route = createFileRoute("/ustadz")({
   head: () => ({
     meta: [
       { title: "Ustadz — AIIS" },
-      { name: "description", content: "Halaqah dan daftar santri untuk ustadz/ustadzah AIIS." },
+      { name: "description", content: "Halaqah dan daftar siswa untuk ustadz/ustadzah AIIS." },
       { property: "og:title", content: "Ustadz — AIIS" },
-      { property: "og:description", content: "Halaqah dan daftar santri untuk ustadz/ustadzah AIIS." },
+      { property: "og:description", content: "Halaqah dan daftar siswa untuk ustadz/ustadzah AIIS." },
     ],
   }),
   component: () => <StaffShell area="Ustadz / Ustadzah" nav={[{ to: "/ustadz", label: "Halaqah", icon: Home, exact: false }]} />,

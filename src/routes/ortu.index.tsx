@@ -40,7 +40,7 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="-mt-14 px-4">
+      <div className="relative z-10 -mt-14 px-4">
         <div className="flex items-center gap-3 rounded-2xl bg-card p-4 shadow-soft">
           {isLoading ? (
             <Skeleton className="h-14 w-full" />

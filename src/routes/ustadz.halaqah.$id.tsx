@@ -30,7 +30,7 @@ function HalaqahDetail() {
       <div className="mx-auto max-w-3xl space-y-3 p-4">
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Cari nama santri..." value={q} onChange={(e) => setQ(e.target.value)} className="h-11 rounded-xl bg-card pl-10" />
+          <Input placeholder="Cari nama siswa..." value={q} onChange={(e) => setQ(e.target.value)} className="h-11 rounded-xl bg-card pl-10" />
         </div>
         {list.map((s) => (
           <Link key={s.id} to="/ustadz/siswa/$id" params={{ id: s.id }} className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
@@ -42,7 +42,7 @@ function HalaqahDetail() {
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </Link>
         ))}
-        {data && list.length === 0 && <p className="text-sm text-muted-foreground">Tidak ada santri.</p>}
+        {data && list.length === 0 && <p className="text-sm text-muted-foreground">Tidak ada siswa.</p>}
       </div>
     </div>
   );

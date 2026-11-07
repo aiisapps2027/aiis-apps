@@ -38,7 +38,7 @@ function UstadzHome() {
               <IconTile><Users className="h-5 w-5" /></IconTile>
               <div className="flex-1">
                 <p className="font-semibold">{h.nama}</p>
-                <p className="text-xs text-muted-foreground">{h.jenjang} • {h.students?.[0]?.count ?? 0} santri</p>
+                <p className="text-xs text-muted-foreground">{h.jenjang} • {h.students?.[0]?.count ?? 0} siswa</p>
               </div>
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </Link>

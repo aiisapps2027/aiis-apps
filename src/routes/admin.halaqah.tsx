@@ -44,11 +44,11 @@ function AdminHalaqah() {
               <IconTile><Users className="h-5 w-5" /></IconTile>
               <div className="min-w-0 flex-1">
                 <p className="truncate font-semibold">{h.nama} <span className="ml-1 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold text-primary">{h.jenjang}</span></p>
-                <p className="truncate text-xs text-muted-foreground">{data.teachers.find((t) => t.id === h.teacher_id)?.nama ?? "Belum ada ustadz"} • {n} santri</p>
+                <p className="truncate text-xs text-muted-foreground">{data.teachers.find((t) => t.id === h.teacher_id)?.nama ?? "Belum ada ustadz"} • {n} siswa</p>
               </div>
               <Button size="icon" variant="ghost" aria-label="Ubah" onClick={() => setEdit(h)}><Pencil className="h-4 w-4" /></Button>
               <Button size="icon" variant="ghost" aria-label="Hapus" onClick={async () => {
-                if (!confirm(`Hapus ${h.nama}? Santri akan dilepas dari halaqah ini.`)) return;
+                if (!confirm(`Hapus ${h.nama}? Siswa akan dilepas dari halaqah ini.`)) return;
                 const { error } = await supabase.from("halaqah").delete().eq("id", h.id);
                 if (error) toast.error(error.message); else refresh();
               }}><Trash2 className="h-4 w-4 text-destructive" /></Button>
@@ -113,7 +113,7 @@ function HalaqahDialog({ value, teachers, students, onClose, onSaved }: {
             </div>
           </div>
           <div>
-            <Label>Santri ({sel.size} dipilih)</Label>
+            <Label>Siswa ({sel.size} dipilih)</Label>
             <div className="mt-1 max-h-60 space-y-1 overflow-y-auto rounded-xl border p-2">
               {pool.map((s) => (
                 <label key={s.id} className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-muted">

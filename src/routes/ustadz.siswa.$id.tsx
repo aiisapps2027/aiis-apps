@@ -22,7 +22,7 @@ function SiswaDetail() {
   ];
   return (
     <div>
-      <ScreenHeader title="Profil Santri" />
+      <ScreenHeader title="Profil Siswa" />
       <div className="mx-auto max-w-xl space-y-4 p-4">
         <div className="flex items-center gap-4 rounded-2xl bg-card p-4 shadow-soft">
           <Avatar name={s?.nama ?? "?"} url={s?.foto_url} size={64} />
