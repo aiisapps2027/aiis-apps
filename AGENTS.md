@@ -28,3 +28,10 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+- Parent/teacher logins map to synthetic Supabase emails (`{phone}@ortu.aiis.app`, `{kode}@ustadz.aiis.app`) built in `src/lib/auth-utils.ts`; keep login, import and admin functions using these helpers so identities stay consistent.
+- All account creation/password changes run in `src/lib/admin.functions.ts` server functions that verify the caller has the admin role before using the service-role client — no public sign-up.
+- Role areas (`/ortu`, `/ustadz`, `/admin`) are `ssr: false` layouts guarded by `requireRole()` in `src/lib/session.ts`, because the session lives in localStorage.
+- Roles live only in `user_roles` and RLS uses `has_role()` / `my_teacher_id()` / `my_student_halaqah_id()` security-definer helpers to avoid recursive policies.
+- Install support is manifest-only (no service worker) because TanStack Start SSR has no static app shell to precache.
