@@ -64,12 +64,11 @@ export function effectiveNilai(s: Pick<SectionState, "salah" | "nilai">): Nilai 
   return s.nilai;
 }
 
-/** Returns an Indonesian error message, or null when the section can be saved. */
-export function validateSection(jenis: JenisLaporan, s: SectionState): string | null {
-  if (s.salah.trim() !== "" && (!Number.isInteger(Number(s.salah)) || Number(s.salah) < 0 || Number(s.salah) > 999)) {
-    return "Jumlah salah harus angka 0 atau lebih";
-  }
-  if (!effectiveNilai(s)) return "Pilih nilai (L / L- / TL)";
+/** Fields describing *what* is recited (shared by reports and targets). */
+export type MaterialState = Pick<SectionState, "surahAwal" | "ayatAwal" | "lintas" | "surahAkhir" | "ayatAkhir" | "jilid" | "halaman" | "materi">;
+
+/** Returns an Indonesian error message, or null when the material is complete and valid. */
+export function validateMaterial(jenis: JenisLaporan, s: MaterialState): string | null {
   if (jenis === "tahsin") {
     if (!s.jilid.trim()) return "Isi jilid";
     if (s.halaman.trim() !== "" && (!Number.isInteger(Number(s.halaman)) || Number(s.halaman) < 1)) return "Halaman harus angka";
@@ -79,7 +78,16 @@ export function validateSection(jenis: JenisLaporan, s: SectionState): string | 
   return validateRange(rangeOf(s));
 }
 
-function rangeOf(s: SectionState) {
+/** Returns an Indonesian error message, or null when the section can be saved. */
+export function validateSection(jenis: JenisLaporan, s: SectionState): string | null {
+  if (s.salah.trim() !== "" && (!Number.isInteger(Number(s.salah)) || Number(s.salah) < 0 || Number(s.salah) > 999)) {
+    return "Jumlah salah harus angka 0 atau lebih";
+  }
+  if (!effectiveNilai(s)) return "Pilih nilai (L / L- / TL)";
+  return validateMaterial(jenis, s);
+}
+
+function rangeOf(s: MaterialState) {
   const surahAwal = s.surahAwal ?? 0;
   return {
     surahAwal,
@@ -205,4 +213,72 @@ export function describeLaporan(r: Pick<LaporanRow, "jenis" | "surah_awal" | "ay
   }
   if (r.surah_awal == null || r.ayat_awal == null) return "-";
   return formatRange({ surahAwal: r.surah_awal, ayatAwal: r.ayat_awal, surahAkhir: r.surah_akhir ?? r.surah_awal, ayatAkhir: r.ayat_akhir ?? r.ayat_awal });
+}
+
+// ---------- targets (what the teacher wants each student to do on a given day) ----------
+export type TargetRow = Database["public"]["Tables"]["target_harian"]["Row"];
+export type TargetInsert = Database["public"]["Tables"]["target_harian"]["Insert"];
+
+export type TargetState = MaterialState & { existingId: string | null; catatan: string };
+
+export const emptyTarget = (): TargetState => {
+  const e = emptySection();
+  return { surahAwal: e.surahAwal, ayatAwal: e.ayatAwal, lintas: e.lintas, surahAkhir: e.surahAkhir, ayatAkhir: e.ayatAkhir, jilid: e.jilid, halaman: e.halaman, materi: e.materi, existingId: null, catatan: "" };
+};
+
+export function targetFromRow(r: TargetRow): TargetState {
+  return {
+    surahAwal: r.surah_awal,
+    ayatAwal: r.ayat_awal?.toString() ?? "",
+    lintas: r.surah_akhir !== null && r.surah_akhir !== r.surah_awal,
+    surahAkhir: r.surah_akhir,
+    ayatAkhir: r.ayat_akhir?.toString() ?? "",
+    jilid: r.jilid ?? "",
+    halaman: r.halaman?.toString() ?? "",
+    materi: r.materi ?? "",
+    existingId: r.id,
+    catatan: r.catatan ?? "",
+  };
+}
+
+/** Pre-fills a report section from a target; the teacher still has to pick the nilai. */
+export function sectionFromTarget(t: TargetState): SectionState {
+  return { ...emptySection(), on: true, surahAwal: t.surahAwal, ayatAwal: t.ayatAwal, lintas: t.lintas, surahAkhir: t.surahAkhir, ayatAkhir: t.ayatAkhir, jilid: t.jilid, halaman: t.halaman, materi: t.materi };
+}
+
+/** One-line summary of a target, e.g. "Al-Jinn: 12–13" or "Jilid 2A • hal. 17". */
+export function describeMaterial(jenis: JenisLaporan, s: MaterialState): string {
+  if (jenis === "tahsin") return [s.jilid.trim() ? `Jilid ${s.jilid.trim()}` : null, s.halaman.trim() ? `hal. ${s.halaman.trim()}` : null, s.materi.trim() || null].filter(Boolean).join(" • ") || "-";
+  if (!s.surahAwal) return "-";
+  const r = rangeOf(s);
+  return formatRange(r);
+}
+
+export function targetToPayload(base: { studentId: string; teacherId: string; tanggal: string }, jenis: JenisLaporan, t: TargetState): TargetInsert {
+  const common = { student_id: base.studentId, teacher_id: base.teacherId, tanggal: base.tanggal, jenis, catatan: t.catatan.trim() || null };
+  if (jenis === "tahsin") {
+    return { ...common, jilid: t.jilid.trim(), halaman: t.halaman.trim() === "" ? null : Number(t.halaman), materi: t.materi.trim() || null, surah_awal: null, ayat_awal: null, surah_akhir: null, ayat_akhir: null };
+  }
+  const r = rangeOf(t);
+  return { ...common, surah_awal: r.surahAwal, ayat_awal: r.ayatAwal, surah_akhir: r.surahAkhir, ayat_akhir: r.ayatAkhir, jilid: null, halaman: null, materi: null };
+}
+
+/** drafts: studentId → target to save, or null to clear. Upserts in one call and deletes cleared rows in one call. */
+export async function saveTargets(input: {
+  teacherId: string; tanggal: string; jenis: JenisLaporan;
+  drafts: Record<string, TargetState | null>;
+}): Promise<void> {
+  const upserts: TargetInsert[] = [];
+  for (const [studentId, d] of Object.entries(input.drafts)) {
+    if (d) upserts.push(targetToPayload({ studentId, teacherId: input.teacherId, tanggal: input.tanggal }, input.jenis, d));
+  }
+  if (upserts.length) {
+    const { error } = await supabase.from("target_harian").upsert(upserts, { onConflict: "student_id,tanggal,jenis" });
+    if (error) throw new Error(friendlyError(error));
+  }
+  const clear = Object.entries(input.drafts).filter(([, d]) => d === null).map(([id]) => id);
+  if (clear.length) {
+    const { error } = await supabase.from("target_harian").delete().in("student_id", clear).eq("tanggal", input.tanggal).eq("jenis", input.jenis);
+    if (error) throw new Error(friendlyError(error));
+  }
 }

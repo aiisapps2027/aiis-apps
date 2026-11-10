@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ClipboardList, Home } from "lucide-react";
+import { ClipboardList, Home, History, Target } from "lucide-react";
 import { requireRole } from "@/lib/session";
 import { StaffShell } from "@/components/aiis/StaffShell";
 
@@ -17,5 +17,7 @@ export const Route = createFileRoute("/ustadz")({
   component: () => <StaffShell area="Ustadz / Ustadzah" nav={[
     { to: "/ustadz", label: "Halaqah", icon: Home, exact: true },
     { to: "/ustadz/setoran", label: "Setoran", icon: ClipboardList, exact: false },
+    { to: "/ustadz/target", label: "Target", icon: Target, exact: false },
+    { to: "/ustadz/riwayat", label: "Riwayat", icon: History, exact: false },
   ]} />,
 });

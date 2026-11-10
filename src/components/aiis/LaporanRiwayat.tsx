@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Star } from "lucide-react";
-import { ScreenHeader } from "@/components/aiis/decor";
+import { ScreenHeader, StatusChip } from "@/components/aiis/decor";
 import { NilaiBadge } from "@/components/aiis/NilaiBadge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { bulanLabel, describeLaporan, formatTanggal, formatTanggalPendek, todayJakarta } from "@/lib/laporan";
+import { bulanLabel, describeLaporan, formatTanggal, formatTanggalPendek, targetFromRow, describeMaterial, todayJakarta } from "@/lib/laporan";
 import { JENIS_LABEL, type JenisLaporan, type Nilai } from "@/lib/nilai";
-import { bintangQuery, catatanQuery, laporanQuery } from "@/lib/ortu-queries";
+import { bintangQuery, catatanQuery, laporanQuery, targetQuery } from "@/lib/ortu-queries";
 
 export type Kind = "tahfiz" | "murojaah" | "tahsin";
 
@@ -23,6 +23,7 @@ export function LaporanRiwayat({ kind }: { kind: Kind }) {
   const cfg = KINDS[kind];
   const { data, isLoading } = useQuery(laporanQuery);
   const { data: catatan } = useQuery(catatanQuery);
+  const { data: targets } = useQuery(targetQuery);
   const [jenis, setJenis] = useState<JenisLaporan>(cfg.jenis[0]!);
   const [bulan, setBulan] = useState(ALL);
 
@@ -32,6 +33,7 @@ export function LaporanRiwayat({ kind }: { kind: Kind }) {
   const latest = rows[0];
   const note = latest ? catatan?.find((c) => c.tanggal === latest.tanggal) : undefined;
   const today = todayJakarta();
+  const todayTargets = (targets ?? []).filter((t) => t.tanggal === today && cfg.jenis.includes(t.jenis as JenisLaporan));
 
   return (
     <div>
@@ -53,6 +55,28 @@ export function LaporanRiwayat({ kind }: { kind: Kind }) {
         )}
 
         {isLoading && <Skeleton className="h-32 w-full rounded-2xl" />}
+
+        {todayTargets.length > 0 && (
+          <section className="rounded-2xl bg-card p-4 shadow-soft">
+            <h2 className="mb-2 font-bold">Target hari ini</h2>
+            <ul className="divide-y">
+              {todayTargets.map((t) => {
+                const done = (data ?? []).some((r) => r.tanggal === today && r.jenis === t.jenis);
+                const j = t.jenis as JenisLaporan;
+                return (
+                  <li key={t.id} className="flex items-center gap-3 py-2">
+                    <div className="min-w-0 flex-1">
+                      {cfg.jenis.length > 1 && <p className="text-[11px] font-semibold uppercase text-muted-foreground">{JENIS_LABEL[j]}</p>}
+                      <p className="break-words text-sm font-medium">{describeMaterial(j, targetFromRow(t))}</p>
+                      {t.catatan && <p className="text-xs text-muted-foreground">{t.catatan}</p>}
+                    </div>
+                    <StatusChip status={done ? "selesai" : "belum"} />
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
 
         {!isLoading && !latest && (
           <p className="rounded-2xl bg-card p-5 text-center text-sm text-muted-foreground shadow-soft">Belum ada laporan {JENIS_LABEL[jenis]}.</p>

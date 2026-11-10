@@ -13,7 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import {
   effectiveNilai, emptySection, formatTanggal, isEditableDate, saveLaporan, sectionFromRow, validateSection,
-  type LaporanRow, type SectionState,
+  describeMaterial, targetFromRow, type LaporanRow, type MaterialState, type SectionState, type TargetRow, type TargetState, sectionFromTarget,
 } from "@/lib/laporan";
 import { JENIS_LABEL, JENIS_ORDER, type JenisLaporan } from "@/lib/nilai";
 import { getSurah, juzOf } from "@/lib/quran";
@@ -33,11 +33,12 @@ type FormProps = {
   halaqahId: string;
   teacherId: string | null;
   initial: LaporanRow[];
+  targets: TargetRow[];
   catatanRow: { kegiatan: string | null; catatan: string | null } | null;
   next: { id: string; nama: string } | null;
 };
 
-export function SetoranForm({ student, tanggal, halaqahId, teacherId, initial, catatanRow, next }: FormProps) {
+export function SetoranForm({ student, tanggal, halaqahId, teacherId, initial, targets, catatanRow, next }: FormProps) {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [sections, setSections] = useState<Sections>(() => {
@@ -86,7 +87,7 @@ export function SetoranForm({ student, tanggal, halaqahId, teacherId, initial, c
       {!editable && <p className="rounded-xl bg-warning-soft p-3 text-sm text-warning">Tanggal ini di luar batas input (maksimal 7 hari ke belakang). Data hanya bisa dilihat.</p>}
 
       {JENIS_ORDER.map((j) => (
-        <SectionCard key={j} jenis={j} s={sections[j]} onChange={(v) => setSections((p) => ({ ...p, [j]: v }))} />
+        <SectionCard key={j} jenis={j} s={sections[j]} target={(() => { const t = targets.find((x) => x.jenis === j); return t ? targetFromRow(t) : undefined; })()} onChange={(v) => setSections((p) => ({ ...p, [j]: v }))} />
       ))}
 
       <div className="space-y-3 rounded-2xl bg-card p-4 shadow-soft">
@@ -116,26 +117,16 @@ export function SetoranForm({ student, tanggal, halaqahId, teacherId, initial, c
   );
 }
 
-export function SectionCard({ jenis, s, onChange }: { jenis: JenisLaporan; s: SectionState; onChange: (v: SectionState) => void }) {
-  const nilai = effectiveNilai(s);
-  const set = (patch: Partial<SectionState>) => onChange({ ...s, ...patch });
+
+/** Surah + ayat range (or jilid + halaman for tahsin). Shared by the report form and the target editor. */
+export function MaterialFields<T extends MaterialState>({ jenis, s, onChange }: { jenis: JenisLaporan; s: T; onChange: (patch: Partial<MaterialState>) => void }) {
+  const set = onChange;
   const awal = s.surahAwal ? getSurah(s.surahAwal) : undefined;
   const akhir = s.lintas && s.surahAkhir ? getSurah(s.surahAkhir) : awal;
   const juz = s.surahAwal && Number(s.ayatAwal) >= 1 && awal && Number(s.ayatAwal) <= awal.ayat ? juzOf(s.surahAwal, Number(s.ayatAwal)) : null;
-
   return (
-    <section className="rounded-2xl bg-card shadow-soft">
-      <div className="flex items-center gap-3 p-4">
-        <div className="min-w-0 flex-1">
-          <h2 className="font-semibold">{JENIS_LABEL[jenis]}</h2>
-          <p className="text-xs text-muted-foreground">{HINT[jenis]}</p>
-        </div>
-        {s.on && nilai && <NilaiBadge nilai={nilai} />}
-        <Switch checked={s.on} onCheckedChange={(on) => set({ on })} aria-label={`Isi ${JENIS_LABEL[jenis]}`} />
-      </div>
-      {s.on && (
-        <div className="space-y-3 border-t p-4">
-          {jenis === "tahsin" ? (
+    <div className="space-y-3">
+      {jenis === "tahsin" ? (
             <>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Jilid</Label><Input placeholder="mis. 2A" value={s.jilid} onChange={(e) => set({ jilid: e.target.value })} className="mt-1 h-11 rounded-xl" /></div>
@@ -167,6 +158,33 @@ export function SectionCard({ jenis, s, onChange }: { jenis: JenisLaporan; s: Se
               </div>
             </>
           )}
+    </div>
+  );
+}
+
+export function SectionCard({ jenis, s, onChange, target }: { jenis: JenisLaporan; s: SectionState; onChange: (v: SectionState) => void; target?: TargetState | undefined }) {
+  const nilai = effectiveNilai(s);
+  const set = (patch: Partial<SectionState>) => onChange({ ...s, ...patch });
+
+  return (
+    <section className="rounded-2xl bg-card shadow-soft">
+      <div className="flex items-center gap-3 p-4">
+        <div className="min-w-0 flex-1">
+          <h2 className="font-semibold">{JENIS_LABEL[jenis]}</h2>
+          <p className="text-xs text-muted-foreground">{HINT[jenis]}</p>
+        </div>
+        {s.on && nilai && <NilaiBadge nilai={nilai} />}
+        <Switch checked={s.on} onCheckedChange={(on) => set({ on })} aria-label={`Isi ${JENIS_LABEL[jenis]}`} />
+      </div>
+      {!s.on && target && (
+        <div className="flex items-center justify-between gap-3 border-t bg-secondary/60 px-4 py-2.5">
+          <p className="min-w-0 break-words text-xs"><span className="font-semibold">Target:</span> {describeMaterial(jenis, target)}</p>
+          <Button type="button" size="sm" variant="outline" className="shrink-0 rounded-lg" onClick={() => onChange({ ...sectionFromTarget(target), existingId: s.existingId })}>Isi dari target</Button>
+        </div>
+      )}
+      {s.on && (
+        <div className="space-y-3 border-t p-4">
+          <MaterialFields jenis={jenis} s={s} onChange={(patch) => set(patch)} />
 
           <div>
             <Label className="mb-1 block">Nilai</Label>

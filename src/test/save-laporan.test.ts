@@ -18,6 +18,7 @@ vi.mock("@/integrations/supabase/client", () => ({
           calls.push(call);
           const chain = {
             eq: (c: string, v: unknown) => (call.eq.push([c, v]), chain),
+            in: (c: string, v: unknown) => (call.eq.push([`${c}[]`, v]), chain),
             then: (res: (v: unknown) => unknown) => res(result()),
           };
           return chain;
@@ -27,7 +28,7 @@ vi.mock("@/integrations/supabase/client", () => ({
   },
 }));
 
-import { emptySection, saveLaporan, type SaveInput, type SectionState } from "@/lib/laporan";
+import { emptySection, emptyTarget, saveLaporan, saveTargets, type SaveInput, type SectionState, type TargetState } from "@/lib/laporan";
 import { JENIS_ORDER, type JenisLaporan } from "@/lib/nilai";
 
 const sections = (over: Partial<Record<JenisLaporan, Partial<SectionState>>> = {}) =>
@@ -68,5 +69,27 @@ describe("saveLaporan", () => {
   it("turns a row-level-security rejection into a clear message", async () => {
     failOn = { table: "laporan_harian", code: "42501" };
     await expect(saveLaporan(input({ sections: sections({ hafalan_baru: hafalan }) }))).rejects.toThrow(/7 hari|halaqah/);
+  });
+});
+
+describe("saveTargets", () => {
+  const tgt = (p: Partial<TargetState>): TargetState => ({ ...emptyTarget(), ...p });
+  it("upserts all drafted students in one call and clears the rest in one call", async () => {
+    await saveTargets({
+      teacherId: "t1", tanggal: "2026-11-11", jenis: "hafalan_baru",
+      drafts: {
+        a: tgt({ surahAwal: 72, ayatAwal: "14", ayatAkhir: "16" }),
+        b: tgt({ surahAwal: 72, ayatAwal: "14", ayatAkhir: "16" }),
+        c: null,
+      },
+    });
+    expect(calls).toHaveLength(2);
+    expect(calls[0]).toMatchObject({ op: "upsert", table: "target_harian", opts: { onConflict: "student_id,tanggal,jenis" } });
+    expect((calls[0]!.payload as unknown[]).map((p) => (p as { student_id: string }).student_id)).toEqual(["a", "b"]);
+    expect(calls[1]).toEqual({ op: "delete", table: "target_harian", eq: [["student_id[]", ["c"]], ["tanggal", "2026-11-11"], ["jenis", "hafalan_baru"]] });
+  });
+  it("does nothing when there is nothing to save", async () => {
+    await saveTargets({ teacherId: "t1", tanggal: "2026-11-11", jenis: "sabiq", drafts: {} });
+    expect(calls).toHaveLength(0);
   });
 });

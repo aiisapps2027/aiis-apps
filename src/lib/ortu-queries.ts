@@ -28,3 +28,12 @@ export const bintangQuery = queryOptions({
     return data ?? [];
   },
 });
+
+export const targetQuery = queryOptions({
+  queryKey: ["ortu-target"],
+  queryFn: async () => {
+    const { data, error } = await supabase.from("target_harian").select("*").order("tanggal", { ascending: false }).limit(60);
+    if (error) throw error;
+    return data ?? [];
+  },
+});

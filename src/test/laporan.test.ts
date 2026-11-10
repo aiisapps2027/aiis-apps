@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { effectiveNilai, emptySection, isEditableDate, sectionFromRow, sectionToPayload, shiftDate, validateSection, type LaporanRow } from "@/lib/laporan";
+import { describeMaterial, effectiveNilai, emptySection, emptyTarget, isEditableDate, sectionFromRow, sectionFromTarget, sectionToPayload, shiftDate, targetToPayload, validateMaterial, validateSection, type LaporanRow } from "@/lib/laporan";
 
 const sec = (p: Partial<ReturnType<typeof emptySection>>) => ({ ...emptySection(), on: true, ...p });
 const base = { studentId: "s1", teacherId: "t1", tanggal: "2026-11-10" };
@@ -64,5 +64,28 @@ describe("sectionFromRow", () => {
   it("round-trips a saved row", () => {
     const row = { id: "x", jenis: "murojaah", surah_awal: 67, ayat_awal: 1, surah_akhir: 67, ayat_akhir: 5, jumlah_salah: null, nilai: "L", jilid: null, halaman: null, materi: null } as unknown as LaporanRow;
     expect(sectionFromRow(row)).toMatchObject({ on: true, existingId: "x", surahAwal: 67, ayatAwal: "1", ayatAkhir: "5", lintas: false, nilai: "L", salah: "" });
+  });
+});
+
+describe("targets", () => {
+  const t = (p: Partial<ReturnType<typeof emptyTarget>>) => ({ ...emptyTarget(), ...p });
+  it("validates material without needing a grade", () => {
+    expect(validateMaterial("murojaah", t({ surahAwal: 67, ayatAwal: "1", ayatAkhir: "5" }))).toBeNull();
+    expect(validateMaterial("murojaah", t({}))).toMatch(/surah/i);
+    expect(validateMaterial("tahsin", t({}))).toMatch(/jilid/i);
+  });
+  it("describes a target", () => {
+    expect(describeMaterial("hafalan_baru", t({ surahAwal: 72, ayatAwal: "12", ayatAkhir: "13" }))).toBe("Al-Jinn: 12–13");
+    expect(describeMaterial("tahsin", t({ jilid: "2A", halaman: "17" }))).toBe("Jilid 2A • hal. 17");
+    expect(describeMaterial("sabiq", t({}))).toBe("-");
+  });
+  it("builds payloads without nilai fields", () => {
+    const base = { studentId: "s1", teacherId: "t1", tanggal: "2026-11-11" };
+    expect(targetToPayload(base, "hafalan_baru", t({ surahAwal: 72, ayatAwal: "14", ayatAkhir: "16", catatan: " pelan " }))).toMatchObject({ jenis: "hafalan_baru", surah_awal: 72, ayat_awal: 14, ayat_akhir: 16, catatan: "pelan", jilid: null });
+    expect(targetToPayload(base, "tahsin", t({ jilid: "2A", halaman: "18" }))).toMatchObject({ jenis: "tahsin", jilid: "2A", halaman: 18, surah_awal: null });
+  });
+  it("pre-fills a report section from a target, leaving the grade empty", () => {
+    const sec = sectionFromTarget(t({ surahAwal: 72, ayatAwal: "14", ayatAkhir: "16" }));
+    expect(sec).toMatchObject({ on: true, surahAwal: 72, ayatAwal: "14", ayatAkhir: "16", nilai: null, salah: "" });
   });
 });

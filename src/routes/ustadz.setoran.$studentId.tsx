@@ -19,15 +19,16 @@ function SetoranPage() {
     queryKey: ["setoran-form", studentId, tanggal],
     queryFn: async () => {
       const { data: u } = await supabase.auth.getUser();
-      const [stu, lap, cat, teacher] = await Promise.all([
+      const [stu, lap, cat, teacher, tgt] = await Promise.all([
         supabase.from("students").select("id, nama, kelas, foto_url, halaqah_id").eq("id", studentId).maybeSingle(),
         supabase.from("laporan_harian").select("*").eq("student_id", studentId).eq("tanggal", tanggal),
         supabase.from("catatan_harian").select("*").eq("student_id", studentId).eq("tanggal", tanggal).maybeSingle(),
         supabase.from("teachers").select("id").eq("user_id", u.user?.id ?? "").maybeSingle(),
+        supabase.from("target_harian").select("*").eq("student_id", studentId).eq("tanggal", tanggal),
       ]);
       if (stu.error) throw stu.error;
       if (lap.error) throw lap.error;
-      return { student: stu.data, laporan: lap.data ?? [], catatan: cat.data, teacherId: teacher.data?.id ?? null };
+      return { student: stu.data, laporan: lap.data ?? [], targets: tgt.data ?? [], catatan: cat.data, teacherId: teacher.data?.id ?? null };
     },
   });
 
@@ -54,6 +55,7 @@ function SetoranPage() {
             halaqahId={halaqahId}
             teacherId={data.teacherId}
             initial={data.laporan}
+            targets={data.targets}
             catatanRow={data.catatan}
             next={next ?? null}
           />
