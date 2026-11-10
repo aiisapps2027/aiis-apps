@@ -5,7 +5,8 @@ import { Plus, Pencil, Trash2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/aiis/StaffShell";
-import { IconTile } from "@/components/aiis/decor";
+import { Avatar, IconTile } from "@/components/aiis/decor";
+import { DetailRow, DetailSheet } from "@/components/aiis/DetailSheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +21,7 @@ type H = { id?: string; nama: string; jenjang: string; teacher_id: string | null
 function AdminHalaqah() {
   const qc = useQueryClient();
   const [edit, setEdit] = useState<H | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
   const { data } = useQuery({
     queryKey: ["admin-halaqah"],
     queryFn: async () => {
@@ -41,11 +43,13 @@ function AdminHalaqah() {
           const n = data.students.filter((s) => s.halaqah_id === h.id).length;
           return (
             <div key={h.id} className="flex items-center gap-3 rounded-2xl bg-card p-4 shadow-soft">
-              <IconTile><Users className="h-5 w-5" /></IconTile>
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold">{h.nama} <span className="ml-1 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold text-primary">{h.jenjang}</span></p>
-                <p className="truncate text-xs text-muted-foreground">{data.teachers.find((t) => t.id === h.teacher_id)?.nama ?? "Belum ada ustadz"} • {n} siswa</p>
-              </div>
+              <button type="button" onClick={() => setDetailId(h.id)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+                <IconTile><Users className="h-5 w-5" /></IconTile>
+                <div className="min-w-0 flex-1">
+                  <p className="break-words font-semibold">{h.nama} <span className="ml-1 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold text-primary">{h.jenjang}</span></p>
+                  <p className="break-words text-xs text-muted-foreground">{data.teachers.find((t) => t.id === h.teacher_id)?.nama ?? "Belum ada ustadz"} • {n} siswa</p>
+                </div>
+              </button>
               <Button size="icon" variant="ghost" aria-label="Ubah" onClick={() => setEdit(h)}><Pencil className="h-4 w-4" /></Button>
               <Button size="icon" variant="ghost" aria-label="Hapus" onClick={async () => {
                 if (!confirm(`Hapus ${h.nama}? Siswa akan dilepas dari halaqah ini.`)) return;
@@ -56,8 +60,62 @@ function AdminHalaqah() {
           );
         })}
       </div>
+      {data && (
+        <HalaqahDetail
+          halaqah={data.halaqah.find((x) => x.id === detailId) ?? null}
+          teachers={data.teachers}
+          students={data.students}
+          onClose={() => setDetailId(null)}
+          onEdit={(h) => { setDetailId(null); setEdit(h); }}
+        />
+      )}
       {edit && data && <HalaqahDialog value={edit} teachers={data.teachers} students={data.students} onClose={() => setEdit(null)} onSaved={refresh} />}
     </div>
+  );
+}
+
+function HalaqahDetail({ halaqah: h, teachers, students, onClose, onEdit }: {
+  halaqah: (H & { id: string }) | null;
+  teachers: { id: string; nama: string }[];
+  students: { id: string; nama: string; jenjang: string; kelas: string | null; halaqah_id: string | null }[];
+  onClose: () => void;
+  onEdit: (h: H) => void;
+}) {
+  const members = students.filter((s) => s.halaqah_id === h?.id);
+  return (
+    <DetailSheet
+      open={!!h}
+      onOpenChange={(o) => !o && onClose()}
+      title={h?.nama ?? ""}
+      description={h ? `Jenjang ${h.jenjang} • ${members.length} siswa` : undefined}
+      footer={h && <Button className="rounded-xl" onClick={() => onEdit(h)}><Pencil className="mr-2 h-4 w-4" /> Ubah halaqah</Button>}
+    >
+      {h && (
+        <>
+          <div className="rounded-2xl bg-card p-4 shadow-soft">
+            <DetailRow label="Ustadz / Ustadzah">{teachers.find((t) => t.id === h.teacher_id)?.nama ?? "Belum ada ustadz"}</DetailRow>
+          </div>
+          <div>
+            <p className="mb-2 text-sm font-semibold">Daftar siswa ({members.length})</p>
+            {members.length === 0 ? (
+              <p className="rounded-2xl bg-card p-4 text-sm text-muted-foreground shadow-soft">Belum ada siswa di halaqah ini.</p>
+            ) : (
+              <ul className="divide-y rounded-2xl bg-card shadow-soft">
+                {members.map((m) => (
+                  <li key={m.id} className="flex items-center gap-3 px-4 py-3">
+                    <Avatar name={m.nama} size={36} />
+                    <div className="min-w-0 flex-1">
+                      <p className="break-words text-sm font-medium">{m.nama}</p>
+                      <p className="text-xs text-muted-foreground">{m.jenjang} • Kelas {m.kelas ?? "-"}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </>
+      )}
+    </DetailSheet>
   );
 }
 

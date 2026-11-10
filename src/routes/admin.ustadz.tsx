@@ -36,6 +36,13 @@ function AdminUstadz() {
     queryKey: ["admin-ustadz"],
     queryFn: async () => ((await supabase.from("teachers").select("*").order("nama")).data ?? []) as Teacher[],
   });
+  const { data: halaqah } = useQuery({
+    queryKey: ["admin-ustadz-halaqah"],
+    queryFn: async () => {
+      const { data } = await supabase.from("halaqah").select("id, nama, jenjang, teacher_id, students(count)").order("nama");
+      return (data ?? []) as { id: string; nama: string; jenjang: string; teacher_id: string | null; students: { count: number }[] }[];
+    },
+  });
   const refresh = () => qc.invalidateQueries({ queryKey: ["admin-ustadz"] });
 
   return (
@@ -51,10 +58,30 @@ function AdminUstadz() {
             <div className="flex items-center gap-3">
               <Avatar name={t.nama} url={t.foto_url} size={44} />
               <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold">{t.nama}</p>
+                <p className="break-words font-semibold">{t.nama}</p>
                 <p className="text-xs text-muted-foreground">{t.no_hp ?? "Tanpa No. HP"}</p>
               </div>
               <StatusChip status={t.aktif ? "aktif" : "nonaktif"} />
+            </div>
+            <div className="mt-3 rounded-xl bg-muted/60 px-3 py-2">
+              <p className="text-[10px] uppercase text-muted-foreground">Halaqah yang dipegang</p>
+              {(() => {
+                const mine = (halaqah ?? []).filter((h) => h.teacher_id === t.id);
+                if (mine.length === 0) return <p className="mt-0.5 text-sm text-muted-foreground">Belum memegang halaqah</p>;
+                const total = mine.reduce((n, h) => n + (h.students?.[0]?.count ?? 0), 0);
+                return (
+                  <>
+                    <div className="mt-1 flex flex-wrap gap-1.5">
+                      {mine.map((h) => (
+                        <span key={h.id} className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium text-primary">
+                          {h.nama} • {h.students?.[0]?.count ?? 0} siswa
+                        </span>
+                      ))}
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">{mine.length} halaqah • {total} siswa</p>
+                  </>
+                );
+              })()}
             </div>
             <div className="mt-3 flex items-center justify-between rounded-xl bg-secondary px-3 py-2">
               <div>

@@ -2,12 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
-import { Plus, Search, Upload, Pencil, KeyRound, Trash2, Loader2 } from "lucide-react";
+import { Plus, Search, Upload, Pencil, KeyRound, Trash2, Loader2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/aiis/StaffShell";
 import { Avatar, StatusChip } from "@/components/aiis/decor";
 import { AvatarUploader } from "@/components/aiis/AvatarUploader";
+import { DetailRow, DetailSheet } from "@/components/aiis/DetailSheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,6 +36,7 @@ function AdminSiswa() {
   const [kelas, setKelas] = useState(ALL);
   const [halaqah, setHalaqah] = useState(ALL);
   const [edit, setEdit] = useState<Partial<Student> | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
   const resetFn = useServerFn(resetStudentLogin);
   const delFn = useServerFn(deletePerson);
@@ -42,11 +44,12 @@ function AdminSiswa() {
   const { data } = useQuery({
     queryKey: ["admin-siswa"],
     queryFn: async () => {
-      const [{ data: s }, { data: h }] = await Promise.all([
+      const [{ data: s }, { data: h }, { data: t }] = await Promise.all([
         supabase.from("students").select("*").order("nama"),
-        supabase.from("halaqah").select("id, nama, jenjang").order("nama"),
+        supabase.from("halaqah").select("id, nama, jenjang, teacher_id").order("nama"),
+        supabase.from("teachers").select("id, nama"),
       ]);
-      return { students: (s ?? []) as Student[], halaqah: h ?? [] };
+      return { students: (s ?? []) as Student[], halaqah: h ?? [], teachers: t ?? [] };
     },
   });
   const hName = (id: string | null) => data?.halaqah.find((h) => h.id === id)?.nama ?? "-";
@@ -114,7 +117,7 @@ function AdminSiswa() {
             <TableBody>
               {list.map((s) => (
                 <TableRow key={s.id}>
-                  <TableCell className="font-medium">{s.nama}</TableCell>
+                  <TableCell className="font-medium"><button type="button" className="text-left hover:underline" onClick={() => setDetailId(s.id)}>{s.nama}</button></TableCell>
                   <TableCell>{s.nis ?? "-"}</TableCell>
                   <TableCell>{s.jenjang}</TableCell>
                   <TableCell>{s.kelas ?? "-"}</TableCell>
@@ -130,21 +133,84 @@ function AdminSiswa() {
         <div className="space-y-3 lg:hidden">
           {list.map((s) => (
             <div key={s.id} className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
-              <Avatar name={s.nama} url={s.foto_url} size={44} />
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold">{s.nama}</p>
-                <p className="truncate text-xs text-muted-foreground">{s.jenjang} • {s.kelas ?? "-"} • {hName(s.halaqah_id)}</p>
-                <div className="mt-1"><StatusChip status={s.aktif ? "aktif" : "nonaktif"} /></div>
-              </div>
+              <button type="button" onClick={() => setDetailId(s.id)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+                <Avatar name={s.nama} url={s.foto_url} size={44} />
+                <div className="min-w-0 flex-1">
+                  <p className="break-words font-semibold leading-snug">{s.nama}</p>
+                  <p className="break-words text-xs text-muted-foreground">{s.jenjang} • {s.kelas ?? "-"} • {hName(s.halaqah_id)}</p>
+                  <div className="mt-1"><StatusChip status={s.aktif ? "aktif" : "nonaktif"} /></div>
+                </div>
+              </button>
               {actions(s)}
             </div>
           ))}
         </div>
         {data && list.length === 0 && <p className="text-sm text-muted-foreground">Tidak ada siswa.</p>}
       </div>
+      <StudentDetail
+        student={data?.students.find((x) => x.id === detailId) ?? null}
+        halaqah={data?.halaqah ?? []}
+        teachers={data?.teachers ?? []}
+        onClose={() => setDetailId(null)}
+        onEdit={(st) => { setDetailId(null); setEdit(st); }}
+      />
       {edit && <StudentDialog value={edit} halaqah={data?.halaqah ?? []} onClose={() => setEdit(null)} onSaved={refresh} />}
       <ImportDialog open={importOpen} onOpenChange={setImportOpen} onDone={refresh} />
     </div>
+  );
+}
+
+const maskNik = (nik: string) => (nik.length === 16 ? `${nik.slice(0, 4)}••••••••${nik.slice(-4)}` : nik);
+
+function StudentDetail({ student: st, halaqah, teachers, onClose, onEdit }: {
+  student: Student | null;
+  halaqah: { id: string; nama: string; teacher_id: string | null }[];
+  teachers: { id: string; nama: string }[];
+  onClose: () => void;
+  onEdit: (s: Student) => void;
+}) {
+  const [showNik, setShowNik] = useState(false);
+  const h = halaqah.find((x) => x.id === st?.halaqah_id);
+  const guru = teachers.find((t) => t.id === h?.teacher_id)?.nama;
+  return (
+    <DetailSheet
+      open={!!st}
+      onOpenChange={(o) => { if (!o) { setShowNik(false); onClose(); } }}
+      title={st?.nama ?? ""}
+      description={st ? `${st.jenjang} • Kelas ${st.kelas ?? "-"}` : undefined}
+      footer={st && <Button className="rounded-xl" onClick={() => onEdit(st)}><Pencil className="mr-2 h-4 w-4" /> Ubah data</Button>}
+    >
+      {st && (
+        <>
+          <div className="flex items-center gap-4">
+            <Avatar name={st.nama} url={st.foto_url} size={72} />
+            <StatusChip status={st.aktif ? "aktif" : "nonaktif"} />
+          </div>
+          <div className="space-y-3 rounded-2xl bg-card p-4 shadow-soft">
+            <DetailRow label="NIS">{st.nis ?? "-"}</DetailRow>
+            <DetailRow label="Jenis kelamin">{st.jenis_kelamin === "P" ? "Perempuan" : "Laki-laki"}</DetailRow>
+            <DetailRow label="Jenjang">{st.jenjang}</DetailRow>
+            <DetailRow label="Kelas">{st.kelas ?? "-"}</DetailRow>
+            <DetailRow label="Halaqah">{h?.nama ?? "Belum masuk halaqah"}</DetailRow>
+            <DetailRow label="Ustadz pembimbing">{guru ?? "-"}</DetailRow>
+            <DetailRow label="Target hafalan">{st.target_hafalan ?? "-"}</DetailRow>
+          </div>
+          <div className="space-y-3 rounded-2xl bg-card p-4 shadow-soft">
+            <DetailRow label="Nama wali">{st.nama_wali ?? "-"}</DetailRow>
+            <DetailRow label="No. HP">{st.no_hp}</DetailRow>
+            <DetailRow label="NIK">
+              <span className="inline-flex items-center gap-2 font-mono">
+                {showNik ? st.nik : maskNik(st.nik)}
+                <button type="button" aria-label={showNik ? "Sembunyikan NIK" : "Tampilkan NIK"} className="text-muted-foreground" onClick={() => setShowNik((v) => !v)}>
+                  {showNik ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </span>
+            </DetailRow>
+            <DetailRow label="Akun login">{st.user_id ? "Sudah dibuat" : "Belum ada"}</DetailRow>
+          </div>
+        </>
+      )}
+    </DetailSheet>
   );
 }
 
