@@ -40,3 +40,25 @@ export function formatRange(r: AyatRange): string {
   if (r.surahAwal === r.surahAkhir) return r.ayatAwal === r.ayatAkhir ? `${a}: ${r.ayatAwal}` : `${a}: ${r.ayatAwal}–${r.ayatAkhir}`;
   return `${a}: ${r.ayatAwal} – ${b}: ${r.ayatAkhir}`;
 }
+
+const OFFSETS: readonly number[] = (() => {
+  let n = 0;
+  return SURAH.map((x) => {
+    const before = n;
+    n += x.ayat;
+    return before;
+  });
+})();
+
+export const TOTAL_AYAT = SURAH.reduce((n, x) => n + x.ayat, 0);
+
+/** 1-based position of surah:ayat across the whole Qur'an (1..6236). */
+export const ayatIndex = (surah: number, ayat: number): number => (OFFSETS[surah - 1] ?? 0) + ayat;
+
+/** Inclusive [first, last] global ayat index of a juz. */
+export function juzBounds(juz: number): [number, number] {
+  const start = JUZ_START[juz - 1];
+  const nextStart = JUZ_START[juz];
+  if (!start) return [1, TOTAL_AYAT];
+  return [ayatIndex(start[0], start[1]), nextStart ? ayatIndex(nextStart[0], nextStart[1]) - 1 : TOTAL_AYAT];
+}

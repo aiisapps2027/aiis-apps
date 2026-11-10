@@ -8,6 +8,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { InstallPrompt } from "@/components/aiis/InstallPrompt";
 import { Progress } from "@/components/ui/progress";
 import { myStudentQuery } from "@/lib/queries";
+import { laporanQuery } from "@/lib/ortu-queries";
+import { juzProgress, parseTargetJuz } from "@/lib/hafalan";
+import { describeLaporan } from "@/lib/laporan";
 import { signOut } from "@/lib/session";
 
 export const Route = createFileRoute("/ortu/profil")({ component: Profil });
@@ -26,6 +29,13 @@ function Row({ icon, label, value }: { icon: React.ReactNode; label: string; val
 
 function Profil() {
   const { data: s } = useQuery(myStudentQuery);
+  const { data: laporan } = useQuery({ ...laporanQuery, enabled: !!s });
+  const targetJuz = parseTargetJuz(s?.target_hafalan);
+  const baru = (laporan ?? []).filter((r) => r.jenis === "hafalan_baru" && r.nilai !== "TL" && r.surah_awal != null && r.ayat_awal != null);
+  const progress = targetJuz
+    ? juzProgress(baru.map((r) => ({ surahAwal: r.surah_awal!, ayatAwal: r.ayat_awal!, surahAkhir: r.surah_akhir ?? r.surah_awal!, ayatAkhir: r.ayat_akhir ?? r.ayat_awal! })), targetJuz)
+    : null;
+  const lastBaru = (laporan ?? []).find((r) => r.jenis === "hafalan_baru");
   const [install, setInstall] = useState(false);
   const navigate = useNavigate();
   const qc = useQueryClient();
@@ -65,10 +75,15 @@ function Profil() {
         <div className="rounded-2xl bg-card p-4 shadow-soft">
           <div className="mb-2 flex justify-between text-sm">
             <span className="font-semibold">Progres Hafalan</span>
-            <span className="font-bold text-primary">0%</span>
+            <span className="font-bold text-primary">{progress ? `${progress.percent}%` : "–"}</span>
           </div>
-          <Progress value={0} className="h-2.5" />
-          <p className="mt-2 text-xs text-muted-foreground">Progres akan tampil setelah laporan harian mulai diisi ustadz.</p>
+          <Progress value={progress?.percent ?? 0} className="h-2.5" />
+          <p className="mt-2 text-xs text-muted-foreground">
+            {progress
+              ? `Perkiraan: ${progress.covered} dari ${progress.total} ayat Juz ${targetJuz} (hafalan baru yang lancar).`
+              : "Progres tampil setelah target hafalan berformat \"Juz N\" dan laporan harian mulai diisi."}
+            {lastBaru && <><br />Setoran terakhir: {describeLaporan(lastBaru)}</>}
+          </p>
         </div>
         <div className="divide-y rounded-2xl bg-card shadow-soft">
           <button onClick={() => setInstall(true)} className="flex w-full items-center gap-3 px-4 py-3.5 text-left">

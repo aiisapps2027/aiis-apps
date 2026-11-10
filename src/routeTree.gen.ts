@@ -20,10 +20,14 @@ import { Route as AdminPengumumanRouteImport } from './routes/admin.pengumuman'
 import { Route as AdminSiswaRouteImport } from './routes/admin.siswa'
 import { Route as AdminUstadzRouteImport } from './routes/admin.ustadz'
 import { Route as OrtuIndexRouteImport } from './routes/ortu.index'
+import { Route as OrtuBintangRouteImport } from './routes/ortu.bintang'
 import { Route as OrtuFiturRouteImport } from './routes/ortu.fitur'
 import { Route as OrtuHafalanRouteImport } from './routes/ortu.hafalan'
+import { Route as OrtuMurojaahRouteImport } from './routes/ortu.murojaah'
 import { Route as OrtuNotifikasiRouteImport } from './routes/ortu.notifikasi'
 import { Route as OrtuProfilRouteImport } from './routes/ortu.profil'
+import { Route as OrtuTahfizRouteImport } from './routes/ortu.tahfiz'
+import { Route as OrtuTahsinRouteImport } from './routes/ortu.tahsin'
 import { Route as UstadzIndexRouteImport } from './routes/ustadz.index'
 import { Route as OrtuSegeraFiturRouteImport } from './routes/ortu.segera.$fitur'
 import { Route as UstadzHalaqahIdRouteImport } from './routes/ustadz.halaqah.$id'
@@ -86,6 +90,11 @@ const OrtuIndexRoute = OrtuIndexRouteImport.update({
   path: '/',
   getParentRoute: () => OrtuRoute,
 } as any)
+const OrtuBintangRoute = OrtuBintangRouteImport.update({
+  id: '/bintang',
+  path: '/bintang',
+  getParentRoute: () => OrtuRoute,
+} as any)
 const OrtuFiturRoute = OrtuFiturRouteImport.update({
   id: '/fitur',
   path: '/fitur',
@@ -96,6 +105,11 @@ const OrtuHafalanRoute = OrtuHafalanRouteImport.update({
   path: '/hafalan',
   getParentRoute: () => OrtuRoute,
 } as any)
+const OrtuMurojaahRoute = OrtuMurojaahRouteImport.update({
+  id: '/murojaah',
+  path: '/murojaah',
+  getParentRoute: () => OrtuRoute,
+} as any)
 const OrtuNotifikasiRoute = OrtuNotifikasiRouteImport.update({
   id: '/notifikasi',
   path: '/notifikasi',
@@ -104,6 +118,16 @@ const OrtuNotifikasiRoute = OrtuNotifikasiRouteImport.update({
 const OrtuProfilRoute = OrtuProfilRouteImport.update({
   id: '/profil',
   path: '/profil',
+  getParentRoute: () => OrtuRoute,
+} as any)
+const OrtuTahfizRoute = OrtuTahfizRouteImport.update({
+  id: '/tahfiz',
+  path: '/tahfiz',
+  getParentRoute: () => OrtuRoute,
+} as any)
+const OrtuTahsinRoute = OrtuTahsinRouteImport.update({
+  id: '/tahsin',
+  path: '/tahsin',
   getParentRoute: () => OrtuRoute,
 } as any)
 const UstadzIndexRoute = UstadzIndexRouteImport.update({
@@ -147,10 +171,14 @@ export interface FileRoutesByFullPath {
   '/admin/pengumuman': typeof AdminPengumumanRoute
   '/admin/siswa': typeof AdminSiswaRoute
   '/admin/ustadz': typeof AdminUstadzRoute
+  '/ortu/bintang': typeof OrtuBintangRoute
   '/ortu/fitur': typeof OrtuFiturRoute
   '/ortu/hafalan': typeof OrtuHafalanRoute
+  '/ortu/murojaah': typeof OrtuMurojaahRoute
   '/ortu/notifikasi': typeof OrtuNotifikasiRoute
   '/ortu/profil': typeof OrtuProfilRoute
+  '/ortu/tahfiz': typeof OrtuTahfizRoute
+  '/ortu/tahsin': typeof OrtuTahsinRoute
   '/admin/': typeof AdminIndexRoute
   '/ortu/': typeof OrtuIndexRoute
   '/ustadz/': typeof UstadzIndexRoute
@@ -167,10 +195,14 @@ export interface FileRoutesByTo {
   '/admin/pengumuman': typeof AdminPengumumanRoute
   '/admin/siswa': typeof AdminSiswaRoute
   '/admin/ustadz': typeof AdminUstadzRoute
+  '/ortu/bintang': typeof OrtuBintangRoute
   '/ortu/fitur': typeof OrtuFiturRoute
   '/ortu/hafalan': typeof OrtuHafalanRoute
+  '/ortu/murojaah': typeof OrtuMurojaahRoute
   '/ortu/notifikasi': typeof OrtuNotifikasiRoute
   '/ortu/profil': typeof OrtuProfilRoute
+  '/ortu/tahfiz': typeof OrtuTahfizRoute
+  '/ortu/tahsin': typeof OrtuTahsinRoute
   '/admin': typeof AdminIndexRoute
   '/ortu': typeof OrtuIndexRoute
   '/ustadz': typeof UstadzIndexRoute
@@ -191,10 +223,14 @@ export interface FileRoutesById {
   '/admin/pengumuman': typeof AdminPengumumanRoute
   '/admin/siswa': typeof AdminSiswaRoute
   '/admin/ustadz': typeof AdminUstadzRoute
+  '/ortu/bintang': typeof OrtuBintangRoute
   '/ortu/fitur': typeof OrtuFiturRoute
   '/ortu/hafalan': typeof OrtuHafalanRoute
+  '/ortu/murojaah': typeof OrtuMurojaahRoute
   '/ortu/notifikasi': typeof OrtuNotifikasiRoute
   '/ortu/profil': typeof OrtuProfilRoute
+  '/ortu/tahfiz': typeof OrtuTahfizRoute
+  '/ortu/tahsin': typeof OrtuTahsinRoute
   '/admin/': typeof AdminIndexRoute
   '/ortu/': typeof OrtuIndexRoute
   '/ustadz/': typeof UstadzIndexRoute
@@ -216,10 +252,14 @@ export interface FileRouteTypes {
     | '/admin/pengumuman'
     | '/admin/siswa'
     | '/admin/ustadz'
+    | '/ortu/bintang'
     | '/ortu/fitur'
     | '/ortu/hafalan'
+    | '/ortu/murojaah'
     | '/ortu/notifikasi'
     | '/ortu/profil'
+    | '/ortu/tahfiz'
+    | '/ortu/tahsin'
     | '/admin/'
     | '/ortu/'
     | '/ustadz/'
@@ -236,10 +276,14 @@ export interface FileRouteTypes {
     | '/admin/pengumuman'
     | '/admin/siswa'
     | '/admin/ustadz'
+    | '/ortu/bintang'
     | '/ortu/fitur'
     | '/ortu/hafalan'
+    | '/ortu/murojaah'
     | '/ortu/notifikasi'
     | '/ortu/profil'
+    | '/ortu/tahfiz'
+    | '/ortu/tahsin'
     | '/admin'
     | '/ortu'
     | '/ustadz'
@@ -259,10 +303,14 @@ export interface FileRouteTypes {
     | '/admin/pengumuman'
     | '/admin/siswa'
     | '/admin/ustadz'
+    | '/ortu/bintang'
     | '/ortu/fitur'
     | '/ortu/hafalan'
+    | '/ortu/murojaah'
     | '/ortu/notifikasi'
     | '/ortu/profil'
+    | '/ortu/tahfiz'
+    | '/ortu/tahsin'
     | '/admin/'
     | '/ortu/'
     | '/ustadz/'
@@ -360,6 +408,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrtuIndexRouteImport
       parentRoute: typeof OrtuRoute
     }
+    '/ortu/bintang': {
+      id: '/ortu/bintang'
+      path: '/bintang'
+      fullPath: '/ortu/bintang'
+      preLoaderRoute: typeof OrtuBintangRouteImport
+      parentRoute: typeof OrtuRoute
+    }
     '/ortu/fitur': {
       id: '/ortu/fitur'
       path: '/fitur'
@@ -374,6 +429,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrtuHafalanRouteImport
       parentRoute: typeof OrtuRoute
     }
+    '/ortu/murojaah': {
+      id: '/ortu/murojaah'
+      path: '/murojaah'
+      fullPath: '/ortu/murojaah'
+      preLoaderRoute: typeof OrtuMurojaahRouteImport
+      parentRoute: typeof OrtuRoute
+    }
     '/ortu/notifikasi': {
       id: '/ortu/notifikasi'
       path: '/notifikasi'
@@ -386,6 +448,20 @@ declare module '@tanstack/react-router' {
       path: '/profil'
       fullPath: '/ortu/profil'
       preLoaderRoute: typeof OrtuProfilRouteImport
+      parentRoute: typeof OrtuRoute
+    }
+    '/ortu/tahfiz': {
+      id: '/ortu/tahfiz'
+      path: '/tahfiz'
+      fullPath: '/ortu/tahfiz'
+      preLoaderRoute: typeof OrtuTahfizRouteImport
+      parentRoute: typeof OrtuRoute
+    }
+    '/ortu/tahsin': {
+      id: '/ortu/tahsin'
+      path: '/tahsin'
+      fullPath: '/ortu/tahsin'
+      preLoaderRoute: typeof OrtuTahsinRouteImport
       parentRoute: typeof OrtuRoute
     }
     '/ustadz/': {
@@ -452,19 +528,27 @@ const AdminRouteChildren: AdminRouteChildren = {
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface OrtuRouteChildren {
+  OrtuBintangRoute: typeof OrtuBintangRoute
   OrtuFiturRoute: typeof OrtuFiturRoute
   OrtuHafalanRoute: typeof OrtuHafalanRoute
+  OrtuMurojaahRoute: typeof OrtuMurojaahRoute
   OrtuNotifikasiRoute: typeof OrtuNotifikasiRoute
   OrtuProfilRoute: typeof OrtuProfilRoute
+  OrtuTahfizRoute: typeof OrtuTahfizRoute
+  OrtuTahsinRoute: typeof OrtuTahsinRoute
   OrtuIndexRoute: typeof OrtuIndexRoute
   OrtuSegeraFiturRoute: typeof OrtuSegeraFiturRoute
 }
 
 const OrtuRouteChildren: OrtuRouteChildren = {
+  OrtuBintangRoute: OrtuBintangRoute,
   OrtuFiturRoute: OrtuFiturRoute,
   OrtuHafalanRoute: OrtuHafalanRoute,
+  OrtuMurojaahRoute: OrtuMurojaahRoute,
   OrtuNotifikasiRoute: OrtuNotifikasiRoute,
   OrtuProfilRoute: OrtuProfilRoute,
+  OrtuTahfizRoute: OrtuTahfizRoute,
+  OrtuTahsinRoute: OrtuTahsinRoute,
   OrtuIndexRoute: OrtuIndexRoute,
   OrtuSegeraFiturRoute: OrtuSegeraFiturRoute,
 }

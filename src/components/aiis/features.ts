@@ -7,13 +7,13 @@ export type Feature = { slug: string; label: string; icon: LucideIcon; to?: stri
 
 export const DASHBOARD_FEATURES: Feature[] = [
   { slug: "al-quran", label: "Al-Qur'an", icon: BookOpen },
-  { slug: "tahfiz", label: "Tahfiz", icon: BookMarked },
-  { slug: "murojaah", label: "Murojaah", icon: RotateCcw },
-  { slug: "tahsin", label: "Tahsin", icon: Mic },
+  { slug: "tahfiz", to: "/ortu/tahfiz", label: "Tahfiz", icon: BookMarked },
+  { slug: "murojaah", to: "/ortu/murojaah", label: "Murojaah", icon: RotateCcw },
+  { slug: "tahsin", to: "/ortu/tahsin", label: "Tahsin", icon: Mic },
   { slug: "munaqasyah", label: "Munaqasyah", icon: ClipboardCheck },
   { slug: "tasmi", label: "Tasmi'", icon: Volume2 },
   { slug: "tashih", label: "Tashih", icon: PenLine },
-  { slug: "bintang", label: "Bintang", icon: Star },
+  { slug: "bintang", to: "/ortu/bintang", label: "Bintang", icon: Star },
   { slug: "spp", label: "SPP", icon: Wallet },
   { slug: "uang-saku", label: "Uang Saku", icon: PiggyBank },
   { slug: "profil", label: "Profil", icon: User, to: "/ortu/profil" },
@@ -31,9 +31,9 @@ export const FEATURE_GROUPS: { title: string; items: Feature[] }[] = [
   {
     title: "Laporan Harian",
     items: [
-      { slug: "tahfiz", label: "Tahfiz", icon: BookMarked },
-      { slug: "murojaah", label: "Murojaah", icon: RotateCcw },
-      { slug: "tahsin", label: "Tahsin", icon: Mic },
+      { slug: "tahfiz", to: "/ortu/tahfiz", label: "Tahfiz", icon: BookMarked },
+      { slug: "murojaah", to: "/ortu/murojaah", label: "Murojaah", icon: RotateCcw },
+      { slug: "tahsin", to: "/ortu/tahsin", label: "Tahsin", icon: Mic },
     ],
   },
   {
@@ -48,7 +48,7 @@ export const FEATURE_GROUPS: { title: string; items: Feature[] }[] = [
     title: "Keuangan",
     items: [
       { slug: "spp", label: "SPP", icon: Wallet },
-      { slug: "bintang", label: "Bintang", icon: Star },
+      { slug: "bintang", to: "/ortu/bintang", label: "Bintang", icon: Star },
       { slug: "uang-saku", label: "Uang Saku", icon: PiggyBank },
     ],
   },

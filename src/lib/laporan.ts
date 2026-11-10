@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { hitungNilai, JENIS_ORDER, type JenisLaporan, type Nilai } from "@/lib/nilai";
-import { juzOf, validateRange } from "@/lib/quran";
+import { formatRange, juzOf, validateRange } from "@/lib/quran";
 
 export type LaporanRow = Database["public"]["Tables"]["laporan_harian"]["Row"];
 export type CatatanRow = Database["public"]["Tables"]["catatan_harian"]["Row"];
@@ -190,4 +190,19 @@ export async function fetchHalaqahStudents(halaqahId: string) {
     .order("nama");
   if (error) throw error;
   return data ?? [];
+}
+
+export const formatTanggalPendek = (iso: string) =>
+  new Date(`${iso}T00:00:00`).toLocaleDateString("id-ID", { day: "numeric", month: "short" });
+
+export const bulanLabel = (key: string) =>
+  new Date(`${key}-01T00:00:00`).toLocaleDateString("id-ID", { month: "long", year: "numeric" });
+
+/** Human readable description of one report row (surah range, or jilid/halaman for tahsin). */
+export function describeLaporan(r: Pick<LaporanRow, "jenis" | "surah_awal" | "ayat_awal" | "surah_akhir" | "ayat_akhir" | "jilid" | "halaman" | "materi">): string {
+  if (r.jenis === "tahsin") {
+    return [r.jilid ? `Jilid ${r.jilid}` : null, r.halaman ? `hal. ${r.halaman}` : null, r.materi].filter(Boolean).join(" • ") || "Tahsin";
+  }
+  if (r.surah_awal == null || r.ayat_awal == null) return "-";
+  return formatRange({ surahAwal: r.surah_awal, ayatAwal: r.ayat_awal, surahAkhir: r.surah_akhir ?? r.surah_awal, ayatAkhir: r.ayat_akhir ?? r.ayat_awal });
 }
