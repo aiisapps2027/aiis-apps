@@ -27,6 +27,8 @@ import { Route as OrtuProfilRouteImport } from './routes/ortu.profil'
 import { Route as UstadzIndexRouteImport } from './routes/ustadz.index'
 import { Route as OrtuSegeraFiturRouteImport } from './routes/ortu.segera.$fitur'
 import { Route as UstadzHalaqahIdRouteImport } from './routes/ustadz.halaqah.$id'
+import { Route as UstadzSetoranIndexRouteImport } from './routes/ustadz.setoran.index'
+import { Route as UstadzSetoranStudentIdRouteImport } from './routes/ustadz.setoran.$studentId'
 import { Route as UstadzSiswaIdRouteImport } from './routes/ustadz.siswa.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -119,6 +121,16 @@ const UstadzHalaqahIdRoute = UstadzHalaqahIdRouteImport.update({
   path: '/halaqah/$id',
   getParentRoute: () => UstadzRoute,
 } as any)
+const UstadzSetoranIndexRoute = UstadzSetoranIndexRouteImport.update({
+  id: '/setoran/',
+  path: '/setoran/',
+  getParentRoute: () => UstadzRoute,
+} as any)
+const UstadzSetoranStudentIdRoute = UstadzSetoranStudentIdRouteImport.update({
+  id: '/setoran/$studentId',
+  path: '/setoran/$studentId',
+  getParentRoute: () => UstadzRoute,
+} as any)
 const UstadzSiswaIdRoute = UstadzSiswaIdRouteImport.update({
   id: '/siswa/$id',
   path: '/siswa/$id',
@@ -144,7 +156,9 @@ export interface FileRoutesByFullPath {
   '/ustadz/': typeof UstadzIndexRoute
   '/ortu/segera/$fitur': typeof OrtuSegeraFiturRoute
   '/ustadz/halaqah/$id': typeof UstadzHalaqahIdRoute
+  '/ustadz/setoran/$studentId': typeof UstadzSetoranStudentIdRoute
   '/ustadz/siswa/$id': typeof UstadzSiswaIdRoute
+  '/ustadz/setoran/': typeof UstadzSetoranIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -162,7 +176,9 @@ export interface FileRoutesByTo {
   '/ustadz': typeof UstadzIndexRoute
   '/ortu/segera/$fitur': typeof OrtuSegeraFiturRoute
   '/ustadz/halaqah/$id': typeof UstadzHalaqahIdRoute
+  '/ustadz/setoran/$studentId': typeof UstadzSetoranStudentIdRoute
   '/ustadz/siswa/$id': typeof UstadzSiswaIdRoute
+  '/ustadz/setoran': typeof UstadzSetoranIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -184,7 +200,9 @@ export interface FileRoutesById {
   '/ustadz/': typeof UstadzIndexRoute
   '/ortu/segera/$fitur': typeof OrtuSegeraFiturRoute
   '/ustadz/halaqah/$id': typeof UstadzHalaqahIdRoute
+  '/ustadz/setoran/$studentId': typeof UstadzSetoranStudentIdRoute
   '/ustadz/siswa/$id': typeof UstadzSiswaIdRoute
+  '/ustadz/setoran/': typeof UstadzSetoranIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -207,7 +225,9 @@ export interface FileRouteTypes {
     | '/ustadz/'
     | '/ortu/segera/$fitur'
     | '/ustadz/halaqah/$id'
+    | '/ustadz/setoran/$studentId'
     | '/ustadz/siswa/$id'
+    | '/ustadz/setoran/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -225,7 +245,9 @@ export interface FileRouteTypes {
     | '/ustadz'
     | '/ortu/segera/$fitur'
     | '/ustadz/halaqah/$id'
+    | '/ustadz/setoran/$studentId'
     | '/ustadz/siswa/$id'
+    | '/ustadz/setoran'
   id:
     | '__root__'
     | '/'
@@ -246,7 +268,9 @@ export interface FileRouteTypes {
     | '/ustadz/'
     | '/ortu/segera/$fitur'
     | '/ustadz/halaqah/$id'
+    | '/ustadz/setoran/$studentId'
     | '/ustadz/siswa/$id'
+    | '/ustadz/setoran/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -385,6 +409,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UstadzHalaqahIdRouteImport
       parentRoute: typeof UstadzRoute
     }
+    '/ustadz/setoran/': {
+      id: '/ustadz/setoran/'
+      path: '/setoran'
+      fullPath: '/ustadz/setoran/'
+      preLoaderRoute: typeof UstadzSetoranIndexRouteImport
+      parentRoute: typeof UstadzRoute
+    }
+    '/ustadz/setoran/$studentId': {
+      id: '/ustadz/setoran/$studentId'
+      path: '/setoran/$studentId'
+      fullPath: '/ustadz/setoran/$studentId'
+      preLoaderRoute: typeof UstadzSetoranStudentIdRouteImport
+      parentRoute: typeof UstadzRoute
+    }
     '/ustadz/siswa/$id': {
       id: '/ustadz/siswa/$id'
       path: '/siswa/$id'
@@ -436,13 +474,17 @@ const OrtuRouteWithChildren = OrtuRoute._addFileChildren(OrtuRouteChildren)
 interface UstadzRouteChildren {
   UstadzIndexRoute: typeof UstadzIndexRoute
   UstadzHalaqahIdRoute: typeof UstadzHalaqahIdRoute
+  UstadzSetoranStudentIdRoute: typeof UstadzSetoranStudentIdRoute
   UstadzSiswaIdRoute: typeof UstadzSiswaIdRoute
+  UstadzSetoranIndexRoute: typeof UstadzSetoranIndexRoute
 }
 
 const UstadzRouteChildren: UstadzRouteChildren = {
   UstadzIndexRoute: UstadzIndexRoute,
   UstadzHalaqahIdRoute: UstadzHalaqahIdRoute,
+  UstadzSetoranStudentIdRoute: UstadzSetoranStudentIdRoute,
   UstadzSiswaIdRoute: UstadzSiswaIdRoute,
+  UstadzSetoranIndexRoute: UstadzSetoranIndexRoute,
 }
 
 const UstadzRouteWithChildren =
