@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { generateKode, namesMatch, normalizePhone, ortuEmail } from "@/lib/auth-utils";
+import { generateKode, isValidNisn, namesMatch, normalizePhone, ortuEmail } from "@/lib/auth-utils";
 
 describe("login identities", () => {
   it("normalizes phone numbers to 62 format", () => {
@@ -20,4 +20,12 @@ describe("login identities", () => {
       expect(k).toMatch(/^[A-HJ-NP-Z2-9]{8}$/);
     }
   });
+});
+
+describe("isValidNisn", () => {
+  it("accepts exactly 9 digits", () => {
+    expect(isValidNisn("123456789")).toBe(true);
+    expect(isValidNisn(" 123456789 ")).toBe(true);
+  });
+  it.each(["12345678", "1234567890", "1234567890123456", "12345678A", ""])("rejects %j", (v) => expect(isValidNisn(v)).toBe(false));
 });

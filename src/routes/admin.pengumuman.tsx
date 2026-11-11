@@ -12,10 +12,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { announcementsQuery, formatDate } from "@/lib/queries";
+import { formatTanggal } from "@/lib/laporan";
 
 export const Route = createFileRoute("/admin/pengumuman")({ component: AdminPengumuman });
 
-type A = { id?: string; judul: string; isi: string; target: string };
+type A = { id?: string; judul: string; isi: string; target: string; tanggal_acara?: string | null };
 
 function AdminPengumuman() {
   const qc = useQueryClient();
@@ -25,14 +26,15 @@ function AdminPengumuman() {
 
   return (
     <div>
-      <PageHeader title="Pengumuman" action={<Button variant="secondary" className="rounded-xl lg:bg-primary lg:text-primary-foreground" onClick={() => setEdit({ judul: "", isi: "", target: "semua" })}><Plus className="mr-1 h-4 w-4" /> Tambah</Button>} />
+      <PageHeader title="Pengumuman" action={<Button variant="secondary" className="rounded-xl lg:bg-primary lg:text-primary-foreground" onClick={() => setEdit({ judul: "", isi: "", target: "semua", tanggal_acara: null })}><Plus className="mr-1 h-4 w-4" /> Tambah</Button>} />
       <div className="mx-auto max-w-3xl space-y-3 p-4 lg:mx-0 lg:px-8">
         {data?.map((a) => (
           <article key={a.id} className="rounded-2xl bg-card p-4 shadow-soft">
             <div className="flex items-start gap-2">
               <div className="flex-1">
                 <p className="font-semibold">{a.judul}</p>
-                <p className="text-[11px] text-muted-foreground">{formatDate(a.created_at)} • Untuk: {a.target === "semua" ? "Semua" : a.target}</p>
+                {a.tanggal_acara && <p className="mt-0.5 text-xs font-semibold text-primary">Acara: {formatTanggal(a.tanggal_acara)}</p>}
+                <p className="text-[11px] text-muted-foreground">Dibuat {formatDate(a.created_at)} • Untuk: {a.target === "semua" ? "Semua" : a.target}</p>
               </div>
               <Button size="icon" variant="ghost" aria-label="Ubah" onClick={() => setEdit(a)}><Pencil className="h-4 w-4" /></Button>
               <Button size="icon" variant="ghost" aria-label="Hapus" onClick={async () => {
@@ -52,6 +54,13 @@ function AdminPengumuman() {
             <div className="space-y-3">
               <div><Label>Judul</Label><Input value={edit.judul} onChange={(e) => setEdit({ ...edit, judul: e.target.value })} /></div>
               <div><Label>Isi</Label><Textarea rows={5} value={edit.isi} onChange={(e) => setEdit({ ...edit, isi: e.target.value })} /></div>
+              <div>
+                <Label>Tanggal acara (opsional)</Label>
+                <div className="flex gap-2">
+                  <Input type="date" value={edit.tanggal_acara ?? ""} onChange={(e) => setEdit({ ...edit, tanggal_acara: e.target.value || null })} />
+                  {edit.tanggal_acara && <Button type="button" variant="ghost" onClick={() => setEdit({ ...edit, tanggal_acara: null })}>Hapus</Button>}
+                </div>
+              </div>
               <div><Label>Ditujukan untuk</Label>
                 <Select value={edit.target} onValueChange={(v) => setEdit({ ...edit, target: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="semua">Semua</SelectItem><SelectItem value="TK">TK</SelectItem><SelectItem value="SD">SD</SelectItem></SelectContent></Select>
               </div>
@@ -59,7 +68,7 @@ function AdminPengumuman() {
             <DialogFooter>
               <Button onClick={async () => {
                 if (!edit.judul.trim()) { toast.error("Judul wajib diisi"); return; }
-                const row = { judul: edit.judul.trim(), isi: edit.isi, target: edit.target };
+                const row = { judul: edit.judul.trim(), isi: edit.isi, target: edit.target, tanggal_acara: edit.tanggal_acara || null };
                 const { error } = edit.id ? await supabase.from("announcements").update(row).eq("id", edit.id) : await supabase.from("announcements").insert(row);
                 if (error) { toast.error(error.message); return; }
                 toast.success("Pengumuman disimpan"); setEdit(null); refresh();

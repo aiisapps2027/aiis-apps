@@ -20,6 +20,7 @@ export type Database = {
           id: string
           isi: string
           judul: string
+          tanggal_acara: string | null
           target: string
           updated_at: string
         }
@@ -28,6 +29,7 @@ export type Database = {
           id?: string
           isi?: string
           judul: string
+          tanggal_acara?: string | null
           target?: string
           updated_at?: string
         }
@@ -36,6 +38,7 @@ export type Database = {
           id?: string
           isi?: string
           judul?: string
+          tanggal_acara?: string | null
           target?: string
           updated_at?: string
         }
@@ -255,7 +258,7 @@ export type Database = {
           kelas: string | null
           nama: string
           nama_wali: string | null
-          nik: string
+          nisn: string
           nis: string | null
           no_hp: string
           target_hafalan: string | null
@@ -273,7 +276,7 @@ export type Database = {
           kelas?: string | null
           nama: string
           nama_wali?: string | null
-          nik: string
+          nisn: string
           nis?: string | null
           no_hp: string
           target_hafalan?: string | null
@@ -291,7 +294,7 @@ export type Database = {
           kelas?: string | null
           nama?: string
           nama_wali?: string | null
-          nik?: string
+          nisn?: string
           nis?: string | null
           no_hp?: string
           target_hafalan?: string | null

@@ -9,7 +9,7 @@ import { announcementsQuery, formatDate, myStudentQuery } from "@/lib/queries";
 import { signOut } from "@/lib/session";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NilaiBadge } from "@/components/aiis/NilaiBadge";
-import { todayJakarta } from "@/lib/laporan";
+import { formatTanggal, todayJakarta } from "@/lib/laporan";
 import { JENIS_LABEL, JENIS_ORDER, type Nilai } from "@/lib/nilai";
 import { bintangQuery, catatanQuery, laporanQuery } from "@/lib/ortu-queries";
 
@@ -118,6 +118,7 @@ function Dashboard() {
                 <IconTile className="h-10 w-10 shrink-0"><Megaphone className="h-4 w-4" /></IconTile>
                 <div className="min-w-0">
                   <p className="font-semibold text-foreground">{a.judul}</p>
+                  {a.tanggal_acara && <p className="mt-0.5 text-xs font-semibold text-primary">Acara: {formatTanggal(a.tanggal_acara)}</p>}
                   <p className="mt-0.5 line-clamp-2 text-sm text-muted-foreground">{a.isi}</p>
                   <p className="mt-1 text-[11px] text-muted-foreground">{formatDate(a.created_at)}</p>
                 </div>

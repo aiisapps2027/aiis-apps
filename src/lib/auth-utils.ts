@@ -32,5 +32,7 @@ export function generateKode(length = 8): string {
   return Array.from(bytes, (b) => KODE_CHARS[b % KODE_CHARS.length]).join("");
 }
 
-export const isValidNik = (nik: string) => /^\d{16}$/.test(nik.trim());
+/** Parent login password: NISN, exactly 9 digits (change here if the school's numbers differ). */
+export const NISN_LENGTH = 9;
+export const isValidNisn = (nisn: string) => new RegExp(`^\\d{${NISN_LENGTH}}$`).test(nisn.trim());
 export const isValidPhone = (p: string) => /^62\d{8,13}$/.test(normalizePhone(p));

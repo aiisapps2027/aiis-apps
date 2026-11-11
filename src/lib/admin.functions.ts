@@ -3,7 +3,8 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
   generateKode,
-  isValidNik,
+  isValidNisn,
+  NISN_LENGTH,
   isValidPhone,
   normalizePhone,
   ortuEmail,
@@ -30,7 +31,7 @@ async function createAuthUser(admin: any, email: string, password: string, role:
 const studentSchema = z.object({
   nis: z.string().trim().max(30).optional().default(""),
   nama: z.string().trim().min(2).max(100),
-  nik: z.string().trim().refine(isValidNik, "NIK harus 16 digit"),
+  nisn: z.string().trim().refine(isValidNisn, `NISN harus ${NISN_LENGTH} digit`),
   no_hp: z.string().trim().refine(isValidPhone, "No. HP tidak valid"),
   jenjang: z.enum(["TK", "SD"]),
   kelas: z.string().trim().max(10).optional().default(""),
@@ -43,7 +44,7 @@ export type StudentInput = z.infer<typeof studentSchema>;
 
 async function insertStudent(admin: any, s: StudentInput) {
   const phone = normalizePhone(s.no_hp);
-  const uid = await createAuthUser(admin, ortuEmail(phone), s.nik, "ortu");
+  const uid = await createAuthUser(admin, ortuEmail(phone), s.nisn, "ortu");
   const { error } = await admin.from("students").insert({
     ...s,
     no_hp: phone,
@@ -53,7 +54,7 @@ async function insertStudent(admin: any, s: StudentInput) {
   });
   if (error) {
     await admin.auth.admin.deleteUser(uid);
-    throw new Error(error.message.includes("duplicate") ? "NIK atau No. HP sudah terdaftar" : error.message);
+    throw new Error(error.message.includes("duplicate") ? "NISN atau No. HP sudah terdaftar" : error.message);
   }
 }
 
@@ -97,11 +98,11 @@ export const updateStudent = createServerFn({ method: "POST" })
       .from("students")
       .update({ ...rest, no_hp: phone, nis: rest.nis || null, halaqah_id: rest.halaqah_id || null })
       .eq("id", id);
-    if (error) throw new Error(error.message.includes("duplicate") ? "NIK atau No. HP sudah terdaftar" : error.message);
+    if (error) throw new Error(error.message.includes("duplicate") ? "NISN atau No. HP sudah terdaftar" : error.message);
     if (cur?.user_id) {
       await admin.auth.admin.updateUserById(cur.user_id, {
         email: ortuEmail(phone),
-        password: rest.nik,
+        password: rest.nisn,
         email_confirm: true,
         ban_duration: rest.aktif ? "none" : "876000h",
       });
@@ -109,7 +110,7 @@ export const updateStudent = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-/** Reset parent login: re-create the auth user if missing and set password = NIK. */
+/** Reset parent login: re-create the auth user if missing and set password = NISN. */
 export const resetStudentLogin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => ({ id: z.string().uuid().parse(d.id) }))
@@ -120,13 +121,13 @@ export const resetStudentLogin = createServerFn({ method: "POST" })
     if (s.user_id) {
       const { error } = await admin.auth.admin.updateUserById(s.user_id, {
         email: ortuEmail(s.no_hp),
-        password: s.nik,
+        password: s.nisn,
         email_confirm: true,
         ban_duration: "none",
       });
       if (!error) return { ok: true };
     }
-    const uid = await createAuthUser(admin, ortuEmail(s.no_hp), s.nik, "ortu");
+    const uid = await createAuthUser(admin, ortuEmail(s.no_hp), s.nisn, "ortu");
     await admin.from("students").update({ user_id: uid }).eq("id", s.id);
     return { ok: true };
   });

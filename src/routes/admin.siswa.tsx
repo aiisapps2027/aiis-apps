@@ -17,12 +17,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { createStudent, deletePerson, importStudents, resetStudentLogin, updateStudent } from "@/lib/admin.functions";
-import { isValidNik, isValidPhone, normalizeName, normalizePhone } from "@/lib/auth-utils";
+import { isValidNisn, isValidPhone, normalizeName, normalizePhone } from "@/lib/auth-utils";
 
 export const Route = createFileRoute("/admin/siswa")({ component: AdminSiswa });
 
 type Student = {
-  id: string; nis: string | null; nama: string; nik: string; no_hp: string; jenjang: string; kelas: string | null;
+  id: string; nis: string | null; nama: string; nisn: string; no_hp: string; jenjang: string; kelas: string | null;
   halaqah_id: string | null; jenis_kelamin: string; target_hafalan: string | null; nama_wali: string | null; aktif: boolean;
   foto_url: string | null; user_id: string | null;
 };
@@ -67,7 +67,7 @@ function AdminSiswa() {
     <div className="flex gap-1">
       <Button size="icon" variant="ghost" aria-label="Ubah" onClick={() => setEdit(s)}><Pencil className="h-4 w-4" /></Button>
       <Button size="icon" variant="ghost" aria-label="Reset login" onClick={async () => {
-        try { await resetFn({ data: { id: s.id } }); toast.success("Login direset: No. HP + NIK"); refresh(); } catch (e: any) { toast.error(e.message); }
+        try { await resetFn({ data: { id: s.id } }); toast.success("Login direset: No. HP + NISN"); refresh(); } catch (e: any) { toast.error(e.message); }
       }}><KeyRound className="h-4 w-4" /></Button>
       <Button size="icon" variant="ghost" aria-label="Hapus" onClick={async () => {
         if (!confirm(`Hapus ${s.nama} beserta akun loginnya?`)) return;
@@ -160,7 +160,7 @@ function AdminSiswa() {
   );
 }
 
-const maskNik = (nik: string) => (nik.length === 16 ? `${nik.slice(0, 4)}••••••••${nik.slice(-4)}` : nik);
+const maskNisn = (nisn: string) => (nisn.length === 9 ? `${nisn.slice(0, 2)}•••••${nisn.slice(-2)}` : "•".repeat(nisn.length));
 
 function StudentDetail({ student: st, halaqah, teachers, onClose, onEdit }: {
   student: Student | null;
@@ -169,13 +169,13 @@ function StudentDetail({ student: st, halaqah, teachers, onClose, onEdit }: {
   onClose: () => void;
   onEdit: (s: Student) => void;
 }) {
-  const [showNik, setShowNik] = useState(false);
+  const [showNisn, setShowNisn] = useState(false);
   const h = halaqah.find((x) => x.id === st?.halaqah_id);
   const guru = teachers.find((t) => t.id === h?.teacher_id)?.nama;
   return (
     <DetailSheet
       open={!!st}
-      onOpenChange={(o) => { if (!o) { setShowNik(false); onClose(); } }}
+      onOpenChange={(o) => { if (!o) { setShowNisn(false); onClose(); } }}
       title={st?.nama ?? ""}
       description={st ? `${st.jenjang} • Kelas ${st.kelas ?? "-"}` : undefined}
       footer={st && <Button className="rounded-xl" onClick={() => onEdit(st)}><Pencil className="mr-2 h-4 w-4" /> Ubah data</Button>}
@@ -198,11 +198,11 @@ function StudentDetail({ student: st, halaqah, teachers, onClose, onEdit }: {
           <div className="space-y-3 rounded-2xl bg-card p-4 shadow-soft">
             <DetailRow label="Nama wali">{st.nama_wali ?? "-"}</DetailRow>
             <DetailRow label="No. HP">{st.no_hp}</DetailRow>
-            <DetailRow label="NIK">
+            <DetailRow label="NISN">
               <span className="inline-flex items-center gap-2 font-mono">
-                {showNik ? st.nik : maskNik(st.nik)}
-                <button type="button" aria-label={showNik ? "Sembunyikan NIK" : "Tampilkan NIK"} className="text-muted-foreground" onClick={() => setShowNik((v) => !v)}>
-                  {showNik ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showNisn ? st.nisn : maskNisn(st.nisn)}
+                <button type="button" aria-label={showNisn ? "Sembunyikan NISN" : "Tampilkan NISN"} className="text-muted-foreground" onClick={() => setShowNisn((v) => !v)}>
+                  {showNisn ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </span>
             </DetailRow>
@@ -225,7 +225,7 @@ function StudentDialog({ value, halaqah, onClose, onSaved }: { value: Partial<St
   async function save() {
     setBusy(true);
     const payload = {
-      nis: f.nis ?? "", nama: f.nama ?? "", nik: f.nik ?? "", no_hp: f.no_hp ?? "", jenjang: (f.jenjang ?? "SD") as "TK" | "SD",
+      nis: f.nis ?? "", nama: f.nama ?? "", nisn: f.nisn ?? "", no_hp: f.no_hp ?? "", jenjang: (f.jenjang ?? "SD") as "TK" | "SD",
       kelas: f.kelas ?? "", jenis_kelamin: (f.jenis_kelamin ?? "L") as "L" | "P", nama_wali: f.nama_wali ?? "",
       target_hafalan: f.target_hafalan ?? "", halaqah_id: f.halaqah_id || null,
     };
@@ -236,7 +236,7 @@ function StudentDialog({ value, halaqah, onClose, onSaved }: { value: Partial<St
       onSaved();
       onClose();
     } catch (e: any) {
-      toast.error(e?.message?.startsWith("[") ? "Periksa kembali isian (NIK 16 digit, No. HP valid)" : e.message);
+      toast.error(e?.message?.startsWith("[") ? "Periksa kembali isian (NISN 9 digit, No. HP valid)" : e.message);
     } finally {
       setBusy(false);
     }
@@ -265,7 +265,7 @@ function StudentDialog({ value, halaqah, onClose, onSaved }: { value: Partial<St
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2"><Label>Nama Murid</Label><Input value={f.nama ?? ""} onChange={set("nama")} /></div>
           <div><Label>NIS</Label><Input value={f.nis ?? ""} onChange={set("nis")} /></div>
-          <div><Label>NIK (16 digit)</Label><Input inputMode="numeric" value={f.nik ?? ""} onChange={set("nik")} /></div>
+          <div><Label>NISN (9 digit)</Label><Input inputMode="numeric" value={f.nisn ?? ""} onChange={set("nisn")} /></div>
           <div><Label>No. HP Orang Tua</Label><Input inputMode="tel" value={f.no_hp ?? ""} onChange={set("no_hp")} /></div>
           <div><Label>Nama Wali</Label><Input value={f.nama_wali ?? ""} onChange={set("nama_wali")} /></div>
           <div><Label>Jenjang</Label>
@@ -287,7 +287,7 @@ function StudentDialog({ value, halaqah, onClose, onSaved }: { value: Partial<St
               <Label>Aktif (bisa login)</Label><Switch checked={f.aktif ?? true} onCheckedChange={(v) => setF({ ...f, aktif: v })} />
             </div>
           )}
-          <p className="col-span-2 text-xs text-muted-foreground">Orang tua masuk dengan Nama Murid + No. HP + NIK.</p>
+          <p className="col-span-2 text-xs text-muted-foreground">Orang tua masuk dengan Nama Murid + No. HP + NISN.</p>
         </div>
         <DialogFooter><Button onClick={save} disabled={busy}>{busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Simpan</Button></DialogFooter>
       </DialogContent>
@@ -295,7 +295,7 @@ function StudentDialog({ value, halaqah, onClose, onSaved }: { value: Partial<St
   );
 }
 
-const CSV_COLS = ["nis", "nama", "nik", "no_hp", "jenjang", "kelas", "jenis_kelamin", "nama_wali", "target_hafalan"] as const;
+const CSV_COLS = ["nis", "nama", "nisn", "no_hp", "jenjang", "kelas", "jenis_kelamin", "nama_wali", "target_hafalan"] as const;
 
 function parseCsv(text: string): string[][] {
   const rows: string[][] = [];
@@ -323,7 +323,7 @@ function parseCsv(text: string): string[][] {
 function validateRow(r: any): string[] {
   const e: string[] = [];
   if (!r.nama || r.nama.trim().length < 2) e.push("nama kosong");
-  if (!isValidNik(r.nik ?? "")) e.push("NIK harus 16 digit");
+  if (!isValidNisn(r.nisn ?? "")) e.push("NISN harus 9 digit");
   if (!isValidPhone(r.no_hp ?? "")) e.push("No. HP tidak valid");
   if (!["TK", "SD"].includes((r.jenjang ?? "").toUpperCase())) e.push("jenjang harus TK/SD");
   if (r.jenis_kelamin && !["L", "P"].includes(r.jenis_kelamin.toUpperCase())) e.push("jenis_kelamin L/P");
@@ -346,11 +346,11 @@ function ImportDialog({ open, onOpenChange, onDone }: { open: boolean; onOpenCha
       const seen = validateRow(r);
       return { ...r, _err: seen };
     });
-    const phones = new Map<string, number>(), niks = new Map<string, number>();
+    const phones = new Map<string, number>(), nisns = new Map<string, number>();
     parsed.forEach((r: any) => {
       const p = normalizePhone(r.no_hp ?? "");
       if (phones.has(p)) r._err.push("No. HP ganda di file"); else phones.set(p, 1);
-      if (niks.has(r.nik)) r._err.push("NIK ganda di file"); else niks.set(r.nik, 1);
+      if (nisns.has(r.nisn)) r._err.push("NISN ganda di file"); else nisns.set(r.nisn, 1);
     });
     setRows(parsed);
     setResults({});
@@ -367,11 +367,11 @@ function ImportDialog({ open, onOpenChange, onDone }: { open: boolean; onOpenCha
         {rows.length > 0 && (
           <div className="max-h-80 overflow-auto rounded-xl border">
             <Table>
-              <TableHeader><TableRow><TableHead>#</TableHead><TableHead>Nama</TableHead><TableHead>NIK</TableHead><TableHead>No. HP</TableHead><TableHead>Jenjang</TableHead><TableHead>Keterangan</TableHead></TableRow></TableHeader>
+              <TableHeader><TableRow><TableHead>#</TableHead><TableHead>Nama</TableHead><TableHead>NISN</TableHead><TableHead>No. HP</TableHead><TableHead>Jenjang</TableHead><TableHead>Keterangan</TableHead></TableRow></TableHeader>
               <TableBody>
                 {rows.map((r, i) => (
                   <TableRow key={i}>
-                    <TableCell>{i + 1}</TableCell><TableCell>{r.nama}</TableCell><TableCell>{r.nik}</TableCell><TableCell>{r.no_hp}</TableCell><TableCell>{r.jenjang}</TableCell>
+                    <TableCell>{i + 1}</TableCell><TableCell>{r.nama}</TableCell><TableCell>{r.nisn}</TableCell><TableCell>{r.no_hp}</TableCell><TableCell>{r.jenjang}</TableCell>
                     <TableCell className={r._err.length || (results[i + 1] && results[i + 1] !== "ok") ? "text-destructive" : "text-success"}>
                       {r._err.length ? r._err.join(", ") : results[i + 1] ? (results[i + 1] === "ok" ? "Berhasil" : results[i + 1]) : "Siap"}
                     </TableCell>

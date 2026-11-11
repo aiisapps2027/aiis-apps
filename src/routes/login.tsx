@@ -38,7 +38,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<Mode>("ortu");
   const [busy, setBusy] = useState(false);
-  const [f, setF] = useState({ nama: "", hp: "", nik: "", kode: "", email: "", password: "" });
+  const [f, setF] = useState({ nama: "", hp: "", nisn: "", kode: "", email: "", password: "" });
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement>) => setF({ ...f, [k]: e.target.value });
 
   async function submit(e: FormEvent) {
@@ -46,7 +46,7 @@ function LoginPage() {
     setBusy(true);
     try {
       if (mode === "ortu") {
-        const { error } = await supabase.auth.signInWithPassword({ email: ortuEmail(f.hp), password: f.nik.trim() });
+        const { error } = await supabase.auth.signInWithPassword({ email: ortuEmail(f.hp), password: f.nisn.trim() });
         if (error) throw new Error(GENERIC);
         const { data: s } = await supabase.from("students").select("nama").limit(1).maybeSingle();
         if (!s || !namesMatch(s.nama, f.nama)) {
@@ -96,7 +96,7 @@ function LoginPage() {
           <>
             <Field icon={<User className="h-4 w-4" />} placeholder="Nama Murid" value={f.nama} onChange={set("nama")} required autoComplete="off" />
             <Field icon={<Phone className="h-4 w-4" />} placeholder="No. HP (contoh 0812...)" inputMode="tel" value={f.hp} onChange={set("hp")} required />
-            <Field icon={<IdCard className="h-4 w-4" />} placeholder="NIK Murid (16 digit)" inputMode="numeric" type="password" value={f.nik} onChange={set("nik")} required />
+            <Field icon={<IdCard className="h-4 w-4" />} placeholder="NISN Murid (9 digit)" inputMode="numeric" type="password" value={f.nisn} onChange={set("nisn")} required />
           </>
         )}
         {mode === "ustadz" && (
