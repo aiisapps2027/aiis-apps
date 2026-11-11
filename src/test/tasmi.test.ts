@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { groupPeserta, juzLabel, periodeDari, type PesertaPublik } from "@/lib/tasmi";
+import { countMunaqasyahBaru, groupPeserta, juzLabel, periodeDari, periodeSignature, type PesertaPublik } from "@/lib/tasmi";
 
 const row = (o: Partial<PesertaPublik>): PesertaPublik => ({ periode_id: "p1", periode_nama: "Semester Ganjil", mulai: "2026-07-01", tanggal_pelaksanaan: null, student_id: "s1", nama: "A", kelas: "2B", jenjang: "SD", juz: 30, saya: false, ...o });
 
@@ -21,5 +21,21 @@ describe("groupPeserta", () => {
   });
   it("formats the juz label", () => {
     expect(juzLabel([29, 30])).toBe("Juz 29, 30");
+  });
+
+  describe("countMunaqasyahBaru", () => {
+    const rows = [row({}), row({ student_id: "s2" })];
+    it("counts an announced period that was never opened", () => {
+      expect(countMunaqasyahBaru(rows, {})).toBe(1);
+    });
+    it("is zero once opened, and returns when participants or the date change", () => {
+      const seen = { p1: periodeSignature(rows, "p1") };
+      expect(countMunaqasyahBaru(rows, seen)).toBe(0);
+      expect(countMunaqasyahBaru([...rows, row({ student_id: "s3" })], seen)).toBe(1);
+      expect(countMunaqasyahBaru(rows.map((r) => ({ ...r, tanggal_pelaksanaan: "2026-12-01" })), seen)).toBe(1);
+    });
+    it("is zero when nothing is announced", () => {
+      expect(countMunaqasyahBaru([], {})).toBe(0);
+    });
   });
 });

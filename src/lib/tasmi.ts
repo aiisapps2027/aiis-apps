@@ -20,6 +20,7 @@ export const tasmiQuery = queryOptions({
 
 export const munaqasyahPesertaQuery = queryOptions({
   queryKey: ["munaqasyah-peserta"],
+  refetchInterval: 60_000,
   queryFn: async () => {
     const { data, error } = await supabase.rpc("munaqasyah_diumumkan");
     if (error) throw error;
@@ -57,4 +58,35 @@ export async function countCalonBaru(): Promise<number> {
   const { count, error } = await supabase.from("munaqasyah_peserta").select("id", { count: "exact", head: true }).eq("diumumkan", false);
   if (error) throw error;
   return count ?? 0;
+}
+
+const SEEN_KEY = "aiis-munaqasyah-seen";
+
+/** Changes whenever participants are added or the date is set, so the parent is told again. */
+export const periodeSignature = (rows: PesertaPublik[], periodeId: string) => {
+  const mine = rows.filter((r) => r.periode_id === periodeId);
+  return `${mine.length}|${mine[0]?.tanggal_pelaksanaan ?? ""}`;
+};
+
+function readSeen(): Record<string, string> {
+  try {
+    return JSON.parse(localStorage.getItem(SEEN_KEY) ?? "{}") as Record<string, string>;
+  } catch {
+    return {};
+  }
+}
+
+/** Number of announced periods the parent has not opened since their last change. */
+export function countMunaqasyahBaru(rows: PesertaPublik[], seen: Record<string, string> = readSeen()): number {
+  return periodeDari(rows).filter((p) => seen[p.id] !== periodeSignature(rows, p.id)).length;
+}
+
+export function markMunaqasyahSeen(rows: PesertaPublik[]) {
+  try {
+    const seen = readSeen();
+    for (const p of periodeDari(rows)) seen[p.id] = periodeSignature(rows, p.id);
+    localStorage.setItem(SEEN_KEY, JSON.stringify(seen));
+  } catch {
+    // storage unavailable: the bubble simply stays until the next change
+  }
 }

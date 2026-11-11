@@ -4,14 +4,15 @@ import { Megaphone, LayoutGrid, LogOut, Star } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { Avatar, IconTile } from "@/components/aiis/decor";
-import { DASHBOARD_FEATURES } from "@/components/aiis/features";
+import { DASHBOARD_FEATURES, type Feature } from "@/components/aiis/features";
 import { announcementsQuery, formatDate, myStudentQuery } from "@/lib/queries";
 import { signOut } from "@/lib/session";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NilaiBadge } from "@/components/aiis/NilaiBadge";
 import { formatTanggal, todayJakarta } from "@/lib/laporan";
 import { JENIS_LABEL, JENIS_ORDER, type Nilai } from "@/lib/nilai";
-import { bintangQuery, catatanQuery, laporanQuery, useSppPerlu } from "@/lib/ortu-queries";
+import { bintangQuery, catatanQuery, laporanQuery } from "@/lib/ortu-queries";
+import { useTileBadge } from "@/lib/badges";
 
 export const Route = createFileRoute("/ortu/")({ component: Dashboard });
 
@@ -24,7 +25,6 @@ function Dashboard() {
   const { data: laporan } = useQuery({ ...laporanQuery, enabled: !!s });
   const { data: catatan } = useQuery({ ...catatanQuery, enabled: !!s });
   const { data: bintang } = useQuery({ ...bintangQuery, enabled: !!s });
-  const sppPerlu = useSppPerlu();
   const today = todayJakarta();
   const todayRows = (laporan ?? []).filter((r) => r.tanggal === today);
   const todayNote = catatan?.find((c) => c.tanggal === today);
@@ -94,24 +94,7 @@ function Dashboard() {
         )}
 
         <div className="mt-5 grid grid-cols-3 gap-y-5 rounded-2xl bg-card p-4 shadow-soft">
-          {DASHBOARD_FEATURES.map((f) => (
-            <Link
-              key={f.slug}
-              to={f.to ?? "/ortu/segera/$fitur"}
-              params={{ fitur: f.slug }}
-              className="flex flex-col items-center gap-1.5 text-center"
-            >
-              <div className="relative">
-                <IconTile><f.icon className="h-5 w-5" strokeWidth={1.8} /></IconTile>
-                {f.slug === "spp" && sppPerlu > 0 && (
-                  <span aria-label={`${sppPerlu} tagihan perlu dibayar`} className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[11px] font-bold text-white ring-2 ring-card">
-                    {sppPerlu}
-                  </span>
-                )}
-              </div>
-              <span className="text-xs font-medium text-foreground">{f.label}</span>
-            </Link>
-          ))}
+          {DASHBOARD_FEATURES.map((f) => <TileLink key={f.slug} f={f} />)}
           <Link to="/ortu/fitur" className="flex flex-col items-center gap-1.5 text-center">
             <IconTile className="bg-primary text-primary-foreground"><LayoutGrid className="h-5 w-5" /></IconTile>
             <span className="text-xs font-medium text-foreground">Semua</span>
@@ -137,5 +120,22 @@ function Dashboard() {
         </section>
       </div>
     </div>
+  );
+}
+
+function TileLink({ f }: { f: Feature }) {
+  const badge = useTileBadge(f.slug);
+  return (
+    <Link to={f.to ?? "/ortu/segera/$fitur"} params={{ fitur: f.slug }} className="flex flex-col items-center gap-1.5 text-center">
+      <div className="relative">
+        <IconTile><f.icon className="h-5 w-5" strokeWidth={1.8} /></IconTile>
+        {badge > 0 && (
+          <span aria-label={`${badge} pemberitahuan baru`} className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[11px] font-bold text-white ring-2 ring-card">
+            {badge}
+          </span>
+        )}
+      </div>
+      <span className="text-xs font-medium text-foreground">{f.label}</span>
+    </Link>
   );
 }

@@ -1,16 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { CalendarDays, CheckCircle2 } from "lucide-react";
 import { ScreenHeader } from "@/components/aiis/decor";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatTanggal } from "@/lib/laporan";
-import { groupPeserta, juzLabel, munaqasyahPesertaQuery, periodeDari } from "@/lib/tasmi";
+import { groupPeserta, juzLabel, markMunaqasyahSeen, munaqasyahPesertaQuery, periodeDari } from "@/lib/tasmi";
 
 export const Route = createFileRoute("/ortu/munaqasyah")({ component: MunaqasyahPage });
 
 function MunaqasyahPage() {
   const { data: peserta, isLoading } = useQuery(munaqasyahPesertaQuery);
   const periode = peserta ? periodeDari(peserta) : undefined;
+  useEffect(() => {
+    if (peserta) markMunaqasyahSeen(peserta);
+  }, [peserta]);
   return (
     <div>
       <ScreenHeader title="Munaqasyah" />
