@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { groupPeserta, juzLabel, type PesertaPublik } from "@/lib/tasmi";
+import { groupPeserta, juzLabel, periodeDari, type PesertaPublik } from "@/lib/tasmi";
 
-const row = (o: Partial<PesertaPublik>): PesertaPublik => ({ periode_id: "p1", student_id: "s1", nama: "A", kelas: "2B", jenjang: "SD", juz: 30, saya: false, ...o });
+const row = (o: Partial<PesertaPublik>): PesertaPublik => ({ periode_id: "p1", periode_nama: "Semester Ganjil", mulai: "2026-07-01", tanggal_pelaksanaan: null, student_id: "s1", nama: "A", kelas: "2B", jenjang: "SD", juz: 30, saya: false, ...o });
 
 describe("groupPeserta", () => {
   it("merges several juz of one student and sorts them", () => {
@@ -13,6 +13,11 @@ describe("groupPeserta", () => {
     const out = groupPeserta([row({ periode_id: "p2" }), row({ student_id: "s3", saya: true })], "p1");
     expect(out).toHaveLength(1);
     expect(out[0]!.saya).toBe(true);
+  });
+  it("lists each announced period once", () => {
+    const out = periodeDari([row({}), row({ student_id: "s2" }), row({ periode_id: "p2", periode_nama: "Genap", tanggal_pelaksanaan: "2027-05-01" })]);
+    expect(out.map((p) => p.id)).toEqual(["p1", "p2"]);
+    expect(out[1]!.tanggal).toBe("2027-05-01");
   });
   it("formats the juz label", () => {
     expect(juzLabel([29, 30])).toBe("Juz 29, 30");

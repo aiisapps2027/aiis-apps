@@ -18,15 +18,6 @@ export const tasmiQuery = queryOptions({
   },
 });
 
-export const munaqasyahPeriodeQuery = queryOptions({
-  queryKey: ["munaqasyah-periode"],
-  queryFn: async () => {
-    const { data, error } = await supabase.from("munaqasyah_periode").select("*").eq("diumumkan", true).order("mulai", { ascending: false });
-    if (error) throw error;
-    return data ?? [];
-  },
-});
-
 export const munaqasyahPesertaQuery = queryOptions({
   queryKey: ["munaqasyah-peserta"],
   queryFn: async () => {
@@ -35,6 +26,13 @@ export const munaqasyahPesertaQuery = queryOptions({
     return data ?? [];
   },
 });
+
+/** Distinct announced periods (newest first) taken from the participant rows. */
+export function periodeDari(rows: PesertaPublik[]) {
+  const seen = new Map<string, { id: string; nama: string; tanggal: string | null }>();
+  for (const r of rows) if (!seen.has(r.periode_id)) seen.set(r.periode_id, { id: r.periode_id, nama: r.periode_nama, tanggal: r.tanggal_pelaksanaan });
+  return [...seen.values()];
+}
 
 /** Participants of one announced period, grouped per student (a student may take more than one juz). */
 export function groupPeserta(rows: PesertaPublik[], periodeId: string) {
@@ -51,3 +49,12 @@ export function groupPeserta(rows: PesertaPublik[], periodeId: string) {
 }
 
 export const juzLabel = (juz: number[]) => `Juz ${juz.join(", ")}`;
+
+export const MUNAQASYAH_PENDING_KEY = ["admin-munaqasyah-pending"] as const;
+
+/** Candidates (from Tasmi') that the admin has not announced yet. */
+export async function countCalonBaru(): Promise<number> {
+  const { count, error } = await supabase.from("munaqasyah_peserta").select("id", { count: "exact", head: true }).eq("diumumkan", false);
+  if (error) throw error;
+  return count ?? 0;
+}

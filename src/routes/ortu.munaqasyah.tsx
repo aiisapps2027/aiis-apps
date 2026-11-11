@@ -4,13 +4,13 @@ import { CalendarDays, CheckCircle2 } from "lucide-react";
 import { ScreenHeader } from "@/components/aiis/decor";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatTanggal } from "@/lib/laporan";
-import { groupPeserta, juzLabel, munaqasyahPeriodeQuery, munaqasyahPesertaQuery } from "@/lib/tasmi";
+import { groupPeserta, juzLabel, munaqasyahPesertaQuery, periodeDari } from "@/lib/tasmi";
 
 export const Route = createFileRoute("/ortu/munaqasyah")({ component: MunaqasyahPage });
 
 function MunaqasyahPage() {
-  const { data: periode, isLoading } = useQuery(munaqasyahPeriodeQuery);
-  const { data: peserta } = useQuery(munaqasyahPesertaQuery);
+  const { data: peserta, isLoading } = useQuery(munaqasyahPesertaQuery);
+  const periode = peserta ? periodeDari(peserta) : undefined;
   return (
     <div>
       <ScreenHeader title="Munaqasyah" />
@@ -25,7 +25,7 @@ function MunaqasyahPage() {
                 <h2 className="font-bold">{p.nama}</h2>
                 <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
                   <CalendarDays className="h-4 w-4" />
-                  {p.tanggal_pelaksanaan ? formatTanggal(p.tanggal_pelaksanaan) : "Tanggal pelaksanaan menyusul"}
+                  {p.tanggal ? formatTanggal(p.tanggal) : "Tanggal pelaksanaan menyusul"}
                 </p>
               </div>
               <div className={saya ? "flex items-center gap-3 rounded-2xl bg-success-soft p-4 text-success" : "rounded-2xl bg-muted/60 p-4 text-sm text-muted-foreground"}>
