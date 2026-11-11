@@ -288,9 +288,9 @@ export type Database = {
         Relationships: []
       }
       pembayaran: {
-        Row: { alasan_tolak: string | null; bank_pengirim: string; bukti_hash: string | null; bukti_path: string; created_at: string; diputuskan_at: string | null; diputuskan_oleh: string | null; id: string; nama_pengirim: string; nominal: number; status: string; student_id: string; tagihan_id: string; tanggal_transfer: string }
-        Insert: { alasan_tolak?: string | null; bank_pengirim: string; bukti_hash?: string | null; bukti_path: string; created_at?: string; diputuskan_at?: string | null; diputuskan_oleh?: string | null; id?: string; nama_pengirim: string; nominal: number; status?: string; student_id: string; tagihan_id: string; tanggal_transfer: string }
-        Update: { alasan_tolak?: string | null; bank_pengirim?: string; bukti_hash?: string | null; bukti_path?: string; created_at?: string; diputuskan_at?: string | null; diputuskan_oleh?: string | null; id?: string; nama_pengirim?: string; nominal?: number; status?: string; student_id?: string; tagihan_id?: string; tanggal_transfer?: string }
+        Row: { alasan_tolak: string | null; bank_pengirim: string; bukti_hash: string | null; bukti_path: string | null; created_at: string; diputuskan_at: string | null; diputuskan_oleh: string | null; id: string; nama_pengirim: string; nominal: number; status: string; student_id: string; tagihan_id: string; tanggal_transfer: string }
+        Insert: { alasan_tolak?: string | null; bank_pengirim: string; bukti_hash?: string | null; bukti_path?: string | null; created_at?: string; diputuskan_at?: string | null; diputuskan_oleh?: string | null; id?: string; nama_pengirim: string; nominal: number; status?: string; student_id: string; tagihan_id: string; tanggal_transfer: string }
+        Update: { alasan_tolak?: string | null; bank_pengirim?: string; bukti_hash?: string | null; bukti_path?: string | null; created_at?: string; diputuskan_at?: string | null; diputuskan_oleh?: string | null; id?: string; nama_pengirim?: string; nominal?: number; status?: string; student_id?: string; tagihan_id?: string; tanggal_transfer?: string }
         Relationships: [
           { foreignKeyName: "pembayaran_student_id_fkey"; columns: ["student_id"]; isOneToOne: false; referencedRelation: "students"; referencedColumns: ["id"] },
           { foreignKeyName: "pembayaran_tagihan_id_fkey"; columns: ["tagihan_id"]; isOneToOne: false; referencedRelation: "tagihan"; referencedColumns: ["id"] },

@@ -2,6 +2,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { bersihkanBuktiLama } from "@/lib/admin.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,6 +57,8 @@ function KatalogRow({ k, onSaved }: { k: Katalog; onSaved: () => void }) {
 
 export function SppPengaturan() {
   const qc = useQueryClient();
+  const bersihkan = useServerFn(bersihkanBuktiLama);
+  const [membersihkan, setMembersihkan] = useState(false);
   const { data: rek } = useQuery({ queryKey: ["admin-rekening"], queryFn: async () => (await supabase.from("rekening_sekolah").select("*").order("jenjang")).data ?? [] });
   const { data: kat } = useQuery({ queryKey: ["admin-katalog"], queryFn: async () => (await supabase.from("katalog_tagihan").select("*").order("urutan")).data ?? [] });
   const refreshRek = () => Promise.all([qc.invalidateQueries({ queryKey: ["admin-rekening"] }), qc.invalidateQueries({ queryKey: ["rekening-sekolah"] })]);
@@ -67,6 +71,27 @@ export function SppPengaturan() {
         <p className="mb-2 text-xs text-muted-foreground">Mengubah harga di sini tidak mengubah tagihan yang sudah dibuat. Harga SPP di sini menjadi isian awal saat membuat tagihan SPP bulanan.</p>
         <ul className="divide-y rounded-2xl bg-card shadow-soft">{kat?.map((k) => <KatalogRow key={k.id + k.nominal} k={k} onSaved={() => void refreshKat()} />)}</ul>
         {kat && <p className="mt-2 text-xs text-muted-foreground">Contoh: {kat[0] ? `${kat[0].nama} ${formatRupiah(kat[0].nominal)}` : ""}</p>}
+      </section>
+      <section className="rounded-2xl bg-card p-4 shadow-soft">
+        <h3 className="mb-1 font-bold">Hemat penyimpanan</h3>
+        <p className="mb-3 text-xs text-muted-foreground">Menghapus foto bukti transfer yang sudah diputuskan (dikonfirmasi/ditolak) lebih dari 6 bulan. Catatan pembayaran (nominal, tanggal, nama pengirim) tetap tersimpan. Maks. 500 foto per tekan.</p>
+        <Button
+          variant="outline"
+          disabled={membersihkan}
+          onClick={async () => {
+            setMembersihkan(true);
+            try {
+              const r = await bersihkan();
+              toast.success(r.dihapus ? `${r.dihapus} foto bukti lama dihapus` : "Tidak ada bukti yang perlu dihapus");
+            } catch (e) {
+              toast.error(e instanceof Error ? e.message : "Gagal membersihkan");
+            } finally {
+              setMembersihkan(false);
+            }
+          }}
+        >
+          {membersihkan && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Bersihkan bukti lama
+        </Button>
       </section>
     </div>
   );

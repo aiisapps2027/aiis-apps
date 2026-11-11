@@ -10,8 +10,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { formatTanggal } from "@/lib/laporan";
 import { adaKembar, formatRupiah, JENIS_TAGIHAN_LABEL, MENUNGGU_KEY, useBuktiUrl } from "@/lib/spp";
 
-function Bukti({ path, onOpen }: { path: string; onOpen: (url: string) => void }) {
+function Bukti({ path, onOpen }: { path: string | null; onOpen: (url: string) => void }) {
   const url = useBuktiUrl(path);
+  if (!path) return <div className="flex h-24 w-24 items-center justify-center rounded-lg bg-muted p-1 text-center text-[10px] text-muted-foreground">Bukti sudah dihapus</div>;
   if (!url) return <div className="h-24 w-24 animate-pulse rounded-lg bg-muted" />;
   return (
     <button type="button" onClick={() => onOpen(url)} aria-label="Perbesar bukti transfer" className="shrink-0">

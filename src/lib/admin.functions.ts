@@ -212,3 +212,29 @@ export const deletePerson = createServerFn({ method: "POST" })
     if (row?.user_id) await admin.auth.admin.deleteUser(row.user_id);
     return { ok: true };
   });
+
+const BUKTI_RETENSI_BULAN = 6;
+
+/** Deletes decided proof images older than the retention period from storage; payment rows are kept. */
+export const bersihkanBuktiLama = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const admin = await assertAdmin(context as Ctx);
+    const batas = new Date();
+    batas.setMonth(batas.getMonth() - BUKTI_RETENSI_BULAN);
+    const { data, error } = await admin
+      .from("pembayaran")
+      .select("id, bukti_path")
+      .in("status", ["dikonfirmasi", "ditolak"])
+      .not("bukti_path", "is", null)
+      .lt("diputuskan_at", batas.toISOString())
+      .limit(500);
+    if (error) throw new Error(error.message);
+    const rows = (data ?? []) as { id: string; bukti_path: string }[];
+    if (rows.length === 0) return { dihapus: 0 };
+    const { error: e1 } = await admin.storage.from("bukti-transfer").remove(rows.map((r) => r.bukti_path));
+    if (e1) throw new Error(e1.message);
+    const { error: e2 } = await admin.from("pembayaran").update({ bukti_path: null }).in("id", rows.map((r) => r.id));
+    if (e2) throw new Error(e2.message);
+    return { dihapus: rows.length };
+  });

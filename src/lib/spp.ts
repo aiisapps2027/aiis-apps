@@ -73,8 +73,8 @@ export async function sha256Hex(file: Blob): Promise<string | null> {
   }
 }
 
-/** Shrinks a phone screenshot/photo to at most 1600px (JPEG) so it stays well under the 3 MB bucket limit. */
-export async function prepareBukti(file: File, maxSide = 1600, quality = 0.82): Promise<{ blob: Blob; hash: string | null }> {
+/** Shrinks a phone screenshot/photo to at most 1200px (JPEG, ~100-150 KB) to save storage. */
+export async function prepareBukti(file: File, maxSide = 1200, quality = 0.7): Promise<{ blob: Blob; hash: string | null }> {
   if (!file.type.startsWith("image/")) throw new Error("Bukti harus berupa foto atau tangkapan layar");
   if (file.size > 15 * 1024 * 1024) throw new Error("Ukuran foto terlalu besar (maks. 15 MB)");
   const hash = await sha256Hex(file);
