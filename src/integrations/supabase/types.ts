@@ -281,6 +281,35 @@ export type Database = {
           },
         ]
       }
+      katalog_tagihan: {
+        Row: { aktif: boolean; created_at: string; id: string; jenis: string; jenjang: string | null; nama: string; nominal: number; untuk: string | null; urutan: number }
+        Insert: { aktif?: boolean; created_at?: string; id?: string; jenis: string; jenjang?: string | null; nama: string; nominal: number; untuk?: string | null; urutan?: number }
+        Update: { aktif?: boolean; created_at?: string; id?: string; jenis?: string; jenjang?: string | null; nama?: string; nominal?: number; untuk?: string | null; urutan?: number }
+        Relationships: []
+      }
+      pembayaran: {
+        Row: { alasan_tolak: string | null; bank_pengirim: string; bukti_hash: string | null; bukti_path: string; created_at: string; diputuskan_at: string | null; diputuskan_oleh: string | null; id: string; nama_pengirim: string; nominal: number; status: string; student_id: string; tagihan_id: string; tanggal_transfer: string }
+        Insert: { alasan_tolak?: string | null; bank_pengirim: string; bukti_hash?: string | null; bukti_path: string; created_at?: string; diputuskan_at?: string | null; diputuskan_oleh?: string | null; id?: string; nama_pengirim: string; nominal: number; status?: string; student_id: string; tagihan_id: string; tanggal_transfer: string }
+        Update: { alasan_tolak?: string | null; bank_pengirim?: string; bukti_hash?: string | null; bukti_path?: string; created_at?: string; diputuskan_at?: string | null; diputuskan_oleh?: string | null; id?: string; nama_pengirim?: string; nominal?: number; status?: string; student_id?: string; tagihan_id?: string; tanggal_transfer?: string }
+        Relationships: [
+          { foreignKeyName: "pembayaran_student_id_fkey"; columns: ["student_id"]; isOneToOne: false; referencedRelation: "students"; referencedColumns: ["id"] },
+          { foreignKeyName: "pembayaran_tagihan_id_fkey"; columns: ["tagihan_id"]; isOneToOne: false; referencedRelation: "tagihan"; referencedColumns: ["id"] },
+        ]
+      }
+      rekening_sekolah: {
+        Row: { atas_nama: string; bank: string; jenjang: string; nomor: string; updated_at: string }
+        Insert: { atas_nama: string; bank: string; jenjang: string; nomor: string; updated_at?: string }
+        Update: { atas_nama?: string; bank?: string; jenjang?: string; nomor?: string; updated_at?: string }
+        Relationships: []
+      }
+      tagihan: {
+        Row: { catatan: string | null; created_at: string; dibayar_at: string | null; id: string; jatuh_tempo: string; jenis: string; judul: string; nominal: number; periode: string | null; status: string; student_id: string; updated_at: string }
+        Insert: { catatan?: string | null; created_at?: string; dibayar_at?: string | null; id?: string; jatuh_tempo: string; jenis: string; judul: string; nominal: number; periode?: string | null; status?: string; student_id: string; updated_at?: string }
+        Update: { catatan?: string | null; created_at?: string; dibayar_at?: string | null; id?: string; jatuh_tempo?: string; jenis?: string; judul?: string; nominal?: number; periode?: string | null; status?: string; student_id?: string; updated_at?: string }
+        Relationships: [
+          { foreignKeyName: "tagihan_student_id_fkey"; columns: ["student_id"]; isOneToOne: false; referencedRelation: "students"; referencedColumns: ["id"] },
+        ]
+      }
       students: {
         Row: {
           aktif: boolean
@@ -491,6 +520,8 @@ export type Database = {
       }
     }
     Functions: {
+      ajukan_pembayaran: { Args: { _bank: string; _bukti_path: string; _hash: string; _nama: string; _tagihan: string; _tanggal: string }; Returns: string }
+      putuskan_pembayaran: { Args: { _alasan?: string; _id: string; _setuju: boolean }; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

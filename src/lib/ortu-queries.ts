@@ -46,3 +46,30 @@ export const penandaQuery = queryOptions({
     return data ?? [];
   },
 });
+
+export const tagihanQuery = queryOptions({
+  queryKey: ["ortu-tagihan"],
+  queryFn: async () => {
+    const { data, error } = await supabase.from("tagihan").select("*").order("jatuh_tempo", { ascending: false }).limit(200);
+    if (error) throw error;
+    return data ?? [];
+  },
+});
+
+export const pembayaranQuery = queryOptions({
+  queryKey: ["ortu-pembayaran"],
+  queryFn: async () => {
+    const { data, error } = await supabase.from("pembayaran").select("*").order("created_at", { ascending: false }).limit(200);
+    if (error) throw error;
+    return data ?? [];
+  },
+});
+
+export const rekeningQuery = queryOptions({
+  queryKey: ["rekening-sekolah"],
+  queryFn: async () => {
+    const { data, error } = await supabase.from("rekening_sekolah").select("*");
+    if (error) throw error;
+    return data ?? [];
+  },
+});

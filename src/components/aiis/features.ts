@@ -14,7 +14,7 @@ export const DASHBOARD_FEATURES: Feature[] = [
   { slug: "tasmi", label: "Tasmi'", icon: Volume2 },
   { slug: "tashih", label: "Tashih", icon: PenLine },
   { slug: "bintang", to: "/ortu/bintang", label: "Bintang", icon: Star },
-  { slug: "spp", label: "SPP", icon: Wallet },
+  { slug: "spp", to: "/ortu/spp", label: "SPP", icon: Wallet },
   { slug: "uang-saku", label: "Uang Saku", icon: Banknote },
   { slug: "profil", label: "Profil", icon: User, to: "/ortu/profil" },
 ];
@@ -47,7 +47,7 @@ export const FEATURE_GROUPS: { title: string; items: Feature[] }[] = [
   {
     title: "Keuangan",
     items: [
-      { slug: "spp", label: "SPP", icon: Wallet },
+      { slug: "spp", to: "/ortu/spp", label: "SPP", icon: Wallet },
       { slug: "bintang", to: "/ortu/bintang", label: "Bintang", icon: Star },
       { slug: "uang-saku", label: "Uang Saku", icon: Banknote },
     ],

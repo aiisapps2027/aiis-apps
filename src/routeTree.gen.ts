@@ -18,6 +18,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminHalaqahRouteImport } from './routes/admin.halaqah'
 import { Route as AdminPengumumanRouteImport } from './routes/admin.pengumuman'
 import { Route as AdminSiswaRouteImport } from './routes/admin.siswa'
+import { Route as AdminSppRouteImport } from './routes/admin.spp'
 import { Route as AdminUstadzRouteImport } from './routes/admin.ustadz'
 import { Route as OrtuIndexRouteImport } from './routes/ortu.index'
 import { Route as OrtuBintangRouteImport } from './routes/ortu.bintang'
@@ -35,6 +36,8 @@ import { Route as OrtuQuranIndexRouteImport } from './routes/ortu.quran.index'
 import { Route as OrtuQuranNoRouteImport } from './routes/ortu.quran.$no'
 import { Route as OrtuQuranPenandaRouteImport } from './routes/ortu.quran.penanda'
 import { Route as OrtuSegeraFiturRouteImport } from './routes/ortu.segera.$fitur'
+import { Route as OrtuSppIndexRouteImport } from './routes/ortu.spp.index'
+import { Route as OrtuSppIdRouteImport } from './routes/ortu.spp.$id'
 import { Route as UstadzHalaqahIdRouteImport } from './routes/ustadz.halaqah.$id'
 import { Route as UstadzSetoranIndexRouteImport } from './routes/ustadz.setoran.index'
 import { Route as UstadzSetoranStudentIdRouteImport } from './routes/ustadz.setoran.$studentId'
@@ -83,6 +86,11 @@ const AdminPengumumanRoute = AdminPengumumanRouteImport.update({
 const AdminSiswaRoute = AdminSiswaRouteImport.update({
   id: '/siswa',
   path: '/siswa',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSppRoute = AdminSppRouteImport.update({
+  id: '/spp',
+  path: '/spp',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminUstadzRoute = AdminUstadzRouteImport.update({
@@ -170,6 +178,16 @@ const OrtuSegeraFiturRoute = OrtuSegeraFiturRouteImport.update({
   path: '/segera/$fitur',
   getParentRoute: () => OrtuRoute,
 } as any)
+const OrtuSppIndexRoute = OrtuSppIndexRouteImport.update({
+  id: '/spp/',
+  path: '/spp/',
+  getParentRoute: () => OrtuRoute,
+} as any)
+const OrtuSppIdRoute = OrtuSppIdRouteImport.update({
+  id: '/spp/$id',
+  path: '/spp/$id',
+  getParentRoute: () => OrtuRoute,
+} as any)
 const UstadzHalaqahIdRoute = UstadzHalaqahIdRouteImport.update({
   id: '/halaqah/$id',
   path: '/halaqah/$id',
@@ -200,6 +218,7 @@ export interface FileRoutesByFullPath {
   '/admin/halaqah': typeof AdminHalaqahRoute
   '/admin/pengumuman': typeof AdminPengumumanRoute
   '/admin/siswa': typeof AdminSiswaRoute
+  '/admin/spp': typeof AdminSppRoute
   '/admin/ustadz': typeof AdminUstadzRoute
   '/ortu/bintang': typeof OrtuBintangRoute
   '/ortu/fitur': typeof OrtuFiturRoute
@@ -217,10 +236,12 @@ export interface FileRoutesByFullPath {
   '/ortu/quran/$no': typeof OrtuQuranNoRoute
   '/ortu/quran/penanda': typeof OrtuQuranPenandaRoute
   '/ortu/segera/$fitur': typeof OrtuSegeraFiturRoute
+  '/ortu/spp/$id': typeof OrtuSppIdRoute
   '/ustadz/halaqah/$id': typeof UstadzHalaqahIdRoute
   '/ustadz/setoran/$studentId': typeof UstadzSetoranStudentIdRoute
   '/ustadz/siswa/$id': typeof UstadzSiswaIdRoute
   '/ortu/quran/': typeof OrtuQuranIndexRoute
+  '/ortu/spp/': typeof OrtuSppIndexRoute
   '/ustadz/setoran/': typeof UstadzSetoranIndexRoute
 }
 export interface FileRoutesByTo {
@@ -229,6 +250,7 @@ export interface FileRoutesByTo {
   '/admin/halaqah': typeof AdminHalaqahRoute
   '/admin/pengumuman': typeof AdminPengumumanRoute
   '/admin/siswa': typeof AdminSiswaRoute
+  '/admin/spp': typeof AdminSppRoute
   '/admin/ustadz': typeof AdminUstadzRoute
   '/ortu/bintang': typeof OrtuBintangRoute
   '/ortu/fitur': typeof OrtuFiturRoute
@@ -246,10 +268,12 @@ export interface FileRoutesByTo {
   '/ortu/quran/$no': typeof OrtuQuranNoRoute
   '/ortu/quran/penanda': typeof OrtuQuranPenandaRoute
   '/ortu/segera/$fitur': typeof OrtuSegeraFiturRoute
+  '/ortu/spp/$id': typeof OrtuSppIdRoute
   '/ustadz/halaqah/$id': typeof UstadzHalaqahIdRoute
   '/ustadz/setoran/$studentId': typeof UstadzSetoranStudentIdRoute
   '/ustadz/siswa/$id': typeof UstadzSiswaIdRoute
   '/ortu/quran': typeof OrtuQuranIndexRoute
+  '/ortu/spp': typeof OrtuSppIndexRoute
   '/ustadz/setoran': typeof UstadzSetoranIndexRoute
 }
 export interface FileRoutesById {
@@ -262,6 +286,7 @@ export interface FileRoutesById {
   '/admin/halaqah': typeof AdminHalaqahRoute
   '/admin/pengumuman': typeof AdminPengumumanRoute
   '/admin/siswa': typeof AdminSiswaRoute
+  '/admin/spp': typeof AdminSppRoute
   '/admin/ustadz': typeof AdminUstadzRoute
   '/ortu/bintang': typeof OrtuBintangRoute
   '/ortu/fitur': typeof OrtuFiturRoute
@@ -279,10 +304,12 @@ export interface FileRoutesById {
   '/ortu/quran/$no': typeof OrtuQuranNoRoute
   '/ortu/quran/penanda': typeof OrtuQuranPenandaRoute
   '/ortu/segera/$fitur': typeof OrtuSegeraFiturRoute
+  '/ortu/spp/$id': typeof OrtuSppIdRoute
   '/ustadz/halaqah/$id': typeof UstadzHalaqahIdRoute
   '/ustadz/setoran/$studentId': typeof UstadzSetoranStudentIdRoute
   '/ustadz/siswa/$id': typeof UstadzSiswaIdRoute
   '/ortu/quran/': typeof OrtuQuranIndexRoute
+  '/ortu/spp/': typeof OrtuSppIndexRoute
   '/ustadz/setoran/': typeof UstadzSetoranIndexRoute
 }
 export interface FileRouteTypes {
@@ -296,6 +323,7 @@ export interface FileRouteTypes {
     | '/admin/halaqah'
     | '/admin/pengumuman'
     | '/admin/siswa'
+    | '/admin/spp'
     | '/admin/ustadz'
     | '/ortu/bintang'
     | '/ortu/fitur'
@@ -313,10 +341,12 @@ export interface FileRouteTypes {
     | '/ortu/quran/$no'
     | '/ortu/quran/penanda'
     | '/ortu/segera/$fitur'
+    | '/ortu/spp/$id'
     | '/ustadz/halaqah/$id'
     | '/ustadz/setoran/$studentId'
     | '/ustadz/siswa/$id'
     | '/ortu/quran/'
+    | '/ortu/spp/'
     | '/ustadz/setoran/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -325,6 +355,7 @@ export interface FileRouteTypes {
     | '/admin/halaqah'
     | '/admin/pengumuman'
     | '/admin/siswa'
+    | '/admin/spp'
     | '/admin/ustadz'
     | '/ortu/bintang'
     | '/ortu/fitur'
@@ -342,10 +373,12 @@ export interface FileRouteTypes {
     | '/ortu/quran/$no'
     | '/ortu/quran/penanda'
     | '/ortu/segera/$fitur'
+    | '/ortu/spp/$id'
     | '/ustadz/halaqah/$id'
     | '/ustadz/setoran/$studentId'
     | '/ustadz/siswa/$id'
     | '/ortu/quran'
+    | '/ortu/spp'
     | '/ustadz/setoran'
   id:
     | '__root__'
@@ -357,6 +390,7 @@ export interface FileRouteTypes {
     | '/admin/halaqah'
     | '/admin/pengumuman'
     | '/admin/siswa'
+    | '/admin/spp'
     | '/admin/ustadz'
     | '/ortu/bintang'
     | '/ortu/fitur'
@@ -374,10 +408,12 @@ export interface FileRouteTypes {
     | '/ortu/quran/$no'
     | '/ortu/quran/penanda'
     | '/ortu/segera/$fitur'
+    | '/ortu/spp/$id'
     | '/ustadz/halaqah/$id'
     | '/ustadz/setoran/$studentId'
     | '/ustadz/siswa/$id'
     | '/ortu/quran/'
+    | '/ortu/spp/'
     | '/ustadz/setoran/'
   fileRoutesById: FileRoutesById
 }
@@ -452,6 +488,13 @@ declare module '@tanstack/react-router' {
       path: '/siswa'
       fullPath: '/admin/siswa'
       preLoaderRoute: typeof AdminSiswaRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/spp': {
+      id: '/admin/spp'
+      path: '/spp'
+      fullPath: '/admin/spp'
+      preLoaderRoute: typeof AdminSppRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/ustadz': {
@@ -573,6 +616,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrtuSegeraFiturRouteImport
       parentRoute: typeof OrtuRoute
     }
+    '/ortu/spp/': {
+      id: '/ortu/spp/'
+      path: '/spp'
+      fullPath: '/ortu/spp/'
+      preLoaderRoute: typeof OrtuSppIndexRouteImport
+      parentRoute: typeof OrtuRoute
+    }
+    '/ortu/spp/$id': {
+      id: '/ortu/spp/$id'
+      path: '/spp/$id'
+      fullPath: '/ortu/spp/$id'
+      preLoaderRoute: typeof OrtuSppIdRouteImport
+      parentRoute: typeof OrtuRoute
+    }
     '/ustadz/halaqah/$id': {
       id: '/ustadz/halaqah/$id'
       path: '/halaqah/$id'
@@ -608,6 +665,7 @@ interface AdminRouteChildren {
   AdminHalaqahRoute: typeof AdminHalaqahRoute
   AdminPengumumanRoute: typeof AdminPengumumanRoute
   AdminSiswaRoute: typeof AdminSiswaRoute
+  AdminSppRoute: typeof AdminSppRoute
   AdminUstadzRoute: typeof AdminUstadzRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -616,6 +674,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminHalaqahRoute: AdminHalaqahRoute,
   AdminPengumumanRoute: AdminPengumumanRoute,
   AdminSiswaRoute: AdminSiswaRoute,
+  AdminSppRoute: AdminSppRoute,
   AdminUstadzRoute: AdminUstadzRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
@@ -635,7 +694,9 @@ interface OrtuRouteChildren {
   OrtuQuranNoRoute: typeof OrtuQuranNoRoute
   OrtuQuranPenandaRoute: typeof OrtuQuranPenandaRoute
   OrtuSegeraFiturRoute: typeof OrtuSegeraFiturRoute
+  OrtuSppIdRoute: typeof OrtuSppIdRoute
   OrtuQuranIndexRoute: typeof OrtuQuranIndexRoute
+  OrtuSppIndexRoute: typeof OrtuSppIndexRoute
 }
 
 const OrtuRouteChildren: OrtuRouteChildren = {
@@ -651,7 +712,9 @@ const OrtuRouteChildren: OrtuRouteChildren = {
   OrtuQuranNoRoute: OrtuQuranNoRoute,
   OrtuQuranPenandaRoute: OrtuQuranPenandaRoute,
   OrtuSegeraFiturRoute: OrtuSegeraFiturRoute,
+  OrtuSppIdRoute: OrtuSppIdRoute,
   OrtuQuranIndexRoute: OrtuQuranIndexRoute,
+  OrtuSppIndexRoute: OrtuSppIndexRoute,
 }
 
 const OrtuRouteWithChildren = OrtuRoute._addFileChildren(OrtuRouteChildren)

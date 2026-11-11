@@ -5,7 +5,11 @@ import logo from "@/assets/logo.png";
 import { signOut } from "@/lib/session";
 import { InstallPrompt } from "@/components/aiis/InstallPrompt";
 
-export type NavItem = { to: string; label: string; icon: LucideIcon; exact?: boolean };
+export type NavItem = { to: string; label: string; icon: LucideIcon; exact?: boolean; badge?: number };
+
+function Badge({ n }: { n?: number | undefined }) {
+  return n ? <span aria-label={`${n} menunggu`} className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-white">{n > 99 ? "99+" : n}</span> : null;
+}
 
 /** Teacher/admin shell: bottom nav on mobile, left sidebar on desktop (lg). */
 export function StaffShell({ nav, area }: { nav: NavItem[]; area: string }) {
@@ -34,7 +38,7 @@ export function StaffShell({ nav, area }: { nav: NavItem[]; area: string }) {
               className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-sidebar-accent"
               activeProps={{ className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
             >
-              <n.icon className="h-5 w-5" /> {n.label}
+              <span className="relative"><n.icon className="h-5 w-5" /><Badge n={n.badge} /></span> {n.label}
             </Link>
           ))}
         </nav>
@@ -57,7 +61,7 @@ export function StaffShell({ nav, area }: { nav: NavItem[]; area: string }) {
             className="flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium text-muted-foreground"
             activeProps={{ className: "text-primary" }}
           >
-            <n.icon className="h-5 w-5" />
+            <span className="relative"><n.icon className="h-5 w-5" /><Badge n={n.badge} /></span>
             {n.label}
           </Link>
         ))}

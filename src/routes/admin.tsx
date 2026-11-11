@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LayoutDashboard, GraduationCap, UserCog, Users, Megaphone } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { LayoutDashboard, GraduationCap, UserCog, Users, Megaphone, Wallet } from "lucide-react";
+import { countMenunggu, MENUNGGU_KEY } from "@/lib/spp";
 import { requireRole } from "@/lib/session";
 import { StaffShell } from "@/components/aiis/StaffShell";
 
@@ -14,7 +16,12 @@ export const Route = createFileRoute("/admin")({
       { property: "og:description", content: "Kelola siswa, ustadz, halaqah dan pengumuman AIIS." },
     ],
   }),
-  component: () => (
+  component: AdminLayout,
+});
+
+function AdminLayout() {
+  const { data: menunggu } = useQuery({ queryKey: [...MENUNGGU_KEY], queryFn: countMenunggu, refetchInterval: 30_000 });
+  return (
     <StaffShell
       area="Admin Sekolah"
       nav={[
@@ -22,8 +29,9 @@ export const Route = createFileRoute("/admin")({
         { to: "/admin/siswa", label: "Siswa", icon: GraduationCap },
         { to: "/admin/ustadz", label: "Ustadz", icon: UserCog },
         { to: "/admin/halaqah", label: "Halaqah", icon: Users },
+        { to: "/admin/spp", label: "SPP", icon: Wallet, ...(menunggu ? { badge: menunggu } : {}) },
         { to: "/admin/pengumuman", label: "Info", icon: Megaphone },
       ]}
     />
-  ),
-});
+  );
+}
