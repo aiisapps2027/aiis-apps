@@ -37,3 +37,12 @@ export const targetQuery = queryOptions({
     return data ?? [];
   },
 });
+
+export const penandaQuery = queryOptions({
+  queryKey: ["ortu-penanda"],
+  queryFn: async () => {
+    const { data, error } = await supabase.from("penanda_quran").select("*").order("created_at", { ascending: false });
+    if (error) throw error;
+    return data ?? [];
+  },
+});

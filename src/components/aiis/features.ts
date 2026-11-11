@@ -6,7 +6,7 @@ import {
 export type Feature = { slug: string; label: string; icon: LucideIcon; to?: string };
 
 export const DASHBOARD_FEATURES: Feature[] = [
-  { slug: "al-quran", label: "Al-Qur'an", icon: BookOpen },
+  { slug: "al-quran", to: "/ortu/quran", label: "Al-Qur'an", icon: BookOpen },
   { slug: "tahfiz", to: "/ortu/tahfiz", label: "Tahfiz", icon: BookMarked },
   { slug: "murojaah", to: "/ortu/murojaah", label: "Murojaah", icon: RotateCcw },
   { slug: "tahsin", to: "/ortu/tahsin", label: "Tahsin", icon: Mic },
@@ -23,9 +23,9 @@ export const FEATURE_GROUPS: { title: string; items: Feature[] }[] = [
   {
     title: "Al-Qur'an",
     items: [
-      { slug: "al-quran", label: "Baca Al-Qur'an", icon: BookOpen },
-      { slug: "cari-surah", label: "Cari Surah / Ayat", icon: Search },
-      { slug: "penanda", label: "Penanda Ayat Hafalan", icon: Bookmark },
+      { slug: "al-quran", to: "/ortu/quran", label: "Baca Al-Qur'an", icon: BookOpen },
+      { slug: "cari-surah", to: "/ortu/quran", label: "Cari Surah / Ayat", icon: Search },
+      { slug: "penanda", to: "/ortu/quran/penanda", label: "Penanda Ayat", icon: Bookmark },
     ],
   },
   {

@@ -65,6 +65,7 @@
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: "Amiri", "Scheherazade New", "Traditional Arabic", serif;
   --shadow-soft: var(--shadow-soft);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);

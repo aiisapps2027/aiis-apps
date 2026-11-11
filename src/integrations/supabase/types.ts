@@ -246,6 +246,41 @@ export type Database = {
           },
         ]
       }
+      penanda_quran: {
+        Row: {
+          ayat: number
+          catatan: string | null
+          created_at: string
+          id: string
+          student_id: string
+          surah: number
+        }
+        Insert: {
+          ayat: number
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          student_id: string
+          surah: number
+        }
+        Update: {
+          ayat?: number
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          student_id?: string
+          surah?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "penanda_quran_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       students: {
         Row: {
           aktif: boolean
@@ -258,8 +293,8 @@ export type Database = {
           kelas: string | null
           nama: string
           nama_wali: string | null
-          nisn: string
           nis: string | null
+          nisn: string
           no_hp: string
           target_hafalan: string | null
           updated_at: string
@@ -276,8 +311,8 @@ export type Database = {
           kelas?: string | null
           nama: string
           nama_wali?: string | null
-          nisn: string
           nis?: string | null
+          nisn: string
           no_hp: string
           target_hafalan?: string | null
           updated_at?: string
@@ -294,8 +329,8 @@ export type Database = {
           kelas?: string | null
           nama?: string
           nama_wali?: string | null
-          nisn?: string
           nis?: string | null
+          nisn?: string
           no_hp?: string
           target_hafalan?: string | null
           updated_at?: string

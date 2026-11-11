@@ -31,6 +31,9 @@ import { Route as OrtuTahsinRouteImport } from './routes/ortu.tahsin'
 import { Route as UstadzIndexRouteImport } from './routes/ustadz.index'
 import { Route as UstadzRiwayatRouteImport } from './routes/ustadz.riwayat'
 import { Route as UstadzTargetRouteImport } from './routes/ustadz.target'
+import { Route as OrtuQuranIndexRouteImport } from './routes/ortu.quran.index'
+import { Route as OrtuQuranNoRouteImport } from './routes/ortu.quran.$no'
+import { Route as OrtuQuranPenandaRouteImport } from './routes/ortu.quran.penanda'
 import { Route as OrtuSegeraFiturRouteImport } from './routes/ortu.segera.$fitur'
 import { Route as UstadzHalaqahIdRouteImport } from './routes/ustadz.halaqah.$id'
 import { Route as UstadzSetoranIndexRouteImport } from './routes/ustadz.setoran.index'
@@ -147,6 +150,21 @@ const UstadzTargetRoute = UstadzTargetRouteImport.update({
   path: '/target',
   getParentRoute: () => UstadzRoute,
 } as any)
+const OrtuQuranIndexRoute = OrtuQuranIndexRouteImport.update({
+  id: '/quran/',
+  path: '/quran/',
+  getParentRoute: () => OrtuRoute,
+} as any)
+const OrtuQuranNoRoute = OrtuQuranNoRouteImport.update({
+  id: '/quran/$no',
+  path: '/quran/$no',
+  getParentRoute: () => OrtuRoute,
+} as any)
+const OrtuQuranPenandaRoute = OrtuQuranPenandaRouteImport.update({
+  id: '/quran/penanda',
+  path: '/quran/penanda',
+  getParentRoute: () => OrtuRoute,
+} as any)
 const OrtuSegeraFiturRoute = OrtuSegeraFiturRouteImport.update({
   id: '/segera/$fitur',
   path: '/segera/$fitur',
@@ -196,10 +214,13 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/ortu/': typeof OrtuIndexRoute
   '/ustadz/': typeof UstadzIndexRoute
+  '/ortu/quran/$no': typeof OrtuQuranNoRoute
+  '/ortu/quran/penanda': typeof OrtuQuranPenandaRoute
   '/ortu/segera/$fitur': typeof OrtuSegeraFiturRoute
   '/ustadz/halaqah/$id': typeof UstadzHalaqahIdRoute
   '/ustadz/setoran/$studentId': typeof UstadzSetoranStudentIdRoute
   '/ustadz/siswa/$id': typeof UstadzSiswaIdRoute
+  '/ortu/quran/': typeof OrtuQuranIndexRoute
   '/ustadz/setoran/': typeof UstadzSetoranIndexRoute
 }
 export interface FileRoutesByTo {
@@ -222,10 +243,13 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/ortu': typeof OrtuIndexRoute
   '/ustadz': typeof UstadzIndexRoute
+  '/ortu/quran/$no': typeof OrtuQuranNoRoute
+  '/ortu/quran/penanda': typeof OrtuQuranPenandaRoute
   '/ortu/segera/$fitur': typeof OrtuSegeraFiturRoute
   '/ustadz/halaqah/$id': typeof UstadzHalaqahIdRoute
   '/ustadz/setoran/$studentId': typeof UstadzSetoranStudentIdRoute
   '/ustadz/siswa/$id': typeof UstadzSiswaIdRoute
+  '/ortu/quran': typeof OrtuQuranIndexRoute
   '/ustadz/setoran': typeof UstadzSetoranIndexRoute
 }
 export interface FileRoutesById {
@@ -252,10 +276,13 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/ortu/': typeof OrtuIndexRoute
   '/ustadz/': typeof UstadzIndexRoute
+  '/ortu/quran/$no': typeof OrtuQuranNoRoute
+  '/ortu/quran/penanda': typeof OrtuQuranPenandaRoute
   '/ortu/segera/$fitur': typeof OrtuSegeraFiturRoute
   '/ustadz/halaqah/$id': typeof UstadzHalaqahIdRoute
   '/ustadz/setoran/$studentId': typeof UstadzSetoranStudentIdRoute
   '/ustadz/siswa/$id': typeof UstadzSiswaIdRoute
+  '/ortu/quran/': typeof OrtuQuranIndexRoute
   '/ustadz/setoran/': typeof UstadzSetoranIndexRoute
 }
 export interface FileRouteTypes {
@@ -283,10 +310,13 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/ortu/'
     | '/ustadz/'
+    | '/ortu/quran/$no'
+    | '/ortu/quran/penanda'
     | '/ortu/segera/$fitur'
     | '/ustadz/halaqah/$id'
     | '/ustadz/setoran/$studentId'
     | '/ustadz/siswa/$id'
+    | '/ortu/quran/'
     | '/ustadz/setoran/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -309,10 +339,13 @@ export interface FileRouteTypes {
     | '/admin'
     | '/ortu'
     | '/ustadz'
+    | '/ortu/quran/$no'
+    | '/ortu/quran/penanda'
     | '/ortu/segera/$fitur'
     | '/ustadz/halaqah/$id'
     | '/ustadz/setoran/$studentId'
     | '/ustadz/siswa/$id'
+    | '/ortu/quran'
     | '/ustadz/setoran'
   id:
     | '__root__'
@@ -338,10 +371,13 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/ortu/'
     | '/ustadz/'
+    | '/ortu/quran/$no'
+    | '/ortu/quran/penanda'
     | '/ortu/segera/$fitur'
     | '/ustadz/halaqah/$id'
     | '/ustadz/setoran/$studentId'
     | '/ustadz/siswa/$id'
+    | '/ortu/quran/'
     | '/ustadz/setoran/'
   fileRoutesById: FileRoutesById
 }
@@ -509,6 +545,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UstadzTargetRouteImport
       parentRoute: typeof UstadzRoute
     }
+    '/ortu/quran/': {
+      id: '/ortu/quran/'
+      path: '/quran'
+      fullPath: '/ortu/quran/'
+      preLoaderRoute: typeof OrtuQuranIndexRouteImport
+      parentRoute: typeof OrtuRoute
+    }
+    '/ortu/quran/$no': {
+      id: '/ortu/quran/$no'
+      path: '/quran/$no'
+      fullPath: '/ortu/quran/$no'
+      preLoaderRoute: typeof OrtuQuranNoRouteImport
+      parentRoute: typeof OrtuRoute
+    }
+    '/ortu/quran/penanda': {
+      id: '/ortu/quran/penanda'
+      path: '/quran/penanda'
+      fullPath: '/ortu/quran/penanda'
+      preLoaderRoute: typeof OrtuQuranPenandaRouteImport
+      parentRoute: typeof OrtuRoute
+    }
     '/ortu/segera/$fitur': {
       id: '/ortu/segera/$fitur'
       path: '/segera/$fitur'
@@ -575,7 +632,10 @@ interface OrtuRouteChildren {
   OrtuTahfizRoute: typeof OrtuTahfizRoute
   OrtuTahsinRoute: typeof OrtuTahsinRoute
   OrtuIndexRoute: typeof OrtuIndexRoute
+  OrtuQuranNoRoute: typeof OrtuQuranNoRoute
+  OrtuQuranPenandaRoute: typeof OrtuQuranPenandaRoute
   OrtuSegeraFiturRoute: typeof OrtuSegeraFiturRoute
+  OrtuQuranIndexRoute: typeof OrtuQuranIndexRoute
 }
 
 const OrtuRouteChildren: OrtuRouteChildren = {
@@ -588,7 +648,10 @@ const OrtuRouteChildren: OrtuRouteChildren = {
   OrtuTahfizRoute: OrtuTahfizRoute,
   OrtuTahsinRoute: OrtuTahsinRoute,
   OrtuIndexRoute: OrtuIndexRoute,
+  OrtuQuranNoRoute: OrtuQuranNoRoute,
+  OrtuQuranPenandaRoute: OrtuQuranPenandaRoute,
   OrtuSegeraFiturRoute: OrtuSegeraFiturRoute,
+  OrtuQuranIndexRoute: OrtuQuranIndexRoute,
 }
 
 const OrtuRouteWithChildren = OrtuRoute._addFileChildren(OrtuRouteChildren)
