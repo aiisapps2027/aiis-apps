@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 // RLS limits every query below to the signed-in parent's own child.
@@ -73,3 +73,9 @@ export const rekeningQuery = queryOptions({
     return data ?? [];
   },
 });
+
+/** Number of invoices the parent still has to pay (not yet submitted, or rejected and unpaid). */
+export function useSppPerlu(): number {
+  const { data } = useQuery(tagihanQuery);
+  return (data ?? []).filter((t) => t.status === "belum_bayar").length;
+}
