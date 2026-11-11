@@ -296,6 +296,30 @@ export type Database = {
           { foreignKeyName: "pembayaran_tagihan_id_fkey"; columns: ["tagihan_id"]; isOneToOne: false; referencedRelation: "tagihan"; referencedColumns: ["id"] },
         ]
       }
+      tasmi: {
+        Row: { catatan: string | null; created_at: string; id: string; juz: number; jumlah_salah: number | null; nilai: string; student_id: string; tanggal: string; teacher_id: string | null; updated_at: string }
+        Insert: { catatan?: string | null; created_at?: string; id?: string; juz: number; jumlah_salah?: number | null; nilai?: string; student_id: string; tanggal?: string; teacher_id?: string | null; updated_at?: string }
+        Update: { catatan?: string | null; created_at?: string; id?: string; juz?: number; jumlah_salah?: number | null; nilai?: string; student_id?: string; tanggal?: string; teacher_id?: string | null; updated_at?: string }
+        Relationships: [
+          { foreignKeyName: "tasmi_student_id_fkey"; columns: ["student_id"]; isOneToOne: false; referencedRelation: "students"; referencedColumns: ["id"] },
+          { foreignKeyName: "tasmi_teacher_id_fkey"; columns: ["teacher_id"]; isOneToOne: false; referencedRelation: "teachers"; referencedColumns: ["id"] },
+        ]
+      }
+      munaqasyah_periode: {
+        Row: { created_at: string; diumumkan: boolean; id: string; mulai: string; nama: string; selesai: string; tanggal_pelaksanaan: string | null; updated_at: string }
+        Insert: { created_at?: string; diumumkan?: boolean; id?: string; mulai: string; nama: string; selesai: string; tanggal_pelaksanaan?: string | null; updated_at?: string }
+        Update: { created_at?: string; diumumkan?: boolean; id?: string; mulai?: string; nama?: string; selesai?: string; tanggal_pelaksanaan?: string | null; updated_at?: string }
+        Relationships: []
+      }
+      munaqasyah_peserta: {
+        Row: { created_at: string; id: string; juz: number; periode_id: string; student_id: string; sumber: string }
+        Insert: { created_at?: string; id?: string; juz: number; periode_id: string; student_id: string; sumber?: string }
+        Update: { created_at?: string; id?: string; juz?: number; periode_id?: string; student_id?: string; sumber?: string }
+        Relationships: [
+          { foreignKeyName: "munaqasyah_peserta_periode_id_fkey"; columns: ["periode_id"]; isOneToOne: false; referencedRelation: "munaqasyah_periode"; referencedColumns: ["id"] },
+          { foreignKeyName: "munaqasyah_peserta_student_id_fkey"; columns: ["student_id"]; isOneToOne: false; referencedRelation: "students"; referencedColumns: ["id"] },
+        ]
+      }
       rekening_sekolah: {
         Row: { atas_nama: string; bank: string; jenjang: string; nomor: string; updated_at: string }
         Insert: { atas_nama: string; bank: string; jenjang: string; nomor: string; updated_at?: string }
@@ -520,6 +544,8 @@ export type Database = {
       }
     }
     Functions: {
+      hitung_calon_munaqasyah: { Args: { _periode: string }; Returns: number }
+      munaqasyah_diumumkan: { Args: never; Returns: { juz: number; jenjang: string; kelas: string | null; nama: string; periode_id: string; saya: boolean; student_id: string }[] }
       ajukan_pembayaran: { Args: { _bank: string; _bukti_path: string; _hash: string; _nama: string; _tagihan: string; _tanggal: string }; Returns: string }
       putuskan_pembayaran: { Args: { _alasan?: string; _id: string; _setuju: boolean }; Returns: undefined }
       has_role: {

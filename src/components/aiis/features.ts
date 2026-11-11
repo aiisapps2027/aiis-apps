@@ -10,8 +10,8 @@ export const DASHBOARD_FEATURES: Feature[] = [
   { slug: "tahfiz", to: "/ortu/tahfiz", label: "Tahfiz", icon: BookMarked },
   { slug: "murojaah", to: "/ortu/murojaah", label: "Murojaah", icon: RotateCcw },
   { slug: "tahsin", to: "/ortu/tahsin", label: "Tahsin", icon: Mic },
-  { slug: "munaqasyah", label: "Munaqasyah", icon: ClipboardCheck },
-  { slug: "tasmi", label: "Tasmi'", icon: Volume2 },
+  { slug: "munaqasyah", to: "/ortu/munaqasyah", label: "Munaqasyah", icon: ClipboardCheck },
+  { slug: "tasmi", to: "/ortu/tasmi", label: "Tasmi'", icon: Volume2 },
   { slug: "tashih", label: "Tashih", icon: PenLine },
   { slug: "bintang", to: "/ortu/bintang", label: "Bintang", icon: Star },
   { slug: "spp", to: "/ortu/spp", label: "SPP", icon: Wallet },
@@ -39,8 +39,8 @@ export const FEATURE_GROUPS: { title: string; items: Feature[] }[] = [
   {
     title: "Ujian & Kegiatan",
     items: [
-      { slug: "munaqasyah", label: "Munaqasyah", icon: ClipboardCheck },
-      { slug: "tasmi", label: "Tasmi'", icon: Volume2 },
+      { slug: "munaqasyah", to: "/ortu/munaqasyah", label: "Munaqasyah", icon: ClipboardCheck },
+      { slug: "tasmi", to: "/ortu/tasmi", label: "Tasmi'", icon: Volume2 },
       { slug: "tashih", label: "Tashih", icon: PenLine },
     ],
   },
