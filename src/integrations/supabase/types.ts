@@ -180,6 +180,7 @@ export type Database = {
           id: string
           jenis: string
           jilid: string | null
+          jumlah_halaman: number | null
           jumlah_salah: number | null
           juz: number | null
           materi: string | null
@@ -199,6 +200,7 @@ export type Database = {
           id?: string
           jenis: string
           jilid?: string | null
+          jumlah_halaman?: number | null
           jumlah_salah?: number | null
           juz?: number | null
           materi?: string | null
@@ -218,6 +220,7 @@ export type Database = {
           id?: string
           jenis?: string
           jilid?: string | null
+          jumlah_halaman?: number | null
           jumlah_salah?: number | null
           juz?: number | null
           materi?: string | null

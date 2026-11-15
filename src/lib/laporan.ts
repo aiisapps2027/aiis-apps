@@ -34,11 +34,12 @@ export type SectionState = {
   jilid: string;
   halaman: string;
   materi: string;
+  jumlahHalaman: string;
 };
 
 export const emptySection = (): SectionState => ({
   on: false, existingId: null, surahAwal: null, ayatAwal: "", lintas: false, surahAkhir: null, ayatAkhir: "",
-  salah: "", nilai: null, jilid: "", halaman: "", materi: "",
+  salah: "", nilai: null, jilid: "", halaman: "", materi: "", jumlahHalaman: "",
 });
 
 export function sectionFromRow(r: LaporanRow): SectionState {
@@ -55,6 +56,7 @@ export function sectionFromRow(r: LaporanRow): SectionState {
     jilid: r.jilid ?? "",
     halaman: r.halaman?.toString() ?? "",
     materi: r.materi ?? "",
+    jumlahHalaman: r.jumlah_halaman?.toString() ?? "",
   };
 }
 
@@ -84,6 +86,10 @@ export function validateSection(jenis: JenisLaporan, s: SectionState): string | 
     return "Jumlah salah harus angka 0 atau lebih";
   }
   if (!effectiveNilai(s)) return "Pilih nilai (L / L- / TL)";
+  if (jenis === "hafalan_baru" && s.jumlahHalaman.trim() !== "") {
+    const n = Number(s.jumlahHalaman.trim().replace(",", "."));
+    if (!Number.isFinite(n) || n <= 0 || n > 20) return "Jumlah halaman harus angka antara 0,5 dan 20";
+  }
   return validateMaterial(jenis, s);
 }
 
@@ -129,6 +135,7 @@ export function sectionToPayload(
     surah_awal: r.surahAwal, ayat_awal: r.ayatAwal, surah_akhir: r.surahAkhir, ayat_akhir: r.ayatAkhir,
     juz: juzOf(r.surahAwal, r.ayatAwal),
     jilid: null, halaman: null, materi: null,
+    jumlah_halaman: jenis === "hafalan_baru" && s.jumlahHalaman.trim() !== "" ? Math.round(Number(s.jumlahHalaman.trim().replace(",", ".")) * 10) / 10 : null,
   };
 }
 

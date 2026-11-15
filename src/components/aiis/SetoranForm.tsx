@@ -186,6 +186,19 @@ export function SectionCard({ jenis, s, onChange, target }: { jenis: JenisLapora
         <div className="space-y-3 border-t p-4">
           <MaterialFields jenis={jenis} s={s} onChange={(patch) => set(patch)} />
 
+          {jenis === "hafalan_baru" && (
+            <div>
+              <Label>Jumlah halaman (opsional)</Label>
+              <div className="mt-1 flex flex-wrap gap-2">
+                {["0,5", "1", "1,5", "2", "3"].map((v) => (
+                  <button key={v} type="button" onClick={() => set({ jumlahHalaman: s.jumlahHalaman === v ? "" : v })}
+                    className={`h-10 min-w-12 rounded-xl border px-3 text-sm font-semibold ${s.jumlahHalaman === v ? "border-brand bg-brand text-white" : "bg-background"}`}>{v}</button>
+                ))}
+                <Input inputMode="decimal" placeholder="lainnya" value={["0,5", "1", "1,5", "2", "3"].includes(s.jumlahHalaman) ? "" : s.jumlahHalaman} onChange={(e) => set({ jumlahHalaman: e.target.value })} className="h-10 w-24 rounded-xl" />
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">1 bintang tiap 1 halaman (nilai L / L-). Kosongkan = dihitung otomatis dari ayat.</p>
+            </div>
+          )}
           <div>
             <Label className="mb-1 block">Nilai</Label>
             <NilaiPicker value={nilai} onChange={(v) => set({ nilai: v, salah: "" })} />
