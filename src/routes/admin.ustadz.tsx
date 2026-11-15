@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { Plus, Copy, RefreshCw, Pencil, Trash2, MessageCircle, Loader2 } from "lucide-react";
+import { Plus, Search, Copy, RefreshCw, Pencil, Trash2, MessageCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/aiis/StaffShell";
@@ -30,6 +30,7 @@ function waLink(t: Teacher) {
 function AdminUstadz() {
   const qc = useQueryClient();
   const [edit, setEdit] = useState<Partial<Teacher> | null>(null);
+  const [cari, setCari] = useState("");
   const [gender, setGender] = useState<"semua" | "L" | "P">("semua");
   const regen = useServerFn(regenerateTeacherKode);
   const del = useServerFn(deletePerson);
@@ -47,7 +48,8 @@ function AdminUstadz() {
   const refresh = () => qc.invalidateQueries({ queryKey: ["admin-ustadz"] });
   const jumlahL = (data ?? []).filter((t) => t.jenis_kelamin === "L").length;
   const jumlahP = (data ?? []).filter((t) => t.jenis_kelamin === "P").length;
-  const list = (data ?? []).filter((t) => gender === "semua" || t.jenis_kelamin === gender);
+  const q = cari.trim().toLowerCase();
+  const list = (data ?? []).filter((t) => (gender === "semua" || t.jenis_kelamin === gender) && (!q || t.nama.toLowerCase().includes(q)));
   const chips: { key: "semua" | "L" | "P"; label: string; n: number }[] = [
     { key: "semua", label: "Semua", n: data?.length ?? 0 },
     { key: "L", label: "Ustadz", n: jumlahL },
@@ -61,7 +63,13 @@ function AdminUstadz() {
         subtitle={`${data?.length ?? 0} pengajar • ${jumlahL} ustadz • ${jumlahP} ustadzah`}
         action={<Button variant="secondary" className="rounded-xl lg:bg-primary lg:text-primary-foreground" onClick={() => setEdit({ jenis_kelamin: "L", aktif: true })}><Plus className="mr-1 h-4 w-4" /> Tambah</Button>}
       />
-      <div className="flex flex-wrap gap-2 px-4 pt-4 lg:px-8">
+      <div className="px-4 pt-4 lg:px-8">
+        <div className="relative max-w-md">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input value={cari} onChange={(e) => setCari(e.target.value)} placeholder="Cari nama ustadz / ustadzah" className="h-11 rounded-xl pl-9" />
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-2 px-4 pt-3 lg:px-8">
         {chips.map((c) => (
           <button key={c.key} type="button" onClick={() => setGender(c.key)}
             className={`rounded-full border px-4 py-1.5 text-sm font-semibold ${gender === c.key ? "border-primary bg-primary text-primary-foreground" : "bg-card"}`}>
@@ -70,6 +78,7 @@ function AdminUstadz() {
         ))}
       </div>
       <div className="grid gap-3 p-4 md:grid-cols-2 lg:px-8 xl:grid-cols-3">
+        {list.length === 0 && <p className="col-span-full py-8 text-center text-sm text-muted-foreground">Tidak ada yang cocok.</p>}
         {list.map((t) => (
           <div key={t.id} className="rounded-2xl bg-card p-4 shadow-soft">
             <div className="flex items-center gap-3">
