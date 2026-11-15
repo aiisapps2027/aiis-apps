@@ -30,6 +30,7 @@ function waLink(t: Teacher) {
 function AdminUstadz() {
   const qc = useQueryClient();
   const [edit, setEdit] = useState<Partial<Teacher> | null>(null);
+  const [gender, setGender] = useState<"semua" | "L" | "P">("semua");
   const regen = useServerFn(regenerateTeacherKode);
   const del = useServerFn(deletePerson);
   const { data } = useQuery({
@@ -44,16 +45,32 @@ function AdminUstadz() {
     },
   });
   const refresh = () => qc.invalidateQueries({ queryKey: ["admin-ustadz"] });
+  const jumlahL = (data ?? []).filter((t) => t.jenis_kelamin === "L").length;
+  const jumlahP = (data ?? []).filter((t) => t.jenis_kelamin === "P").length;
+  const list = (data ?? []).filter((t) => gender === "semua" || t.jenis_kelamin === gender);
+  const chips: { key: "semua" | "L" | "P"; label: string; n: number }[] = [
+    { key: "semua", label: "Semua", n: data?.length ?? 0 },
+    { key: "L", label: "Ustadz", n: jumlahL },
+    { key: "P", label: "Ustadzah", n: jumlahP },
+  ];
 
   return (
     <div>
       <PageHeader
         title="Ustadz / Ustadzah"
-        subtitle={`${data?.length ?? 0} pengajar`}
+        subtitle={`${data?.length ?? 0} pengajar • ${jumlahL} ustadz • ${jumlahP} ustadzah`}
         action={<Button variant="secondary" className="rounded-xl lg:bg-primary lg:text-primary-foreground" onClick={() => setEdit({ jenis_kelamin: "L", aktif: true })}><Plus className="mr-1 h-4 w-4" /> Tambah</Button>}
       />
+      <div className="flex flex-wrap gap-2 px-4 pt-4 lg:px-8">
+        {chips.map((c) => (
+          <button key={c.key} type="button" onClick={() => setGender(c.key)}
+            className={`rounded-full border px-4 py-1.5 text-sm font-semibold ${gender === c.key ? "border-primary bg-primary text-primary-foreground" : "bg-card"}`}>
+            {c.label} ({c.n})
+          </button>
+        ))}
+      </div>
       <div className="grid gap-3 p-4 md:grid-cols-2 lg:px-8 xl:grid-cols-3">
-        {data?.map((t) => (
+        {list.map((t) => (
           <div key={t.id} className="rounded-2xl bg-card p-4 shadow-soft">
             <div className="flex items-center gap-3">
               <Avatar name={t.nama} url={t.foto_url} size={44} />
