@@ -143,7 +143,7 @@ export function BintangPage() {
             <p className="text-4xl font-extrabold text-primary">{isLoading ? "–" : total}</p>
           </div>
         </section>
-        <p className="text-xs text-muted-foreground">Ananda mendapat 1 bintang setiap berhasil menyetor 1 halaman (hafalan baru atau tahsin, nilai L atau L-).</p>
+        <p className="text-xs text-muted-foreground">Ananda mendapat 1 bintang setiap berhasil menyetor 1 halaman Al-Qur'an baru (nilai L atau L-).</p>
         <section>
           <h2 className="mb-2 font-bold">Riwayat Bintang</h2>
           {data && data.length === 0 && <p className="rounded-2xl bg-card p-5 text-center text-sm text-muted-foreground shadow-soft">Belum ada bintang.</p>}
