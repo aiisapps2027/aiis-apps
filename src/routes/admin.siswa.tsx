@@ -346,10 +346,8 @@ function ImportDialog({ open, onOpenChange, onDone }: { open: boolean; onOpenCha
       const seen = validateRow(r);
       return { ...r, _err: seen };
     });
-    const phones = new Map<string, number>(), nisns = new Map<string, number>();
+    const nisns = new Map<string, number>();
     parsed.forEach((r: any) => {
-      const p = normalizePhone(r.no_hp ?? "");
-      if (phones.has(p)) r._err.push("No. HP ganda di file"); else phones.set(p, 1);
       if (nisns.has(r.nisn)) r._err.push("NISN ganda di file"); else nisns.set(r.nisn, 1);
     });
     setRows(parsed);

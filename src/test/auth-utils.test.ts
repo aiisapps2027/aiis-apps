@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { generateKode, isValidNisn, namesMatch, normalizePhone, ortuEmail } from "@/lib/auth-utils";
+import { generateKode, isValidNisn, namesMatch, normalizePhone, ortuEmail, ortuEmailLama } from "@/lib/auth-utils";
 
 describe("login identities", () => {
   it("normalizes phone numbers to 62 format", () => {
@@ -7,8 +7,10 @@ describe("login identities", () => {
     expect(normalizePhone("+62 812 3456 7890")).toBe("6281234567890");
     expect(normalizePhone("81234567890")).toBe("6281234567890");
   });
-  it("builds the parent email from the phone", () => {
-    expect(ortuEmail("08123456789")).toBe("628123456789@ortu.aiis.app");
+  it("builds the parent email from phone + NISN so siblings can share a phone", () => {
+    expect(ortuEmail("08123456789", "123456789")).toBe("628123456789.123456789@ortu.aiis.app");
+    expect(ortuEmail("08123456789", "123456789")).not.toBe(ortuEmail("08123456789", "987654321"));
+    expect(ortuEmailLama("08123456789")).toBe("628123456789@ortu.aiis.app");
   });
   it("matches student names ignoring case and extra spaces", () => {
     expect(namesMatch("  ahmad   FADLI ", "Ahmad Fadli")).toBe(true);

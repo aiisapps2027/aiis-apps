@@ -21,7 +21,10 @@ export function namesMatch(a: string, b: string): boolean {
   return normalizeName(a) === normalizeName(b) && normalizeName(a).length > 0;
 }
 
-export const ortuEmail = (phone: string) => `${normalizePhone(phone)}@${ORTU_DOMAIN}`;
+/** Parent login identity: phone + NISN, so siblings can share one phone number. */
+export const ortuEmail = (phone: string, nisn: string) => `${normalizePhone(phone)}.${nisn.trim()}@${ORTU_DOMAIN}`;
+/** Older accounts were created from the phone number alone; login still falls back to this. */
+export const ortuEmailLama = (phone: string) => `${normalizePhone(phone)}@${ORTU_DOMAIN}`;
 export const ustadzEmail = (kode: string) => `${kode.trim().toLowerCase()}@${USTADZ_DOMAIN}`;
 
 const KODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no I, O, 0, 1

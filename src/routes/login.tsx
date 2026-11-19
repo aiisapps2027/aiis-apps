@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MosqueSilhouette, Wave } from "@/components/aiis/decor";
 import { supabase } from "@/integrations/supabase/client";
-import { namesMatch, ortuEmail, ustadzEmail } from "@/lib/auth-utils";
+import { namesMatch, ortuEmail, ortuEmailLama, ustadzEmail } from "@/lib/auth-utils";
 import { getCurrentRole, homeFor } from "@/lib/session";
 
 export const Route = createFileRoute("/login")({
@@ -46,7 +46,9 @@ function LoginPage() {
     setBusy(true);
     try {
       if (mode === "ortu") {
-        const { error } = await supabase.auth.signInWithPassword({ email: ortuEmail(f.hp), password: f.nisn.trim() });
+        const pw = f.nisn.trim();
+        let { error } = await supabase.auth.signInWithPassword({ email: ortuEmail(f.hp, pw), password: pw });
+        if (error) ({ error } = await supabase.auth.signInWithPassword({ email: ortuEmailLama(f.hp), password: pw }));
         if (error) throw new Error(GENERIC);
         const { data: s } = await supabase.from("students").select("nama").limit(1).maybeSingle();
         if (!s || !namesMatch(s.nama, f.nama)) {

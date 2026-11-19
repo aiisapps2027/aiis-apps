@@ -44,7 +44,7 @@ export type StudentInput = z.infer<typeof studentSchema>;
 
 async function insertStudent(admin: any, s: StudentInput) {
   const phone = normalizePhone(s.no_hp);
-  const uid = await createAuthUser(admin, ortuEmail(phone), s.nisn, "ortu");
+  const uid = await createAuthUser(admin, ortuEmail(phone, s.nisn), s.nisn, "ortu");
   const { error } = await admin.from("students").insert({
     ...s,
     no_hp: phone,
@@ -54,7 +54,7 @@ async function insertStudent(admin: any, s: StudentInput) {
   });
   if (error) {
     await admin.auth.admin.deleteUser(uid);
-    throw new Error(error.message.includes("duplicate") ? "NISN atau No. HP sudah terdaftar" : error.message);
+    throw new Error(error.message.includes("duplicate") ? "NISN sudah terdaftar" : error.message);
   }
 }
 
@@ -98,10 +98,10 @@ export const updateStudent = createServerFn({ method: "POST" })
       .from("students")
       .update({ ...rest, no_hp: phone, nis: rest.nis || null, halaqah_id: rest.halaqah_id || null })
       .eq("id", id);
-    if (error) throw new Error(error.message.includes("duplicate") ? "NISN atau No. HP sudah terdaftar" : error.message);
+    if (error) throw new Error(error.message.includes("duplicate") ? "NISN sudah terdaftar" : error.message);
     if (cur?.user_id) {
       await admin.auth.admin.updateUserById(cur.user_id, {
-        email: ortuEmail(phone),
+        email: ortuEmail(phone, rest.nisn),
         password: rest.nisn,
         email_confirm: true,
         ban_duration: rest.aktif ? "none" : "876000h",
@@ -120,14 +120,14 @@ export const resetStudentLogin = createServerFn({ method: "POST" })
     if (!s) throw new Error("Siswa tidak ditemukan");
     if (s.user_id) {
       const { error } = await admin.auth.admin.updateUserById(s.user_id, {
-        email: ortuEmail(s.no_hp),
+        email: ortuEmail(s.no_hp, s.nisn),
         password: s.nisn,
         email_confirm: true,
         ban_duration: "none",
       });
       if (!error) return { ok: true };
     }
-    const uid = await createAuthUser(admin, ortuEmail(s.no_hp), s.nisn, "ortu");
+    const uid = await createAuthUser(admin, ortuEmail(s.no_hp, s.nisn), s.nisn, "ortu");
     await admin.from("students").update({ user_id: uid }).eq("id", s.id);
     return { ok: true };
   });
