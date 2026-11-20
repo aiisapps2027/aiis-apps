@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Loader2, Plus, X } from "lucide-react";
 import { toast } from "sonner";
@@ -20,6 +21,12 @@ export function EskulDialog({ value, existing, onClose, onSaved }: { value: Part
   const [aktif, setAktif] = useState(value.aktif ?? true);
   const [slots, setSlots] = useState<Slot[]>(sortJadwal(value.eskul_jadwal ?? []).map((j) => ({ hari: String(j.hari), mulai: j.jam_mulai.slice(0, 5), selesai: j.jam_selesai.slice(0, 5), tempat: j.tempat ?? "" })));
   const [busy, setBusy] = useState(false);
+  // Suggestions for "Pengajar": all ustadz/ustadzah plus pengajar already used by other eskul (e.g. outside coaches).
+  const { data: guru } = useQuery({
+    queryKey: ["eskul-saran-pengajar"],
+    queryFn: async () => (await supabase.from("teachers").select("nama").eq("aktif", true).order("nama")).data?.map((t) => t.nama) ?? [],
+  });
+  const saran = [...new Set([...(guru ?? []), ...existing.map((e) => e.pengajar ?? "")].map((n) => n.trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   const setSlot = (i: number, patch: Partial<Slot>) => setSlots((s) => s.map((x, k) => (k === i ? { ...x, ...patch } : x)));
 
   async function save() {
@@ -65,10 +72,12 @@ export function EskulDialog({ value, existing, onClose, onSaved }: { value: Part
         <DialogHeader><DialogTitle>{value.id ? "Ubah Eskul" : "Tambah Eskul"}</DialogTitle></DialogHeader>
         <div className="space-y-3">
           <div><Label>Nama eskul</Label><Input value={nama} onChange={(e) => setNama(e.target.value)} placeholder="mis. Panahan" /></div>
-          <div><Label>Pengajar</Label><Input value={pengajar} onChange={(e) => setPengajar(e.target.value)} placeholder="Nama pelatih / ustadz / ustadzah" /></div>
+          <div><Label>Pengajar</Label><Input list="saran-pengajar" autoComplete="off" value={pengajar} onChange={(e) => setPengajar(e.target.value)} placeholder="Ketik nama, pilih dari saran" />
+            <datalist id="saran-pengajar">{saran.map((n) => <option key={n} value={n} />)}</datalist>
+          </div>
           <div><Label>Keterangan (opsional)</Label><Input value={deskripsi} onChange={(e) => setDeskripsi(e.target.value)} /></div>
           <div className="space-y-2">
-            <Label>Jadwal</Label>
+            <Label className="block">Jadwal</Label>
             {slots.map((s, i) => (
               <div key={i} className="space-y-2 rounded-xl bg-muted/60 p-3">
                 <div className="flex items-center gap-2">
