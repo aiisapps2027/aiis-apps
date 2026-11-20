@@ -1,7 +1,9 @@
 import { queryOptions } from "@tanstack/react-query";
 
-/** Per-ayat recitation used everywhere: Misyari Rasyid Al-Afasi (equran.id qari "05"). */
-export const QARI = "05";
+/** Per-ayat recitation used everywhere: Syaikh Mahmoud Khalil Al-Husary (murattal), served by everyayah.com. */
+export const QARI_FOLDER = "Husary_128kbps";
+export const audioUrl = (surah: number, ayat: number) =>
+  `https://everyayah.com/data/${QARI_FOLDER}/${String(surah).padStart(3, "0")}${String(ayat).padStart(3, "0")}.mp3`;
 export const BISMILLAH = "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ";
 
 export type Ayat = { n: number; arab: string; latin: string; indo: string; audio: string | null };
@@ -24,7 +26,7 @@ const ref = (r: ApiRef): SurahRef | null => (r ? { no: r.nomor, latin: r.namaLat
 export function mapSurahDetail(d: ApiSurah): SurahDetail {
   return {
     no: d.nomor, latin: d.namaLatin, arab: d.nama, arti: d.arti, tempatTurun: d.tempatTurun, jumlahAyat: d.jumlahAyat,
-    ayat: d.ayat.map((a) => ({ n: a.nomorAyat, arab: a.teksArab, latin: strip(a.teksLatin), indo: strip(a.teksIndonesia), audio: a.audio?.[QARI] ?? null })),
+    ayat: d.ayat.map((a) => ({ n: a.nomorAyat, arab: a.teksArab, latin: strip(a.teksLatin), indo: strip(a.teksIndonesia), audio: audioUrl(d.nomor, a.nomorAyat) })),
     prev: ref(d.suratSebelumnya),
     next: ref(d.suratSelanjutnya),
   };

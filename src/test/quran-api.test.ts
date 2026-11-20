@@ -4,21 +4,17 @@ import { hafalAyatInSurah, hafalCountBySurah, rangesFromLaporan } from "@/lib/ha
 
 const api: ApiSurah = {
   nomor: 1, nama: "الفاتحة", namaLatin: "Al-Fatihah", jumlahAyat: 7, tempatTurun: "Mekah", arti: "Pembukaan",
-  ayat: [{ nomorAyat: 1, teksArab: "بِسْمِ", teksLatin: "Bismillāh", teksIndonesia: "Dengan nama Allah<sup>1</sup>", audio: { "01": "a.mp3", "05": "afasy.mp3" } }],
+  ayat: [{ nomorAyat: 1, teksArab: "بِسْمِ", teksLatin: "Bismillāh", teksIndonesia: "Dengan nama Allah<sup>1</sup>" }],
   suratSebelumnya: false,
   suratSelanjutnya: { nomor: 2, namaLatin: "Al-Baqarah" },
 };
 
 describe("mapSurahDetail", () => {
-  it("maps fields, picks the Al-Afasy audio and strips HTML", () => {
+  it("maps fields, uses the Husary audio and strips HTML", () => {
     const d = mapSurahDetail(api);
     expect(d).toMatchObject({ no: 1, latin: "Al-Fatihah", jumlahAyat: 7, prev: null, next: { no: 2, latin: "Al-Baqarah" } });
-    expect(d.ayat[0]).toEqual({ n: 1, arab: "بِسْمِ", latin: "Bismillāh", indo: "Dengan nama Allah1", audio: "afasy.mp3" });
-  });
-  it("tolerates a missing audio map", () => {
-    const first = api.ayat[0]!;
-    const d = mapSurahDetail({ ...api, ayat: [{ nomorAyat: first.nomorAyat, teksArab: first.teksArab, teksLatin: first.teksLatin, teksIndonesia: first.teksIndonesia }] });
-    expect(d.ayat[0]!.audio).toBeNull();
+    expect(d.ayat[0]).toEqual({ n: 1, arab: "بِسْمِ", latin: "Bismillāh", indo: "Dengan nama Allah1", audio: "https://everyayah.com/data/Husary_128kbps/001001.mp3" });
+    expect(mapSurahDetail({ ...api, nomor: 114, ayat: [{ ...api.ayat[0]!, nomorAyat: 6 }] }).ayat[0]!.audio).toBe("https://everyayah.com/data/Husary_128kbps/114006.mp3");
   });
 });
 
