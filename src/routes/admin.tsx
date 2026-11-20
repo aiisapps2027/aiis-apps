@@ -27,12 +27,12 @@ function AdminLayout() {
     <StaffShell
       area="Admin Sekolah"
       nav={[
-        { to: "/admin", label: "Dasbor", icon: LayoutDashboard, exact: true },
-        { to: "/admin/siswa", label: "Siswa", icon: GraduationCap },
+        { to: "/admin", label: "Dasbor", icon: LayoutDashboard, exact: true, utama: true },
+        { to: "/admin/siswa", label: "Siswa", icon: GraduationCap, utama: true },
         { to: "/admin/ustadz", label: "Ustadz", icon: UserCog },
         { to: "/admin/halaqah", label: "Halaqah", icon: Users },
-        { to: "/admin/spp", label: "SPP", icon: Wallet, ...(menunggu ? { badge: menunggu } : {}) },
-        { to: "/admin/munaqasyah", label: "Munaqasyah", icon: ClipboardCheck, ...(calon ? { badge: calon } : {}) },
+        { to: "/admin/spp", label: "SPP", icon: Wallet, utama: true, ...(menunggu ? { badge: menunggu } : {}) },
+        { to: "/admin/munaqasyah", label: "Munaqasyah", icon: ClipboardCheck, utama: true, ...(calon ? { badge: calon } : {}) },
         { to: "/admin/eskul", label: "Eskul", icon: Trophy },
         { to: "/admin/pengumuman", label: "Info", icon: Megaphone },
       ]}

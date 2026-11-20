@@ -1,11 +1,16 @@
 import { Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { LogOut, type LucideIcon } from "lucide-react";
+import { LayoutGrid, LogOut, type LucideIcon } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import logo from "@/assets/logo.png";
 import { signOut } from "@/lib/session";
 import { InstallPrompt } from "@/components/aiis/InstallPrompt";
 
-export type NavItem = { to: string; label: string; icon: LucideIcon; exact?: boolean; badge?: number };
+export type NavItem = { to: string; label: string; icon: LucideIcon; exact?: boolean; badge?: number; utama?: boolean };
+
+/** Mobile bottom bar shows at most this many tabs; with more items the rest move into a "Menu" sheet. */
+const MAX_TABS = 4;
 
 function Badge({ n }: { n?: number | undefined }) {
   return n ? <span aria-label={`${n} menunggu`} className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-white">{n > 99 ? "99+" : n}</span> : null;
@@ -15,6 +20,13 @@ function Badge({ n }: { n?: number | undefined }) {
 export function StaffShell({ nav, area }: { nav: NavItem[]; area: string }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const [menuOpen, setMenuOpen] = useState(false);
+  // Few items: show them all. Many items: the marked (or first) ones as tabs, the rest inside "Menu".
+  const banyak = nav.length > MAX_TABS + 1;
+  const utama = nav.filter((n) => n.utama);
+  const tabs = banyak ? (utama.length ? utama : nav).slice(0, MAX_TABS) : nav;
+  const lainnya = banyak ? nav.filter((n) => !tabs.includes(n)) : [];
+  const lainnyaBadge = lainnya.reduce((t, n) => t + (n.badge ?? 0), 0);
   const logout = async () => {
     await signOut(qc);
     navigate({ to: "/login", replace: true });
@@ -51,9 +63,9 @@ export function StaffShell({ nav, area }: { nav: NavItem[]; area: string }) {
       </main>
       <nav
         className="fixed bottom-0 left-0 right-0 z-30 grid border-t bg-card lg:hidden"
-        style={{ gridTemplateColumns: `repeat(${nav.length + 1}, minmax(0, 1fr))` }}
+        style={{ gridTemplateColumns: `repeat(${tabs.length + 1}, minmax(0, 1fr))` }}
       >
-        {nav.map((n) => (
+        {tabs.map((n) => (
           <Link
             key={n.to}
             to={n.to}
@@ -65,10 +77,38 @@ export function StaffShell({ nav, area }: { nav: NavItem[]; area: string }) {
             {n.label}
           </Link>
         ))}
-        <button onClick={logout} className="flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium text-muted-foreground">
-          <LogOut className="h-5 w-5" /> Keluar
-        </button>
+        {lainnya.length > 0 ? (
+          <button onClick={() => setMenuOpen(true)} className="flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium text-muted-foreground">
+            <span className="relative"><LayoutGrid className="h-5 w-5" /><Badge n={lainnyaBadge || undefined} /></span>
+            Menu
+          </button>
+        ) : (
+          <button onClick={logout} className="flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium text-muted-foreground">
+            <LogOut className="h-5 w-5" /> Keluar
+          </button>
+        )}
       </nav>
+      <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+        <SheetContent side="bottom" className="rounded-t-3xl pb-8">
+          <SheetHeader><SheetTitle>Menu</SheetTitle></SheetHeader>
+          <div className="mt-4 grid grid-cols-3 gap-3">
+            {lainnya.map((n) => (
+              <Link
+                key={n.to}
+                to={n.to}
+                onClick={() => setMenuOpen(false)}
+                className="flex flex-col items-center gap-2 rounded-2xl bg-muted/60 px-2 py-4 text-center text-xs font-semibold"
+              >
+                <span className="relative"><n.icon className="h-6 w-6 text-primary" /><Badge n={n.badge} /></span>
+                {n.label}
+              </Link>
+            ))}
+            <button onClick={logout} className="flex flex-col items-center gap-2 rounded-2xl bg-muted/60 px-2 py-4 text-center text-xs font-semibold text-destructive">
+              <LogOut className="h-6 w-6" /> Keluar
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
       <InstallPrompt />
     </div>
   );
