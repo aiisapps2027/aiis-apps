@@ -26,7 +26,11 @@ export function EskulDialog({ value, existing, onClose, onSaved }: { value: Part
     queryKey: ["eskul-saran-pengajar"],
     queryFn: async () => (await supabase.from("teachers").select("nama").eq("aktif", true).order("nama")).data?.map((t) => t.nama) ?? [],
   });
+  const [saranBuka, setSaranBuka] = useState(false);
   const saran = [...new Set([...(guru ?? []), ...existing.map((e) => e.pengajar ?? "")].map((n) => n.trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  // Only suggest once something is typed; hide when the field already holds exactly a suggestion.
+  const ketik = normalizeName(pengajar);
+  const cocok = ketik ? saran.filter((n) => normalizeName(n).includes(ketik) && normalizeName(n) !== ketik).slice(0, 5) : [];
   const setSlot = (i: number, patch: Partial<Slot>) => setSlots((s) => s.map((x, k) => (k === i ? { ...x, ...patch } : x)));
 
   async function save() {
@@ -72,8 +76,18 @@ export function EskulDialog({ value, existing, onClose, onSaved }: { value: Part
         <DialogHeader><DialogTitle>{value.id ? "Ubah Eskul" : "Tambah Eskul"}</DialogTitle></DialogHeader>
         <div className="space-y-3">
           <div><Label>Nama eskul</Label><Input value={nama} onChange={(e) => setNama(e.target.value)} placeholder="mis. Panahan" /></div>
-          <div><Label>Pengajar</Label><Input list="saran-pengajar" autoComplete="off" value={pengajar} onChange={(e) => setPengajar(e.target.value)} placeholder="Ketik nama, pilih dari saran" />
-            <datalist id="saran-pengajar">{saran.map((n) => <option key={n} value={n} />)}</datalist>
+          <div><Label>Pengajar</Label><Input autoComplete="off" value={pengajar} onChange={(e) => { setPengajar(e.target.value); setSaranBuka(true); }} onBlur={() => setTimeout(() => setSaranBuka(false), 150)} placeholder="Nama pelatih / ustadz / ustadzah" />
+            {saranBuka && cocok.length > 0 && (
+              <ul className="mt-1 overflow-hidden rounded-xl border bg-card shadow-soft">
+                {cocok.map((n) => (
+                  <li key={n}>
+                    <button type="button" className="w-full px-3 py-2.5 text-left text-sm hover:bg-muted active:bg-muted" onMouseDown={(e) => e.preventDefault()} onClick={() => { setPengajar(n); setSaranBuka(false); }}>
+                      {n}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           <div><Label>Keterangan (opsional)</Label><Input value={deskripsi} onChange={(e) => setDeskripsi(e.target.value)} /></div>
           <div className="space-y-2">
