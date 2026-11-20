@@ -1,4 +1,5 @@
--- Eskul (extracurricular): admin manages everything; ustadz may enrol/remove students of their own halaqah; parents read only.
+-- Eskul (extracurricular): admin manages everything (incl. deleting eskul); ustadz may add/edit eskul and schedules and enrol/remove
+-- students of their own halaqah; parents read only.
 
 CREATE TABLE public.eskul (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -50,11 +51,16 @@ ALTER TABLE public.eskul_peserta ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admin manage eskul" ON public.eskul FOR ALL TO authenticated
   USING (public.has_role(auth.uid(), 'admin')) WITH CHECK (public.has_role(auth.uid(), 'admin'));
 CREATE POLICY "Teacher reads eskul" ON public.eskul FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'ustadz'));
+CREATE POLICY "Teacher adds eskul" ON public.eskul FOR INSERT TO authenticated WITH CHECK (public.has_role(auth.uid(), 'ustadz'));
+CREATE POLICY "Teacher edits eskul" ON public.eskul FOR UPDATE TO authenticated
+  USING (public.has_role(auth.uid(), 'ustadz')) WITH CHECK (public.has_role(auth.uid(), 'ustadz'));
 CREATE POLICY "Parent reads own eskul" ON public.eskul FOR SELECT TO authenticated USING (public.eskul_saya(id));
 
 CREATE POLICY "Admin manage eskul_jadwal" ON public.eskul_jadwal FOR ALL TO authenticated
   USING (public.has_role(auth.uid(), 'admin')) WITH CHECK (public.has_role(auth.uid(), 'admin'));
 CREATE POLICY "Teacher reads eskul_jadwal" ON public.eskul_jadwal FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'ustadz'));
+CREATE POLICY "Teacher manages eskul_jadwal" ON public.eskul_jadwal FOR ALL TO authenticated
+  USING (public.has_role(auth.uid(), 'ustadz')) WITH CHECK (public.has_role(auth.uid(), 'ustadz'));
 CREATE POLICY "Parent reads own eskul_jadwal" ON public.eskul_jadwal FOR SELECT TO authenticated USING (public.eskul_saya(eskul_id));
 
 CREATE POLICY "Admin manage eskul_peserta" ON public.eskul_peserta FOR ALL TO authenticated
