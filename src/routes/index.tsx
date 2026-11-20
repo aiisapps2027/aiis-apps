@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import logo from "@/assets/logo.png";
-import { MosqueSilhouette, Wave } from "@/components/aiis/decor";
+import { Wave } from "@/components/aiis/decor";
 import { getCurrentRole, homeFor } from "@/lib/session";
 
 export const Route = createFileRoute("/")({
@@ -33,7 +33,6 @@ function Splash() {
       <p className="mt-1 font-semibold text-primary">Akhyar International Islamic School</p>
       <p className="mt-6 text-sm font-medium text-foreground">Aplikasi Resmi Sekolah</p>
       <p className="mt-2 text-xs text-muted-foreground">Tahfiz • Tahsin • Akademik • Keuangan</p>
-      <MosqueSilhouette className="absolute bottom-16 left-0 w-full opacity-30" />
       <Wave className="absolute bottom-0 left-0 h-28 w-full" />
     </div>
   );

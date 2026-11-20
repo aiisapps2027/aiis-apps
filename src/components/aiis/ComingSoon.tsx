@@ -1,5 +1,5 @@
 import { Hourglass } from "lucide-react";
-import { ScreenHeader, MosqueSilhouette } from "@/components/aiis/decor";
+import { ScreenHeader } from "@/components/aiis/decor";
 
 export function ComingSoon({ title, back = true }: { title: string; back?: boolean }) {
   return (
@@ -11,7 +11,6 @@ export function ComingSoon({ title, back = true }: { title: string; back?: boole
         </div>
         <h2 className="mt-5 text-xl font-bold text-primary">Segera Hadir</h2>
         <p className="mt-2 text-sm text-muted-foreground">Fitur {title} sedang kami siapkan. Insya Allah segera dapat digunakan.</p>
-        <MosqueSilhouette className="mt-10 w-56 opacity-40" />
       </div>
     </div>
   );

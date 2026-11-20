@@ -4,23 +4,6 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { useAvatarUrl } from "@/lib/avatar";
 
-export function MosqueSilhouette({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 400 160" className={cn("text-brand-soft", className)} fill="currentColor" aria-hidden>
-      <rect x="40" y="40" width="10" height="110" rx="2" />
-      <path d="M45 18 l6 22 h-12z" />
-      <rect x="350" y="40" width="10" height="110" rx="2" />
-      <path d="M355 18 l6 22 h-12z" />
-      <path d="M120 150 V100 a80 70 0 0 1 160 0 V150z" />
-      <path d="M200 20 c-3 8 -3 12 0 14 c3 -2 3 -6 0 -14z" />
-      <rect x="196" y="30" width="8" height="8" />
-      <path d="M80 150 V115 a30 28 0 0 1 60 0 V150z" />
-      <path d="M260 150 V115 a30 28 0 0 1 60 0 V150z" />
-      <rect x="0" y="146" width="400" height="14" />
-    </svg>
-  );
-}
-
 export function Wave({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 400 120" preserveAspectRatio="none" className={className} aria-hidden>

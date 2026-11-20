@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MosqueSilhouette, Wave } from "@/components/aiis/decor";
+import { Wave } from "@/components/aiis/decor";
 import { supabase } from "@/integrations/supabase/client";
 import { namesMatch, ortuEmail, ortuEmailLama, ustadzEmail } from "@/lib/auth-utils";
 import { getCurrentRole, homeFor } from "@/lib/session";
@@ -125,7 +125,6 @@ function LoginPage() {
         <p className="pt-2 text-center text-xs text-muted-foreground">Belum punya akun? Hubungi sekolah</p>
       </form>
 
-      <MosqueSilhouette className="absolute bottom-14 left-0 w-full opacity-25" />
       <Wave className="absolute bottom-0 left-0 h-24 w-full" />
     </div>
   );
