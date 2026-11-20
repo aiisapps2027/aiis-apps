@@ -4,6 +4,7 @@ import { ChevronRight, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { IconTile } from "@/components/aiis/decor";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TopPekanan } from "@/components/aiis/TopPekanan";
 
 export const Route = createFileRoute("/ustadz/")({ component: UstadzHome });
 
@@ -45,6 +46,7 @@ function UstadzHome() {
           ))}
         </div>
         {data && data.halaqah.length === 0 && <p className="text-sm text-muted-foreground">Belum ada halaqah yang ditugaskan.</p>}
+        <TopPekanan className="mt-6" />
       </div>
     </div>
   );

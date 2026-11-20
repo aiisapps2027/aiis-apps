@@ -4,6 +4,7 @@ import { GraduationCap, Baby, School, UserCog, Users, Smile, Shapes } from "luci
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/aiis/StaffShell";
 import { IconTile } from "@/components/aiis/decor";
+import { TopPekanan } from "@/components/aiis/TopPekanan";
 
 export const Route = createFileRoute("/admin/")({ component: AdminHome });
 
@@ -45,6 +46,7 @@ function AdminHome() {
             </Link>
           ))}
         </div>
+        <TopPekanan className="max-w-xl" />
       </div>
     </div>
   );

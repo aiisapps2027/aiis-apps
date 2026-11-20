@@ -13,6 +13,7 @@ import { formatTanggal, todayJakarta } from "@/lib/laporan";
 import { JENIS_LABEL, JENIS_ORDER, type Nilai } from "@/lib/nilai";
 import { bintangQuery, catatanQuery, laporanQuery } from "@/lib/ortu-queries";
 import { useTileBadge } from "@/lib/badges";
+import { TopPekanan } from "@/components/aiis/TopPekanan";
 import { eskulSayaQuery, pengingatEskul, rentangJam } from "@/lib/eskul";
 
 export const Route = createFileRoute("/ortu/")({ component: Dashboard });
@@ -84,6 +85,8 @@ function Dashboard() {
             ))}
           </Link>
         )}
+
+        {s && <TopPekanan className="mt-5" />}
 
         {s && (
           <section className="mt-5 rounded-2xl bg-card p-4 shadow-soft">

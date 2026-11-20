@@ -570,6 +570,7 @@ export type Database = {
       }
     }
     Functions: {
+      top_bintang_pekan: { Args: never; Returns: { jenjang: string; jumlah: number; kelas: string | null; mulai: string; nama: string; pekan: string; peringkat: number; saya: boolean; selesai: string }[] }
       munaqasyah_diumumkan: { Args: never; Returns: { jenjang: string; juz: number; kelas: string | null; mulai: string; nama: string; periode_id: string; periode_nama: string; saya: boolean; student_id: string; tanggal_pelaksanaan: string | null }[] }
       ajukan_pembayaran: { Args: { _bank: string; _bukti_path: string; _hash: string; _nama: string; _tagihan: string; _tanggal: string }; Returns: string }
       putuskan_pembayaran: { Args: { _alasan?: string; _id: string; _setuju: boolean }; Returns: undefined }
