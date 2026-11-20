@@ -21,10 +21,8 @@ export function namesMatch(a: string, b: string): boolean {
   return normalizeName(a) === normalizeName(b) && normalizeName(a).length > 0;
 }
 
-/** Parent login identity: phone + NISN, so siblings can share one phone number. */
-export const ortuEmail = (phone: string, nisn: string) => `${normalizePhone(phone)}.${nisn.trim()}@${ORTU_DOMAIN}`;
-/** Older accounts were created from the phone number alone; login still falls back to this. */
-export const ortuEmailLama = (phone: string) => `${normalizePhone(phone)}@${ORTU_DOMAIN}`;
+/** Parent login identity: phone + NIS, so siblings can share one phone number. */
+export const ortuEmail = (phone: string, nis: string) => `${normalizePhone(phone)}.${nis.trim()}@${ORTU_DOMAIN}`;
 export const ustadzEmail = (kode: string) => `${kode.trim().toLowerCase()}@${USTADZ_DOMAIN}`;
 
 const KODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no I, O, 0, 1
@@ -35,7 +33,10 @@ export function generateKode(length = 8): string {
   return Array.from(bytes, (b) => KODE_CHARS[b % KODE_CHARS.length]).join("");
 }
 
-/** Parent login password: NISN, exactly 9 digits (change here if the school's numbers differ). */
+/** NISN: exactly 9 digits (national number, no longer used for login) (change here if the school's numbers differ). */
 export const NISN_LENGTH = 9;
 export const isValidNisn = (nisn: string) => new RegExp(`^\\d{${NISN_LENGTH}}$`).test(nisn.trim());
 export const isValidPhone = (p: string) => /^62\d{8,13}$/.test(normalizePhone(p));
+
+/** Parent login password: the school's NIS, digits only (6–15; the auth service needs at least 6 characters). */
+export const isValidNis = (nis: string) => /^\d{6,15}$/.test(nis.trim());

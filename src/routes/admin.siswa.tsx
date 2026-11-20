@@ -17,7 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { createStudent, deletePerson, importStudents, resetStudentLogin, updateStudent } from "@/lib/admin.functions";
-import { isValidNisn, isValidPhone, normalizeName, normalizePhone } from "@/lib/auth-utils";
+import { isValidNis, isValidNisn, isValidPhone, normalizeName, normalizePhone } from "@/lib/auth-utils";
 
 export const Route = createFileRoute("/admin/siswa")({ component: AdminSiswa });
 
@@ -67,7 +67,7 @@ function AdminSiswa() {
     <div className="flex gap-1">
       <Button size="icon" variant="ghost" aria-label="Ubah" onClick={() => setEdit(s)}><Pencil className="h-4 w-4" /></Button>
       <Button size="icon" variant="ghost" aria-label="Reset login" onClick={async () => {
-        try { await resetFn({ data: { id: s.id } }); toast.success("Login direset: No. HP + NISN"); refresh(); } catch (e: any) { toast.error(e.message); }
+        try { await resetFn({ data: { id: s.id } }); toast.success("Login direset: No. HP + NIS"); refresh(); } catch (e: any) { toast.error(e.message); }
       }}><KeyRound className="h-4 w-4" /></Button>
       <Button size="icon" variant="ghost" aria-label="Hapus" onClick={async () => {
         if (!confirm(`Hapus ${s.nama} beserta akun loginnya?`)) return;
@@ -236,7 +236,7 @@ function StudentDialog({ value, halaqah, onClose, onSaved }: { value: Partial<St
       onSaved();
       onClose();
     } catch (e: any) {
-      toast.error(e?.message?.startsWith("[") ? "Periksa kembali isian (NISN 9 digit, No. HP valid)" : e.message);
+      toast.error(e?.message?.startsWith("[") ? "Periksa kembali isian (NIS 6–15 digit, NISN 9 digit, No. HP valid)" : e.message);
     } finally {
       setBusy(false);
     }
@@ -264,7 +264,7 @@ function StudentDialog({ value, halaqah, onClose, onSaved }: { value: Partial<St
         )}
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2"><Label>Nama Murid</Label><Input value={f.nama ?? ""} onChange={set("nama")} /></div>
-          <div><Label>NIS</Label><Input value={f.nis ?? ""} onChange={set("nis")} /></div>
+          <div><Label>NIS (kata sandi orang tua)</Label><Input inputMode="numeric" value={f.nis ?? ""} onChange={set("nis")} /></div>
           <div><Label>NISN (9 digit)</Label><Input inputMode="numeric" value={f.nisn ?? ""} onChange={set("nisn")} /></div>
           <div><Label>No. HP Orang Tua</Label><Input inputMode="tel" value={f.no_hp ?? ""} onChange={set("no_hp")} /></div>
           <div><Label>Nama Wali</Label><Input value={f.nama_wali ?? ""} onChange={set("nama_wali")} /></div>
@@ -287,7 +287,7 @@ function StudentDialog({ value, halaqah, onClose, onSaved }: { value: Partial<St
               <Label>Aktif (bisa login)</Label><Switch checked={f.aktif ?? true} onCheckedChange={(v) => setF({ ...f, aktif: v })} />
             </div>
           )}
-          <p className="col-span-2 text-xs text-muted-foreground">Orang tua masuk dengan Nama Murid + No. HP + NISN.</p>
+          <p className="col-span-2 text-xs text-muted-foreground">Orang tua masuk dengan Nama Murid + No. HP + NIS.</p>
         </div>
         <DialogFooter><Button onClick={save} disabled={busy}>{busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Simpan</Button></DialogFooter>
       </DialogContent>
@@ -323,6 +323,7 @@ function parseCsv(text: string): string[][] {
 function validateRow(r: any): string[] {
   const e: string[] = [];
   if (!r.nama || r.nama.trim().length < 2) e.push("nama kosong");
+  if (!isValidNis(r.nis ?? "")) e.push("NIS harus angka 6–15 digit");
   if (!isValidNisn(r.nisn ?? "")) e.push("NISN harus 9 digit");
   if (!isValidPhone(r.no_hp ?? "")) e.push("No. HP tidak valid");
   if (!["TK", "SD"].includes((r.jenjang ?? "").toUpperCase())) e.push("jenjang harus TK/SD");
@@ -346,8 +347,9 @@ function ImportDialog({ open, onOpenChange, onDone }: { open: boolean; onOpenCha
       const seen = validateRow(r);
       return { ...r, _err: seen };
     });
-    const nisns = new Map<string, number>();
+    const nisns = new Map<string, number>(), niss = new Map<string, number>();
     parsed.forEach((r: any) => {
+      if (niss.has(r.nis)) r._err.push("NIS ganda di file"); else niss.set(r.nis, 1);
       if (nisns.has(r.nisn)) r._err.push("NISN ganda di file"); else nisns.set(r.nisn, 1);
     });
     setRows(parsed);

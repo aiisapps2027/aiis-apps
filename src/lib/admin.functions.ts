@@ -4,6 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
   generateKode,
   isValidNisn,
+  isValidNis,
   NISN_LENGTH,
   isValidPhone,
   normalizePhone,
@@ -29,7 +30,7 @@ async function createAuthUser(admin: any, email: string, password: string, role:
 }
 
 const studentSchema = z.object({
-  nis: z.string().trim().max(30).optional().default(""),
+  nis: z.string().trim().refine(isValidNis, "NIS harus angka 6–15 digit"),
   nama: z.string().trim().min(2).max(100),
   nisn: z.string().trim().refine(isValidNisn, `NISN harus ${NISN_LENGTH} digit`),
   no_hp: z.string().trim().refine(isValidPhone, "No. HP tidak valid"),
@@ -44,17 +45,16 @@ export type StudentInput = z.infer<typeof studentSchema>;
 
 async function insertStudent(admin: any, s: StudentInput) {
   const phone = normalizePhone(s.no_hp);
-  const uid = await createAuthUser(admin, ortuEmail(phone, s.nisn), s.nisn, "ortu");
+  const uid = await createAuthUser(admin, ortuEmail(phone, s.nis), s.nis, "ortu");
   const { error } = await admin.from("students").insert({
     ...s,
     no_hp: phone,
-    nis: s.nis || null,
     halaqah_id: s.halaqah_id || null,
     user_id: uid,
   });
   if (error) {
     await admin.auth.admin.deleteUser(uid);
-    throw new Error(error.message.includes("duplicate") ? "NISN sudah terdaftar" : error.message);
+    throw new Error(error.message.includes("duplicate") ? "NIS atau NISN sudah terdaftar" : error.message);
   }
 }
 
@@ -96,13 +96,13 @@ export const updateStudent = createServerFn({ method: "POST" })
     const { data: cur } = await admin.from("students").select("user_id").eq("id", id).single();
     const { error } = await admin
       .from("students")
-      .update({ ...rest, no_hp: phone, nis: rest.nis || null, halaqah_id: rest.halaqah_id || null })
+      .update({ ...rest, no_hp: phone, halaqah_id: rest.halaqah_id || null })
       .eq("id", id);
-    if (error) throw new Error(error.message.includes("duplicate") ? "NISN sudah terdaftar" : error.message);
+    if (error) throw new Error(error.message.includes("duplicate") ? "NIS atau NISN sudah terdaftar" : error.message);
     if (cur?.user_id) {
       await admin.auth.admin.updateUserById(cur.user_id, {
-        email: ortuEmail(phone, rest.nisn),
-        password: rest.nisn,
+        email: ortuEmail(phone, rest.nis),
+        password: rest.nis,
         email_confirm: true,
         ban_duration: rest.aktif ? "none" : "876000h",
       });
@@ -110,7 +110,7 @@ export const updateStudent = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-/** Reset parent login: re-create the auth user if missing and set password = NISN. */
+/** Reset parent login: re-create the auth user if missing and set password = NIS. */
 export const resetStudentLogin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => ({ id: z.string().uuid().parse(d.id) }))
@@ -118,16 +118,17 @@ export const resetStudentLogin = createServerFn({ method: "POST" })
     const admin = await assertAdmin(context);
     const { data: s } = await admin.from("students").select("*").eq("id", data.id).single();
     if (!s) throw new Error("Siswa tidak ditemukan");
+    if (!s.nis) throw new Error("NIS siswa belum diisi");
     if (s.user_id) {
       const { error } = await admin.auth.admin.updateUserById(s.user_id, {
-        email: ortuEmail(s.no_hp, s.nisn),
-        password: s.nisn,
+        email: ortuEmail(s.no_hp, s.nis),
+        password: s.nis,
         email_confirm: true,
         ban_duration: "none",
       });
       if (!error) return { ok: true };
     }
-    const uid = await createAuthUser(admin, ortuEmail(s.no_hp, s.nisn), s.nisn, "ortu");
+    const uid = await createAuthUser(admin, ortuEmail(s.no_hp, s.nis), s.nis, "ortu");
     await admin.from("students").update({ user_id: uid }).eq("id", s.id);
     return { ok: true };
   });
