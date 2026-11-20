@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { LayoutDashboard, GraduationCap, UserCog, Users, Megaphone, Wallet, ClipboardCheck, Trophy } from "lucide-react";
+import { LayoutDashboard, GraduationCap, UserCog, Users, Megaphone, Wallet, ClipboardCheck, Trophy, ListChecks, ContactRound } from "lucide-react";
 import { countMenunggu, MENUNGGU_KEY } from "@/lib/spp";
 import { countCalonBaru, MUNAQASYAH_PENDING_KEY } from "@/lib/tasmi";
 import { requireRole } from "@/lib/session";
@@ -20,6 +20,9 @@ export const Route = createFileRoute("/admin")({
   component: AdminLayout,
 });
 
+const DAFTAR = { nama: "Daftar", icon: ContactRound };
+const KEGIATAN = { nama: "Kegiatan", icon: ListChecks };
+
 function AdminLayout() {
   const { data: menunggu } = useQuery({ queryKey: [...MENUNGGU_KEY], queryFn: countMenunggu, refetchInterval: 30_000 });
   const { data: calon } = useQuery({ queryKey: [...MUNAQASYAH_PENDING_KEY], queryFn: countCalonBaru, refetchInterval: 30_000 });
@@ -27,14 +30,14 @@ function AdminLayout() {
     <StaffShell
       area="Admin Sekolah"
       nav={[
-        { to: "/admin", label: "Dasbor", icon: LayoutDashboard, exact: true, utama: true },
-        { to: "/admin/siswa", label: "Siswa", icon: GraduationCap, utama: true },
-        { to: "/admin/ustadz", label: "Ustadz", icon: UserCog },
-        { to: "/admin/halaqah", label: "Halaqah", icon: Users },
-        { to: "/admin/spp", label: "SPP", icon: Wallet, utama: true, ...(menunggu ? { badge: menunggu } : {}) },
-        { to: "/admin/munaqasyah", label: "Munaqasyah", icon: ClipboardCheck, utama: true, ...(calon ? { badge: calon } : {}) },
-        { to: "/admin/eskul", label: "Eskul", icon: Trophy },
-        { to: "/admin/pengumuman", label: "Info", icon: Megaphone },
+        { to: "/admin", label: "Dasbor", icon: LayoutDashboard, exact: true },
+        { to: "/admin/siswa", label: "Siswa", icon: GraduationCap, grup: DAFTAR },
+        { to: "/admin/ustadz", label: "Ustadz", icon: UserCog, grup: DAFTAR },
+        { to: "/admin/halaqah", label: "Halaqah", icon: Users, grup: DAFTAR },
+        { to: "/admin/spp", label: "SPP", icon: Wallet, ...(menunggu ? { badge: menunggu } : {}) },
+        { to: "/admin/munaqasyah", label: "Munaqasyah", icon: ClipboardCheck, grup: KEGIATAN, ...(calon ? { badge: calon } : {}) },
+        { to: "/admin/eskul", label: "Eskul", icon: Trophy, grup: KEGIATAN },
+        { to: "/admin/pengumuman", label: "Info", icon: Megaphone, grup: KEGIATAN },
       ]}
     />
   );

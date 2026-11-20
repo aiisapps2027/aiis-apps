@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ClipboardList, Home, History, Target, Trophy, Volume2 } from "lucide-react";
+import { ClipboardList, Home, History, Target, Trophy, Volume2, ClipboardCheck } from "lucide-react";
 import { requireRole } from "@/lib/session";
 import { StaffShell } from "@/components/aiis/StaffShell";
+
+const PENILAIAN = { nama: "Penilaian", icon: ClipboardCheck };
 
 export const Route = createFileRoute("/ustadz")({
   ssr: false,
@@ -15,11 +17,11 @@ export const Route = createFileRoute("/ustadz")({
     ],
   }),
   component: () => <StaffShell area="Ustadz / Ustadzah" nav={[
-    { to: "/ustadz", label: "Halaqah", icon: Home, exact: true, utama: true },
-    { to: "/ustadz/setoran", label: "Setoran", icon: ClipboardList, exact: false, utama: true },
-    { to: "/ustadz/target", label: "Target", icon: Target, exact: false, utama: true },
-    { to: "/ustadz/tasmi", label: "Tasmi'", icon: Volume2, exact: false, utama: true },
+    { to: "/ustadz", label: "Halaqah", icon: Home, exact: true },
+    { to: "/ustadz/setoran", label: "Setoran", icon: ClipboardList, exact: false },
+    { to: "/ustadz/target", label: "Target", icon: Target, exact: false, grup: PENILAIAN },
+    { to: "/ustadz/tasmi", label: "Tasmi'", icon: Volume2, exact: false, grup: PENILAIAN },
     { to: "/ustadz/eskul", label: "Eskul", icon: Trophy, exact: false },
-    { to: "/ustadz/riwayat", label: "Riwayat", icon: History, exact: false },
+    { to: "/ustadz/riwayat", label: "Riwayat", icon: History, exact: false, grup: PENILAIAN },
   ]} />,
 });

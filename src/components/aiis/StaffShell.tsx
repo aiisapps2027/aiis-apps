@@ -1,16 +1,33 @@
-import { Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { LayoutGrid, LogOut, type LucideIcon } from "lucide-react";
+import { LogOut, type LucideIcon } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import logo from "@/assets/logo.png";
 import { signOut } from "@/lib/session";
 import { InstallPrompt } from "@/components/aiis/InstallPrompt";
 
-export type NavItem = { to: string; label: string; icon: LucideIcon; exact?: boolean; badge?: number; utama?: boolean };
+export type NavGroup = { nama: string; icon: LucideIcon };
+/** `grup`: on mobile, items sharing a group collapse into one bottom tab that opens a sheet; the desktop sidebar stays flat. */
+export type NavItem = { to: string; label: string; icon: LucideIcon; exact?: boolean; badge?: number; grup?: NavGroup };
 
-/** Mobile bottom bar shows at most this many tabs; with more items the rest move into a "Menu" sheet. */
-const MAX_TABS = 4;
+type Tab = { key: string; label: string; icon: LucideIcon; item?: NavItem; children?: NavItem[] };
+
+function buildTabs(nav: NavItem[]): Tab[] {
+  const tabs: Tab[] = [];
+  for (const n of nav) {
+    if (!n.grup) {
+      tabs.push({ key: n.to, label: n.label, icon: n.icon, item: n });
+      continue;
+    }
+    const g = tabs.find((t) => t.key === `grup:${n.grup!.nama}`);
+    if (g) g.children!.push(n);
+    else tabs.push({ key: `grup:${n.grup.nama}`, label: n.grup.nama, icon: n.grup.icon, children: [n] });
+  }
+  return tabs;
+}
+
+const isActive = (n: NavItem, path: string) => (n.exact ? path === n.to : path === n.to || path.startsWith(n.to + "/"));
 
 function Badge({ n }: { n?: number | undefined }) {
   return n ? <span aria-label={`${n} menunggu`} className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-white">{n > 99 ? "99+" : n}</span> : null;
@@ -20,13 +37,9 @@ function Badge({ n }: { n?: number | undefined }) {
 export function StaffShell({ nav, area }: { nav: NavItem[]; area: string }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const [menuOpen, setMenuOpen] = useState(false);
-  // Few items: show them all. Many items: the marked (or first) ones as tabs, the rest inside "Menu".
-  const banyak = nav.length > MAX_TABS + 1;
-  const utama = nav.filter((n) => n.utama);
-  const tabs = banyak ? (utama.length ? utama : nav).slice(0, MAX_TABS) : nav;
-  const lainnya = banyak ? nav.filter((n) => !tabs.includes(n)) : [];
-  const lainnyaBadge = lainnya.reduce((t, n) => t + (n.badge ?? 0), 0);
+  const [open, setOpen] = useState<Tab | null>(null);
+  const path = useRouterState({ select: (st) => st.location.pathname });
+  const tabs = buildTabs(nav);
   const logout = async () => {
     await signOut(qc);
     navigate({ to: "/login", replace: true });
@@ -65,47 +78,49 @@ export function StaffShell({ nav, area }: { nav: NavItem[]; area: string }) {
         className="fixed bottom-0 left-0 right-0 z-30 grid border-t bg-card lg:hidden"
         style={{ gridTemplateColumns: `repeat(${tabs.length + 1}, minmax(0, 1fr))` }}
       >
-        {tabs.map((n) => (
-          <Link
-            key={n.to}
-            to={n.to}
-            activeOptions={{ exact: !!n.exact }}
-            className="flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium text-muted-foreground"
-            activeProps={{ className: "text-primary" }}
-          >
-            <span className="relative"><n.icon className="h-5 w-5" /><Badge n={n.badge} /></span>
-            {n.label}
-          </Link>
-        ))}
-        {lainnya.length > 0 ? (
-          <button onClick={() => setMenuOpen(true)} className="flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium text-muted-foreground">
-            <span className="relative"><LayoutGrid className="h-5 w-5" /><Badge n={lainnyaBadge || undefined} /></span>
-            Menu
-          </button>
-        ) : (
-          <button onClick={logout} className="flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium text-muted-foreground">
-            <LogOut className="h-5 w-5" /> Keluar
-          </button>
-        )}
+        {tabs.map((t) => {
+          const total = (t.children ?? []).reduce((n, c) => n + (c.badge ?? 0), 0);
+          if (t.item) {
+            return (
+              <Link
+                key={t.key}
+                to={t.item.to}
+                activeOptions={{ exact: !!t.item.exact }}
+                className="flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium text-muted-foreground"
+                activeProps={{ className: "text-primary" }}
+              >
+                <span className="relative"><t.icon className="h-5 w-5" /><Badge n={t.item.badge} /></span>
+                {t.label}
+              </Link>
+            );
+          }
+          const aktif = (t.children ?? []).some((c) => isActive(c, path));
+          return (
+            <button key={t.key} onClick={() => setOpen(t)} className={`flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium ${aktif ? "text-primary" : "text-muted-foreground"}`}>
+              <span className="relative"><t.icon className="h-5 w-5" /><Badge n={total || undefined} /></span>
+              {t.label}
+            </button>
+          );
+        })}
+        <button onClick={logout} className="flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium text-muted-foreground">
+          <LogOut className="h-5 w-5" /> Keluar
+        </button>
       </nav>
-      <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+      <Sheet open={!!open} onOpenChange={(o) => !o && setOpen(null)}>
         <SheetContent side="bottom" className="rounded-t-3xl pb-8">
-          <SheetHeader><SheetTitle>Menu</SheetTitle></SheetHeader>
+          <SheetHeader><SheetTitle>{open?.label}</SheetTitle></SheetHeader>
           <div className="mt-4 grid grid-cols-3 gap-3">
-            {lainnya.map((n) => (
+            {open?.children?.map((n) => (
               <Link
                 key={n.to}
                 to={n.to}
-                onClick={() => setMenuOpen(false)}
-                className="flex flex-col items-center gap-2 rounded-2xl bg-muted/60 px-2 py-4 text-center text-xs font-semibold"
+                onClick={() => setOpen(null)}
+                className={`flex flex-col items-center gap-2 rounded-2xl px-2 py-4 text-center text-xs font-semibold ${isActive(n, path) ? "bg-secondary text-primary" : "bg-muted/60"}`}
               >
                 <span className="relative"><n.icon className="h-6 w-6 text-primary" /><Badge n={n.badge} /></span>
                 {n.label}
               </Link>
             ))}
-            <button onClick={logout} className="flex flex-col items-center gap-2 rounded-2xl bg-muted/60 px-2 py-4 text-center text-xs font-semibold text-destructive">
-              <LogOut className="h-6 w-6" /> Keluar
-            </button>
           </div>
         </SheetContent>
       </Sheet>
