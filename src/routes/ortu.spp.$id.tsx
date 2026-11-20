@@ -1,3 +1,4 @@
+import { grupJenjang } from "@/lib/jenjang";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Copy } from "lucide-react";
@@ -34,7 +35,7 @@ function SppDetail() {
   const t = tagihan?.find((x) => x.id === id);
   const mine = (pembayaran ?? []).filter((p) => p.tagihan_id === id);
   const last = mine[0];
-  const acc = rekening?.find((r) => r.jenjang === student?.jenjang);
+  const acc = rekening?.find((r) => r.jenjang === grupJenjang(student?.jenjang ?? ''));
   const buktiUrl = useBuktiUrl(last?.bukti_path);
 
   return (

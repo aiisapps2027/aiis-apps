@@ -77,7 +77,7 @@ export function SppTagihan() {
           <Input placeholder="Cari nama siswa" value={q} onChange={(e) => setQ(e.target.value)} className="rounded-xl bg-card pl-9" />
         </div>
         <Select value={status} onValueChange={setStatus}><SelectTrigger className="w-40 rounded-xl bg-card"><SelectValue /></SelectTrigger><SelectContent><SelectItem value={ALL}>Semua status</SelectItem><SelectItem value="belum_bayar">Belum dibayar</SelectItem><SelectItem value="terlambat">Terlambat</SelectItem><SelectItem value="menunggu">Menunggu</SelectItem><SelectItem value="lunas">Lunas</SelectItem></SelectContent></Select>
-        <Select value={jenjang} onValueChange={setJenjang}><SelectTrigger className="w-28 rounded-xl bg-card"><SelectValue /></SelectTrigger><SelectContent><SelectItem value={ALL}>TK + SD</SelectItem><SelectItem value="TK">TK</SelectItem><SelectItem value="SD">SD</SelectItem></SelectContent></Select>
+        <Select value={jenjang} onValueChange={setJenjang}><SelectTrigger className="w-28 rounded-xl bg-card"><SelectValue /></SelectTrigger><SelectContent><SelectItem value={ALL}>Semua jenjang</SelectItem><SelectItem value="PG">PG</SelectItem><SelectItem value="K1">K1</SelectItem><SelectItem value="K2">K2</SelectItem><SelectItem value="SD">SD</SelectItem></SelectContent></Select>
         <Select value={jenis} onValueChange={setJenis}><SelectTrigger className="w-36 rounded-xl bg-card"><SelectValue /></SelectTrigger><SelectContent><SelectItem value={ALL}>Semua jenis</SelectItem>{Object.entries(JENIS_TAGIHAN_LABEL).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent></Select>
         <Button className="rounded-xl" onClick={() => setBuat(true)}><Plus className="mr-1 h-4 w-4" /> Buat tagihan</Button>
       </div>
@@ -196,9 +196,9 @@ function SppBulanan({ katalog, siswa, onDone }: { katalog: Katalog[]; siswa: Stu
       <div className="grid grid-cols-2 gap-3">
         <div><Label>Bulan</Label><Input type="month" value={ym} onChange={(e) => setYm(e.target.value)} /></div>
         <div><Label>Untuk</Label>
-          <Select value={scope} onValueChange={setScope}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value={ALL}>Semua siswa aktif</SelectItem><SelectItem value="TK">TK saja</SelectItem><SelectItem value="SD">SD saja</SelectItem></SelectContent></Select>
+          <Select value={scope} onValueChange={setScope}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value={ALL}>Semua siswa aktif</SelectItem><SelectItem value="PG">PG saja</SelectItem><SelectItem value="K1">K1 saja</SelectItem><SelectItem value="K2">K2 saja</SelectItem><SelectItem value="SD">SD saja</SelectItem></SelectContent></Select>
         </div>
-        <div><Label>SPP TK (Rp)</Label><Input inputMode="numeric" value={nTk} onChange={(e) => setTk(e.target.value.replace(/\D/g, ""))} /></div>
+        <div><Label>SPP PG / K1 / K2 (Rp)</Label><Input inputMode="numeric" value={nTk} onChange={(e) => setTk(e.target.value.replace(/\D/g, ""))} /></div>
         <div><Label>SPP SD (Rp)</Label><Input inputMode="numeric" value={nSd} onChange={(e) => setSd(e.target.value.replace(/\D/g, ""))} /></div>
       </div>
       <p className="text-xs text-muted-foreground">Jatuh tempo tanggal 10. {target.length} siswa aktif akan ditagih; yang sudah punya SPP bulan itu dilewati. Potongan per siswa bisa diubah setelah dibuat.</p>

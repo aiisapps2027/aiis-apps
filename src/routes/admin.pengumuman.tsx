@@ -62,7 +62,7 @@ function AdminPengumuman() {
                 </div>
               </div>
               <div><Label>Ditujukan untuk</Label>
-                <Select value={edit.target} onValueChange={(v) => setEdit({ ...edit, target: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="semua">Semua</SelectItem><SelectItem value="TK">TK</SelectItem><SelectItem value="SD">SD</SelectItem></SelectContent></Select>
+                <Select value={edit.target} onValueChange={(v) => setEdit({ ...edit, target: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="semua">Semua</SelectItem><SelectItem value="TK">TK (PG, K1, K2)</SelectItem><SelectItem value="PG">PG</SelectItem><SelectItem value="K1">K1</SelectItem><SelectItem value="K2">K2</SelectItem><SelectItem value="SD">SD</SelectItem></SelectContent></Select>
               </div>
             </div>
             <DialogFooter>

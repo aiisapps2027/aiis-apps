@@ -1,3 +1,4 @@
+import { grupJenjang } from "@/lib/jenjang";
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -21,7 +22,7 @@ export const announcementsQuery = (jenjang?: string) =>
     queryKey: ["announcements", jenjang ?? "all"],
     queryFn: async () => {
       let q = supabase.from("announcements").select("*").order("created_at", { ascending: false });
-      if (jenjang) q = q.in("target", ["semua", jenjang]);
+      if (jenjang) q = q.in("target", ["semua", jenjang, grupJenjang(jenjang)]);
       const { data, error } = await q;
       if (error) throw error;
       return data;

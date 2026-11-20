@@ -161,7 +161,7 @@ function HalaqahDialog({ value, teachers, students, onClose, onSaved }: {
           <div><Label>Nama Halaqah</Label><Input value={f.nama} onChange={(e) => setF({ ...f, nama: e.target.value })} /></div>
           <div className="grid grid-cols-2 gap-3">
             <div><Label>Jenjang</Label>
-              <Select value={f.jenjang} onValueChange={(v) => setF({ ...f, jenjang: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="TK">TK</SelectItem><SelectItem value="SD">SD</SelectItem></SelectContent></Select>
+              <Select value={f.jenjang} onValueChange={(v) => setF({ ...f, jenjang: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="PG">PG</SelectItem><SelectItem value="K1">K1</SelectItem><SelectItem value="K2">K2</SelectItem><SelectItem value="SD">SD</SelectItem></SelectContent></Select>
             </div>
             <div><Label>Ustadz</Label>
               <Select value={f.teacher_id ?? NONE} onValueChange={(v) => setF({ ...f, teacher_id: v === NONE ? null : v })}>

@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { JENJANG } from "@/lib/jenjang";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
   generateKode,
@@ -34,7 +35,7 @@ const studentSchema = z.object({
   nama: z.string().trim().min(2).max(100),
   nisn: z.string().trim().refine(isValidNisn, `NISN harus ${NISN_LENGTH} digit`),
   no_hp: z.string().trim().refine(isValidPhone, "No. HP tidak valid"),
-  jenjang: z.enum(["TK", "SD"]),
+  jenjang: z.enum(JENJANG),
   kelas: z.string().trim().max(10).optional().default(""),
   jenis_kelamin: z.enum(["L", "P"]).default("L"),
   nama_wali: z.string().trim().max(100).optional().default(""),

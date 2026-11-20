@@ -1,3 +1,4 @@
+import { grupJenjang } from "@/lib/jenjang";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
@@ -48,7 +49,7 @@ export function buildSppRows(
   const rows: Database["public"]["Tables"]["tagihan"]["Insert"][] = [];
   let dilewati = 0;
   for (const s of students) {
-    const n = nominal[s.jenjang];
+    const n = nominal[grupJenjang(s.jenjang)];
     if (!n || n <= 0) continue;
     if (existingStudentIds.has(s.id)) { dilewati++; continue; }
     rows.push({ student_id: s.id, jenis: "spp", judul, periode: periodeDari(ym), nominal: n, jatuh_tempo: jatuhTempoDari(ym, hari) });
@@ -58,7 +59,7 @@ export function buildSppRows(
 
 /** Seragam are sold per gender; other items apply to everyone of the right jenjang. */
 export function katalogUntuk(katalog: Katalog[], student: { jenjang: string; jenis_kelamin: string }) {
-  return katalog.filter((k) => k.aktif && (!k.jenjang || k.jenjang === student.jenjang) && (!k.untuk || k.untuk === student.jenis_kelamin));
+  return katalog.filter((k) => k.aktif && (!k.jenjang || k.jenjang === grupJenjang(student.jenjang)) && (!k.untuk || k.untuk === student.jenis_kelamin));
 }
 
 // ---------- proof of transfer ----------

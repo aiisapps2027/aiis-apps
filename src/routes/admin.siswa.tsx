@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
+import { isJenjang, JENJANG, type Jenjang } from "@/lib/jenjang";
 import { Plus, Search, Upload, Pencil, KeyRound, Trash2, Loader2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,7 +22,7 @@ import { isValidNis, isValidNisn, isValidPhone, normalizeName, normalizePhone } 
 
 export const Route = createFileRoute("/admin/siswa")({
   component: AdminSiswa,
-  validateSearch: (s: Record<string, unknown>): { jenjang?: "TK" | "SD" } => (s["jenjang"] === "TK" || s["jenjang"] === "SD" ? { jenjang: s["jenjang"] } : {}),
+  validateSearch: (s: Record<string, unknown>): { jenjang?: Jenjang } => (isJenjang(s["jenjang"]) ? { jenjang: s["jenjang"] } : {}),
 });
 
 type Student = {
@@ -100,7 +101,7 @@ function AdminSiswa() {
             <Input placeholder="Cari nama / NIS" value={q} onChange={(e) => setQ(e.target.value)} className="rounded-xl bg-card pl-9" />
           </div>
           <div className="flex gap-1 rounded-xl bg-card p-1">
-            {[ALL, "TK", "SD"].map((j) => (
+            {[ALL, ...JENJANG].map((j) => (
               <button key={j} onClick={() => setJenjang(j)} className={`rounded-lg px-3 py-1.5 text-sm font-medium ${jenjang === j ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
                 {j === ALL ? "Semua" : j}
               </button>
@@ -230,7 +231,7 @@ function StudentDialog({ value, halaqah, onClose, onSaved }: { value: Partial<St
   async function save() {
     setBusy(true);
     const payload = {
-      nis: f.nis ?? "", nama: f.nama ?? "", nisn: f.nisn ?? "", no_hp: f.no_hp ?? "", jenjang: (f.jenjang ?? "SD") as "TK" | "SD",
+      nis: f.nis ?? "", nama: f.nama ?? "", nisn: f.nisn ?? "", no_hp: f.no_hp ?? "", jenjang: (f.jenjang ?? "SD") as Jenjang,
       kelas: f.kelas ?? "", jenis_kelamin: (f.jenis_kelamin ?? "L") as "L" | "P", nama_wali: f.nama_wali ?? "",
       target_hafalan: f.target_hafalan ?? "", halaqah_id: f.halaqah_id || null,
     };
@@ -274,7 +275,7 @@ function StudentDialog({ value, halaqah, onClose, onSaved }: { value: Partial<St
           <div><Label>No. HP Orang Tua</Label><Input inputMode="tel" value={f.no_hp ?? ""} onChange={set("no_hp")} /></div>
           <div><Label>Nama Wali</Label><Input value={f.nama_wali ?? ""} onChange={set("nama_wali")} /></div>
           <div><Label>Jenjang</Label>
-            <Select value={f.jenjang ?? "SD"} onValueChange={(v) => setF({ ...f, jenjang: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="TK">TK</SelectItem><SelectItem value="SD">SD</SelectItem></SelectContent></Select>
+            <Select value={f.jenjang ?? "SD"} onValueChange={(v) => setF({ ...f, jenjang: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="PG">PG</SelectItem><SelectItem value="K1">K1</SelectItem><SelectItem value="K2">K2</SelectItem><SelectItem value="SD">SD</SelectItem></SelectContent></Select>
           </div>
           <div><Label>Kelas</Label><Input placeholder="mis. 3A" value={f.kelas ?? ""} onChange={set("kelas")} /></div>
           <div><Label>Jenis Kelamin</Label>
@@ -331,7 +332,7 @@ function validateRow(r: any): string[] {
   if (!isValidNis(r.nis ?? "")) e.push("NIS harus angka 6–15 digit");
   if (!isValidNisn(r.nisn ?? "")) e.push("NISN harus 9 digit");
   if (!isValidPhone(r.no_hp ?? "")) e.push("No. HP tidak valid");
-  if (!["TK", "SD"].includes((r.jenjang ?? "").toUpperCase())) e.push("jenjang harus TK/SD");
+  if (!(JENJANG as readonly string[]).includes((r.jenjang ?? "").toUpperCase())) e.push("jenjang harus PG/K1/K2/SD");
   if (r.jenis_kelamin && !["L", "P"].includes(r.jenis_kelamin.toUpperCase())) e.push("jenis_kelamin L/P");
   return e;
 }
