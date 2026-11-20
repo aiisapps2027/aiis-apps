@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { GraduationCap, Baby, School, UserCog, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,11 +24,11 @@ function AdminHome() {
     },
   });
   const cards = [
-    { label: "Total Siswa", v: data?.siswa, icon: GraduationCap },
-    { label: "Siswa TK", v: data?.tk, icon: Baby },
-    { label: "Siswa SD", v: data?.sd, icon: School },
-    { label: "Ustadz/Ustadzah", v: data?.ustadz, icon: UserCog },
-    { label: "Halaqah", v: data?.halaqah, icon: Users },
+    { label: "Total Siswa", v: data?.siswa, icon: GraduationCap, to: "/admin/siswa" as const, search: {} },
+    { label: "Siswa TK", v: data?.tk, icon: Baby, to: "/admin/siswa" as const, search: { jenjang: "TK" as const } },
+    { label: "Siswa SD", v: data?.sd, icon: School, to: "/admin/siswa" as const, search: { jenjang: "SD" as const } },
+    { label: "Ustadz/Ustadzah", v: data?.ustadz, icon: UserCog, to: "/admin/ustadz" as const, search: {} },
+    { label: "Halaqah", v: data?.halaqah, icon: Users, to: "/admin/halaqah" as const, search: {} },
   ];
   return (
     <div>
@@ -36,11 +36,11 @@ function AdminHome() {
       <div className="space-y-6 p-4 lg:px-8">
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
           {cards.map((c) => (
-            <div key={c.label} className="rounded-2xl bg-card p-4 shadow-soft">
+            <Link key={c.label} to={c.to} search={c.search as never} className="block rounded-2xl bg-card p-4 shadow-soft transition-transform active:scale-[0.98] lg:hover:shadow-md">
               <IconTile className="h-10 w-10"><c.icon className="h-5 w-5" /></IconTile>
               <p className="mt-3 text-3xl font-extrabold text-primary">{c.v ?? "–"}</p>
               <p className="text-xs text-muted-foreground">{c.label}</p>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

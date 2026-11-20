@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Plus, Search, Upload, Pencil, KeyRound, Trash2, Loader2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,7 +19,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { createStudent, deletePerson, importStudents, resetStudentLogin, updateStudent } from "@/lib/admin.functions";
 import { isValidNis, isValidNisn, isValidPhone, normalizeName, normalizePhone } from "@/lib/auth-utils";
 
-export const Route = createFileRoute("/admin/siswa")({ component: AdminSiswa });
+export const Route = createFileRoute("/admin/siswa")({
+  component: AdminSiswa,
+  validateSearch: (s: Record<string, unknown>): { jenjang?: "TK" | "SD" } => (s["jenjang"] === "TK" || s["jenjang"] === "SD" ? { jenjang: s["jenjang"] } : {}),
+});
 
 type Student = {
   id: string; nis: string | null; nama: string; nisn: string; no_hp: string; jenjang: string; kelas: string | null;
@@ -32,7 +35,9 @@ const ALL = "__all";
 function AdminSiswa() {
   const qc = useQueryClient();
   const [q, setQ] = useState("");
-  const [jenjang, setJenjang] = useState(ALL);
+  const { jenjang: jenjangUrl } = Route.useSearch();
+  const [jenjang, setJenjang] = useState<string>(jenjangUrl ?? ALL);
+  useEffect(() => setJenjang(jenjangUrl ?? ALL), [jenjangUrl]);
   const [kelas, setKelas] = useState(ALL);
   const [halaqah, setHalaqah] = useState(ALL);
   const [edit, setEdit] = useState<Partial<Student> | null>(null);
