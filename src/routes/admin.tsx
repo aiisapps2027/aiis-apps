@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { LayoutDashboard, GraduationCap, UserCog, Users, Megaphone, Wallet, ClipboardCheck } from "lucide-react";
+import { LayoutDashboard, GraduationCap, UserCog, Users, Megaphone, Wallet, ClipboardCheck, Trophy } from "lucide-react";
 import { countMenunggu, MENUNGGU_KEY } from "@/lib/spp";
 import { countCalonBaru, MUNAQASYAH_PENDING_KEY } from "@/lib/tasmi";
 import { requireRole } from "@/lib/session";
@@ -33,6 +33,7 @@ function AdminLayout() {
         { to: "/admin/halaqah", label: "Halaqah", icon: Users },
         { to: "/admin/spp", label: "SPP", icon: Wallet, ...(menunggu ? { badge: menunggu } : {}) },
         { to: "/admin/munaqasyah", label: "Munaqasyah", icon: ClipboardCheck, ...(calon ? { badge: calon } : {}) },
+        { to: "/admin/eskul", label: "Eskul", icon: Trophy },
         { to: "/admin/pengumuman", label: "Info", icon: Megaphone },
       ]}
     />

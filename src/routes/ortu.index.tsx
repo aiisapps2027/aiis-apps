@@ -13,6 +13,7 @@ import { formatTanggal, todayJakarta } from "@/lib/laporan";
 import { JENIS_LABEL, JENIS_ORDER, type Nilai } from "@/lib/nilai";
 import { bintangQuery, catatanQuery, laporanQuery } from "@/lib/ortu-queries";
 import { useTileBadge } from "@/lib/badges";
+import { eskulSayaQuery, pengingatEskul, rentangJam } from "@/lib/eskul";
 
 export const Route = createFileRoute("/ortu/")({ component: Dashboard });
 
@@ -25,6 +26,8 @@ function Dashboard() {
   const { data: laporan } = useQuery({ ...laporanQuery, enabled: !!s });
   const { data: catatan } = useQuery({ ...catatanQuery, enabled: !!s });
   const { data: bintang } = useQuery({ ...bintangQuery, enabled: !!s });
+  const { data: eskul } = useQuery({ ...eskulSayaQuery, enabled: !!s });
+  const pengingat = eskul ? pengingatEskul(eskul) : [];
   const today = todayJakarta();
   const todayRows = (laporan ?? []).filter((r) => r.tanggal === today);
   const todayNote = catatan?.find((c) => c.tanggal === today);
@@ -69,6 +72,18 @@ function Dashboard() {
             <p className="text-sm text-muted-foreground">Data siswa tidak ditemukan.</p>
           )}
         </div>
+
+        {pengingat.length > 0 && (
+          <Link to="/ortu/eskul" className="mt-5 block rounded-2xl bg-secondary p-4">
+            <p className="text-sm font-bold text-primary">Pengingat Eskul</p>
+            {pengingat.slice(0, 3).map((p) => (
+              <p key={p.jadwal.id} className="mt-1 text-sm">
+                <span className="font-semibold">{p.kapan === "hari ini" ? "Hari ini" : "Besok"}</span> • {p.nama}, {rentangJam(p.jadwal)}
+                {p.jadwal.tempat ? ` • ${p.jadwal.tempat}` : ""}
+              </p>
+            ))}
+          </Link>
+        )}
 
         {s && (
           <section className="mt-5 rounded-2xl bg-card p-4 shadow-soft">

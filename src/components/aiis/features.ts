@@ -1,5 +1,5 @@
 import {
-  BookOpen, BookMarked, RotateCcw, Mic, ClipboardCheck, Volume2, PenLine, Star, Wallet, Banknote, User, Search, Bookmark,
+  BookOpen, BookMarked, RotateCcw, Mic, ClipboardCheck, Volume2, PenLine, Star, Wallet, Banknote, User, Search, Bookmark, Trophy,
   type LucideIcon,
 } from "lucide-react";
 
@@ -16,6 +16,7 @@ export const DASHBOARD_FEATURES: Feature[] = [
   { slug: "bintang", to: "/ortu/bintang", label: "Bintang", icon: Star },
   { slug: "spp", to: "/ortu/spp", label: "SPP", icon: Wallet },
   { slug: "uang-saku", label: "Uang Saku", icon: Banknote },
+  { slug: "eskul", to: "/ortu/eskul", label: "Eskul", icon: Trophy },
   { slug: "profil", label: "Profil", icon: User, to: "/ortu/profil" },
 ];
 
@@ -42,6 +43,7 @@ export const FEATURE_GROUPS: { title: string; items: Feature[] }[] = [
       { slug: "munaqasyah", to: "/ortu/munaqasyah", label: "Munaqasyah", icon: ClipboardCheck },
       { slug: "tasmi", to: "/ortu/tasmi", label: "Tasmi'", icon: Volume2 },
       { slug: "tashih", label: "Tashih", icon: PenLine },
+      { slug: "eskul", to: "/ortu/eskul", label: "Eskul", icon: Trophy },
     ],
   },
   {

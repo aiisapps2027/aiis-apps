@@ -299,6 +299,29 @@ export type Database = {
           { foreignKeyName: "pembayaran_tagihan_id_fkey"; columns: ["tagihan_id"]; isOneToOne: false; referencedRelation: "tagihan"; referencedColumns: ["id"] },
         ]
       }
+      eskul: {
+        Row: { aktif: boolean; created_at: string; deskripsi: string | null; id: string; nama: string; pengajar: string | null; updated_at: string }
+        Insert: { aktif?: boolean; created_at?: string; deskripsi?: string | null; id?: string; nama: string; pengajar?: string | null; updated_at?: string }
+        Update: { aktif?: boolean; created_at?: string; deskripsi?: string | null; id?: string; nama?: string; pengajar?: string | null; updated_at?: string }
+        Relationships: []
+      }
+      eskul_jadwal: {
+        Row: { created_at: string; eskul_id: string; hari: number; id: string; jam_mulai: string; jam_selesai: string; tempat: string | null }
+        Insert: { created_at?: string; eskul_id: string; hari: number; id?: string; jam_mulai: string; jam_selesai: string; tempat?: string | null }
+        Update: { created_at?: string; eskul_id?: string; hari?: number; id?: string; jam_mulai?: string; jam_selesai?: string; tempat?: string | null }
+        Relationships: [
+          { foreignKeyName: "eskul_jadwal_eskul_id_fkey"; columns: ["eskul_id"]; isOneToOne: false; referencedRelation: "eskul"; referencedColumns: ["id"] },
+        ]
+      }
+      eskul_peserta: {
+        Row: { created_at: string; eskul_id: string; id: string; student_id: string }
+        Insert: { created_at?: string; eskul_id: string; id?: string; student_id: string }
+        Update: { created_at?: string; eskul_id?: string; id?: string; student_id?: string }
+        Relationships: [
+          { foreignKeyName: "eskul_peserta_eskul_id_fkey"; columns: ["eskul_id"]; isOneToOne: false; referencedRelation: "eskul"; referencedColumns: ["id"] },
+          { foreignKeyName: "eskul_peserta_student_id_fkey"; columns: ["student_id"]; isOneToOne: false; referencedRelation: "students"; referencedColumns: ["id"] },
+        ]
+      }
       tasmi: {
         Row: { catatan: string | null; created_at: string; id: string; juz: number; jumlah_salah: number | null; nilai: string; student_id: string; tanggal: string; teacher_id: string | null; updated_at: string }
         Insert: { catatan?: string | null; created_at?: string; id?: string; juz: number; jumlah_salah?: number | null; nilai?: string; student_id: string; tanggal?: string; teacher_id?: string | null; updated_at?: string }
