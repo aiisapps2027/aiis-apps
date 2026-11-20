@@ -1,8 +1,9 @@
 import {
-  BookOpen, BookMarked, RotateCcw, Mic, ClipboardCheck, Volume2, PenLine, Star, Wallet, Banknote, User, Search, Bookmark, Trophy,
+  BookOpen, BookMarked, RotateCcw, Mic, ClipboardCheck, Volume2, Star, Wallet, Banknote, User, Search, Bookmark, Trophy,
   type LucideIcon,
 } from "lucide-react";
 
+// Tashih is hidden until the foundation decides how it should work (re-add { slug: "tashih", label: "Tashih", icon: PenLine }).
 export type Feature = { slug: string; label: string; icon: LucideIcon; to?: string };
 
 export const DASHBOARD_FEATURES: Feature[] = [
@@ -12,7 +13,6 @@ export const DASHBOARD_FEATURES: Feature[] = [
   { slug: "tahsin", to: "/ortu/tahsin", label: "Tahsin", icon: Mic },
   { slug: "munaqasyah", to: "/ortu/munaqasyah", label: "Munaqasyah", icon: ClipboardCheck },
   { slug: "tasmi", to: "/ortu/tasmi", label: "Tasmi'", icon: Volume2 },
-  { slug: "tashih", label: "Tashih", icon: PenLine },
   { slug: "bintang", to: "/ortu/bintang", label: "Bintang", icon: Star },
   { slug: "spp", to: "/ortu/spp", label: "SPP", icon: Wallet },
   { slug: "uang-saku", label: "Uang Saku", icon: Banknote },
@@ -42,7 +42,6 @@ export const FEATURE_GROUPS: { title: string; items: Feature[] }[] = [
     items: [
       { slug: "munaqasyah", to: "/ortu/munaqasyah", label: "Munaqasyah", icon: ClipboardCheck },
       { slug: "tasmi", to: "/ortu/tasmi", label: "Tasmi'", icon: Volume2 },
-      { slug: "tashih", label: "Tashih", icon: PenLine },
       { slug: "eskul", to: "/ortu/eskul", label: "Eskul", icon: Trophy },
     ],
   },
