@@ -322,6 +322,15 @@ export type Database = {
           { foreignKeyName: "eskul_peserta_student_id_fkey"; columns: ["student_id"]; isOneToOne: false; referencedRelation: "students"; referencedColumns: ["id"] },
         ]
       }
+      tashih: {
+        Row: { catatan: string | null; created_at: string; id: string; jenis: string; status: string; student_id: string; surah: number; tanggal: string; teacher_id: string | null; updated_at: string; ayat: number | null }
+        Insert: { catatan?: string | null; created_at?: string; id?: string; jenis: string; status?: string; student_id: string; surah: number; tanggal?: string; teacher_id?: string | null; updated_at?: string; ayat?: number | null }
+        Update: { catatan?: string | null; created_at?: string; id?: string; jenis?: string; status?: string; student_id?: string; surah?: number; tanggal?: string; teacher_id?: string | null; updated_at?: string; ayat?: number | null }
+        Relationships: [
+          { foreignKeyName: "tashih_student_id_fkey"; columns: ["student_id"]; isOneToOne: false; referencedRelation: "students"; referencedColumns: ["id"] },
+          { foreignKeyName: "tashih_teacher_id_fkey"; columns: ["teacher_id"]; isOneToOne: false; referencedRelation: "teachers"; referencedColumns: ["id"] },
+        ]
+      }
       tasmi: {
         Row: { catatan: string | null; created_at: string; id: string; juz: number; jumlah_salah: number | null; nilai: string; student_id: string; tanggal: string; teacher_id: string | null; updated_at: string }
         Insert: { catatan?: string | null; created_at?: string; id?: string; juz: number; jumlah_salah?: number | null; nilai?: string; student_id: string; tanggal?: string; teacher_id?: string | null; updated_at?: string }
