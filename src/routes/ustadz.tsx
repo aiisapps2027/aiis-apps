@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ClipboardList, Home, History, Target, Trophy, Volume2, ClipboardCheck, PenLine } from "lucide-react";
+import { ClipboardList, Home, History, Target, Trophy, Volume2, ClipboardCheck, PenLine, User } from "lucide-react";
 import { requireRole } from "@/lib/session";
 import { StaffShell } from "@/components/aiis/StaffShell";
 
@@ -23,6 +23,7 @@ export const Route = createFileRoute("/ustadz")({
     { to: "/ustadz/tasmi", label: "Tasmi'", icon: Volume2, exact: false, grup: PENILAIAN },
     { to: "/ustadz/tashih", label: "Tashih", icon: PenLine, exact: false, grup: PENILAIAN },
     { to: "/ustadz/eskul", label: "Eskul", icon: Trophy, exact: false },
+    { to: "/ustadz/profil", label: "Profil", icon: User, exact: false },
     { to: "/ustadz/riwayat", label: "Riwayat", icon: History, exact: false, grup: PENILAIAN },
   ]} />,
 });

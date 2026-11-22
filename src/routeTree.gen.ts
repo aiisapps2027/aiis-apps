@@ -37,6 +37,7 @@ import { Route as OrtuTashihRouteImport } from './routes/ortu.tashih'
 import { Route as OrtuTasmiRouteImport } from './routes/ortu.tasmi'
 import { Route as UstadzIndexRouteImport } from './routes/ustadz.index'
 import { Route as UstadzEskulRouteImport } from './routes/ustadz.eskul'
+import { Route as UstadzProfilRouteImport } from './routes/ustadz.profil'
 import { Route as UstadzRiwayatRouteImport } from './routes/ustadz.riwayat'
 import { Route as UstadzTargetRouteImport } from './routes/ustadz.target'
 import { Route as UstadzTashihRouteImport } from './routes/ustadz.tashih'
@@ -192,6 +193,11 @@ const UstadzEskulRoute = UstadzEskulRouteImport.update({
   path: '/eskul',
   getParentRoute: () => UstadzRoute,
 } as any)
+const UstadzProfilRoute = UstadzProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => UstadzRoute,
+} as any)
 const UstadzRiwayatRoute = UstadzRiwayatRouteImport.update({
   id: '/riwayat',
   path: '/riwayat',
@@ -289,6 +295,7 @@ export interface FileRoutesByFullPath {
   '/ortu/tashih': typeof OrtuTashihRoute
   '/ortu/tasmi': typeof OrtuTasmiRoute
   '/ustadz/eskul': typeof UstadzEskulRoute
+  '/ustadz/profil': typeof UstadzProfilRoute
   '/ustadz/riwayat': typeof UstadzRiwayatRoute
   '/ustadz/target': typeof UstadzTargetRoute
   '/ustadz/tashih': typeof UstadzTashihRoute
@@ -330,6 +337,7 @@ export interface FileRoutesByTo {
   '/ortu/tashih': typeof OrtuTashihRoute
   '/ortu/tasmi': typeof OrtuTasmiRoute
   '/ustadz/eskul': typeof UstadzEskulRoute
+  '/ustadz/profil': typeof UstadzProfilRoute
   '/ustadz/riwayat': typeof UstadzRiwayatRoute
   '/ustadz/target': typeof UstadzTargetRoute
   '/ustadz/tashih': typeof UstadzTashihRoute
@@ -375,6 +383,7 @@ export interface FileRoutesById {
   '/ortu/tashih': typeof OrtuTashihRoute
   '/ortu/tasmi': typeof OrtuTasmiRoute
   '/ustadz/eskul': typeof UstadzEskulRoute
+  '/ustadz/profil': typeof UstadzProfilRoute
   '/ustadz/riwayat': typeof UstadzRiwayatRoute
   '/ustadz/target': typeof UstadzTargetRoute
   '/ustadz/tashih': typeof UstadzTashihRoute
@@ -421,6 +430,7 @@ export interface FileRouteTypes {
     | '/ortu/tashih'
     | '/ortu/tasmi'
     | '/ustadz/eskul'
+    | '/ustadz/profil'
     | '/ustadz/riwayat'
     | '/ustadz/target'
     | '/ustadz/tashih'
@@ -462,6 +472,7 @@ export interface FileRouteTypes {
     | '/ortu/tashih'
     | '/ortu/tasmi'
     | '/ustadz/eskul'
+    | '/ustadz/profil'
     | '/ustadz/riwayat'
     | '/ustadz/target'
     | '/ustadz/tashih'
@@ -506,6 +517,7 @@ export interface FileRouteTypes {
     | '/ortu/tashih'
     | '/ortu/tasmi'
     | '/ustadz/eskul'
+    | '/ustadz/profil'
     | '/ustadz/riwayat'
     | '/ustadz/target'
     | '/ustadz/tashih'
@@ -731,6 +743,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UstadzEskulRouteImport
       parentRoute: typeof UstadzRoute
     }
+    '/ustadz/profil': {
+      id: '/ustadz/profil'
+      path: '/profil'
+      fullPath: '/ustadz/profil'
+      preLoaderRoute: typeof UstadzProfilRouteImport
+      parentRoute: typeof UstadzRoute
+    }
     '/ustadz/riwayat': {
       id: '/ustadz/riwayat'
       path: '/riwayat'
@@ -904,6 +923,7 @@ const OrtuRouteWithChildren = OrtuRoute._addFileChildren(OrtuRouteChildren)
 
 interface UstadzRouteChildren {
   UstadzEskulRoute: typeof UstadzEskulRoute
+  UstadzProfilRoute: typeof UstadzProfilRoute
   UstadzRiwayatRoute: typeof UstadzRiwayatRoute
   UstadzTargetRoute: typeof UstadzTargetRoute
   UstadzTashihRoute: typeof UstadzTashihRoute
@@ -917,6 +937,7 @@ interface UstadzRouteChildren {
 
 const UstadzRouteChildren: UstadzRouteChildren = {
   UstadzEskulRoute: UstadzEskulRoute,
+  UstadzProfilRoute: UstadzProfilRoute,
   UstadzRiwayatRoute: UstadzRiwayatRoute,
   UstadzTargetRoute: UstadzTargetRoute,
   UstadzTashihRoute: UstadzTashihRoute,

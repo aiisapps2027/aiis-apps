@@ -40,3 +40,7 @@ export const isValidPhone = (p: string) => /^62\d{8,13}$/.test(normalizePhone(p)
 
 /** Parent login password: the school's NIS, digits only (6–15; the auth service needs at least 6 characters). */
 export const isValidNis = (nis: string) => /^\d{6,15}$/.test(nis.trim());
+
+/** Teacher code (also the teacher's password): 6-12 letters/digits, stored uppercase. */
+export const normalizeKode = (k: string) => k.trim().toUpperCase();
+export const isValidKode = (k: string) => /^[A-Z0-9]{6,12}$/.test(normalizeKode(k));

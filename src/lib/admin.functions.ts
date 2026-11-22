@@ -5,6 +5,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
   generateKode,
   isValidNisn,
+  isValidKode,
+  normalizeKode,
   isValidNis,
   NISN_LENGTH,
   isValidPhone,
@@ -198,6 +200,39 @@ export const regenerateTeacherKode = createServerFn({ method: "POST" })
     }
     if (!uid) uid = await createAuthUser(admin, ustadzEmail(kode), kode, "ustadz");
     await admin.from("teachers").update({ kode, user_id: uid }).eq("id", t.id);
+    return { kode };
+  });
+
+// Admin may set any teacher's code (pass id); a teacher may set only their own (omit id). The code is also the login password.
+export const setTeacherKode = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id?: string; kode: string }) => ({
+    id: d.id ? z.string().uuid().parse(d.id) : undefined,
+    kode: z.string().refine(isValidKode, "Kode harus 6–12 huruf/angka (tanpa spasi)").parse(d.kode),
+  }))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin: admin } = await import("@/integrations/supabase/client.server");
+    let t: any;
+    if (data.id) {
+      await assertAdmin(context);
+      t = (await admin.from("teachers").select("id, kode, user_id").eq("id", data.id).single()).data;
+    } else {
+      const { data: isUstadz } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "ustadz" });
+      if (!isUstadz) throw new Error("Akses ditolak");
+      t = (await admin.from("teachers").select("id, kode, user_id").eq("user_id", context.userId).maybeSingle()).data;
+    }
+    if (!t || !t.user_id) throw new Error("Ustadz tidak ditemukan");
+    const kode = normalizeKode(data.kode);
+    if (kode === t.kode) return { kode };
+    const { data: dupe } = await admin.from("teachers").select("id").eq("kode", kode).neq("id", t.id).limit(1);
+    if (dupe && dupe.length) throw new Error("Kode sudah dipakai pengajar lain, pilih yang lain");
+    const { error } = await admin.auth.admin.updateUserById(t.user_id, { email: ustadzEmail(kode), password: kode, email_confirm: true });
+    if (error) throw new Error(error.message.includes("already") ? "Kode sudah dipakai pengajar lain, pilih yang lain" : error.message);
+    const { error: e2 } = await admin.from("teachers").update({ kode }).eq("id", t.id);
+    if (e2) {
+      await admin.auth.admin.updateUserById(t.user_id, { email: ustadzEmail(t.kode), password: t.kode });
+      throw new Error(e2.message);
+    }
     return { kode };
   });
 

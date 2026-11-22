@@ -35,3 +35,18 @@ describe("isValidNisn", () => {
   });
   it.each(["12345678", "1234567890", "1234567890123456", "12345678A", ""])("rejects %j", (v) => expect(isValidNisn(v)).toBe(false));
 });
+
+import { isValidKode, normalizeKode } from "@/lib/auth-utils";
+describe("teacher kode", () => {
+  it("accepts 6-12 letters/digits, any case", () => {
+    expect(isValidKode("abc123")).toBe(true);
+    expect(isValidKode("FNATB4Z5")).toBe(true);
+    expect(normalizeKode(" abc123 ")).toBe("ABC123");
+  });
+  it("rejects short, long, or symbols", () => {
+    expect(isValidKode("abc12")).toBe(false);
+    expect(isValidKode("ABCDEFGHJKLMN")).toBe(false);
+    expect(isValidKode("abc 123")).toBe(false);
+    expect(isValidKode("abc-123")).toBe(false);
+  });
+});

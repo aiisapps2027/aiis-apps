@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { createTeacher, deletePerson, regenerateTeacherKode, updateTeacher } from "@/lib/admin.functions";
+import { createTeacher, deletePerson, regenerateTeacherKode, setTeacherKode, updateTeacher } from "@/lib/admin.functions";
 import { normalizePhone } from "@/lib/auth-utils";
 
 export const Route = createFileRoute("/admin/ustadz")({ component: AdminUstadz });
@@ -145,6 +145,8 @@ function TeacherDialog({ value, onClose, onSaved }: { value: Partial<Teacher>; o
   const [busy, setBusy] = useState(false);
   const create = useServerFn(createTeacher);
   const update = useServerFn(updateTeacher);
+  const setKode = useServerFn(setTeacherKode);
+  const [kode, setKodeVal] = useState(value.kode ?? "");
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent>
@@ -155,6 +157,7 @@ function TeacherDialog({ value, onClose, onSaved }: { value: Partial<Teacher>; o
           <div><Label>Jenis Kelamin</Label>
             <Select value={f.jenis_kelamin ?? "L"} onValueChange={(v) => setF({ ...f, jenis_kelamin: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="L">Ustadz (Laki-laki)</SelectItem><SelectItem value="P">Ustadzah (Perempuan)</SelectItem></SelectContent></Select>
           </div>
+          {f.id && <div><Label>Kode Pengajar (kata sandi login)</Label><Input value={kode} onChange={(e) => setKodeVal(e.target.value.toUpperCase())} maxLength={12} className="font-mono tracking-widest" /><p className="mt-1 text-xs text-muted-foreground">6–12 huruf/angka. Pengajar login dengan kode ini.</p></div>}
           {f.id && <div className="flex items-center justify-between rounded-xl bg-muted p-3"><Label>Aktif</Label><Switch checked={f.aktif ?? true} onCheckedChange={(v) => setF({ ...f, aktif: v })} /></div>}
           {!f.id && <p className="text-xs text-muted-foreground">Kode pengajar 8 karakter akan dibuat otomatis.</p>}
         </div>
@@ -163,7 +166,10 @@ function TeacherDialog({ value, onClose, onSaved }: { value: Partial<Teacher>; o
             setBusy(true);
             const payload = { nama: f.nama ?? "", no_hp: f.no_hp ?? "", jenis_kelamin: (f.jenis_kelamin ?? "L") as "L" | "P" };
             try {
-              if (f.id) await update({ data: { ...payload, id: f.id, aktif: f.aktif ?? true } });
+              if (f.id) {
+                await update({ data: { ...payload, id: f.id, aktif: f.aktif ?? true } });
+                if (kode.trim() && kode.trim().toUpperCase() !== value.kode) { await setKode({ data: { id: f.id, kode } }); toast.success("Kode diubah"); }
+              }
               else { const r = await create({ data: payload }); toast.success(`Kode pengajar: ${r.kode}`); }
               onSaved(); onClose();
             } catch (e: any) { toast.error(e?.message?.startsWith("[") ? "Nama minimal 2 huruf" : e.message); }
